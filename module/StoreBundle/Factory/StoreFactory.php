@@ -23,7 +23,7 @@ use StoreBundle\Entity\Store,
  */
 class StoreFactory
 {
-	/**
+    /**
      * @throws \InvalidArgumentException
      *
      * @param string $name The name of the store
@@ -32,9 +32,9 @@ class StoreFactory
      */
     public function createStore($name)
     {
-    	$store = new Store();
-    	$store->setName($name);
+        $store = new Store();
+        $store->setName($name);
 
-    	return $store;
+        return $store;
     }
 }

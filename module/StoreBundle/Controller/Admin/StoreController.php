@@ -15,8 +15,8 @@
 namespace StoreBundle\Controller\Admin;
 
 use StoreBundle\Entity\Store,
-	StoreBundle\Factory\StoreFactory,
-	StoreBundle\Form\Admin\Store\Add,
+    StoreBundle\Factory\StoreFactory,
+    StoreBundle\Form\Admin\Store\Add,
     Zend\View\Model\ViewModel;
 
 /**
@@ -26,18 +26,18 @@ use StoreBundle\Entity\Store,
  */
 class StoreController extends \CommonBundle\Component\Controller\ActionController\SiteController
 {
-	public function indexAction()
-	{
-		$stores = $this->getEntityManager()
-					->getRepository('StoreBundle\Entity\Store')
-					->findAllQuery();
+    public function indexAction()
+    {
+        $stores = $this->getEntityManager()
+                    ->getRepository('StoreBundle\Entity\Store')
+                    ->findAllQuery();
 
-		return new ViewModel(
-			array(
-				'stores' => $stores,
-			)
-		);
-	}
+        return new ViewModel(
+            array(
+                'stores' => $stores,
+            )
+        );
+    }
 
     public function createAction()
     {
@@ -48,12 +48,12 @@ class StoreController extends \CommonBundle\Component\Controller\ActionControlle
             $form->setData($formData);
 
             if ($form->isValid()) {
-            	$name = $formData['name'];
+                $name = $formData['name'];
 
-            	$storeFactory = new StoreFactory();
-            	$store = $storeFactory->createStore($name);
+                $storeFactory = new StoreFactory();
+                $store = $storeFactory->createStore($name);
 
-            	$this->getEntityManager()->persist($store);
+                $this->getEntityManager()->persist($store);
             }
         }
 
