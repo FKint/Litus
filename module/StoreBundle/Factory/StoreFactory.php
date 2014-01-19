@@ -14,7 +14,7 @@
 
 namespace StoreBundle\Factory;
 
-use StoreBundle\Entity\Store,
+use StoreBundle\Entity\Store;
 
 /**
  * ArticleController

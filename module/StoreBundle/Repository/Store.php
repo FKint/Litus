@@ -15,7 +15,7 @@ class Store extends EntityRepository
     public function findAllQuery()
     {
         $query = $this->_em->createQueryBuilder();
-        $resultSet = $query->select('a')
+        $resultSet = $query->select('s')
             ->from('StoreBundle\Entity\Store', 's')
             ->getQuery();
 

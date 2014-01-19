@@ -24,13 +24,13 @@ use StoreBundle\Entity\Store,
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class StoreController extends \CommonBundle\Component\Controller\ActionController\SiteController
+class StoreController extends \CommonBundle\Component\Controller\ActionController\AdminController
 {
     public function indexAction()
     {
         $stores = $this->getEntityManager()
                     ->getRepository('StoreBundle\Entity\Store')
-                    ->findAllQuery();
+                    ->findAll();
 
         return new ViewModel(
             array(
@@ -54,6 +54,7 @@ class StoreController extends \CommonBundle\Component\Controller\ActionControlle
                 $store = $storeFactory->createStore($name);
 
                 $this->getEntityManager()->persist($store);
+                $this->getEntityManager()->flush();
             }
         }
 

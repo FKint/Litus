@@ -24,7 +24,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-abstract class Store
+class Store
 {
     public function __construct()
     {

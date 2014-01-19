@@ -30,7 +30,7 @@ use CommonBundle\Component\Form\Admin\Element\Select,
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class Add extends \CommonBundle\Component\Form\Admin\Form\Form
+class Add extends \CommonBundle\Component\Form\Admin\Form
 {
     /**
      * @param null|string|int $name Optional name for the element
@@ -38,8 +38,6 @@ class Add extends \CommonBundle\Component\Form\Admin\Form\Form
     public function __construct($name = null)
     {
         parent::__construct($name);
-
-        $this->add($tabContent);
 
         $field = new Text('name');
         $field->setLabel('Naam');
