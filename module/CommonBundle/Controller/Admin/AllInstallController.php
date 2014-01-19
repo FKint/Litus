@@ -56,6 +56,7 @@ class AllInstallController extends \CommonBundle\Component\Controller\ActionCont
             'syllabus',
             'ticket',
             'wiki',
+            'store'
         );
 
         return new ViewModel(

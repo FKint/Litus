@@ -54,6 +54,7 @@ return array(
         'WikiBundle',
 
         'QuizBundle',
+        'StoreBundle'
     ),
     'module_listener_options' => array(
         'config_glob_paths'    => array(
