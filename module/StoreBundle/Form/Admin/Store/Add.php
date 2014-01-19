@@ -28,7 +28,7 @@ use CommonBundle\Component\Form\Admin\Element\Select,
 /**
  * Add a store
  *
- * @author Daan Wendelen <daanwendelen@gmail.com>
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class Add extends \CommonBundle\Component\Form\Admin\Form\Form
 {

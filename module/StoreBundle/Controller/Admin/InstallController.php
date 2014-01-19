@@ -8,7 +8,7 @@
  * @author Bram Gotink <bram.gotink@litus.cc>
  * @author Pieter Maene <pieter.maene@litus.cc>
  * @author Kristof Mariën <kristof.marien@litus.cc>
- * @author Daan Wendelen <daanwendelen@gmail.com>
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
  *
  * @license http://litus.cc/LICENSE
  */
@@ -20,7 +20,7 @@ use CommonBundle\Entity\General\Language;
 /**
  * InstallController
  *
- * @author Daan Wendelen <daanwendelen@gmail.com>
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class InstallController extends \CommonBundle\Component\Controller\ActionController\InstallController
 {
