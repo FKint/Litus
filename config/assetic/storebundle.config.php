@@ -14,7 +14,7 @@
 
 return array(
     'controllers'  => array(
-        'news_install' => array(
+        'store_install' => array(
             '@common_jquery',
             '@admin_css',
             '@admin_js',
