@@ -13,20 +13,29 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace StoreBundle\Controller\Admin\Store;
+namespace StoreBundle\Factory;
 
-use StoreBundle\Entity\Store\Store,
-    Zend\View\Model\ViewModel;
+use StoreBundle\Entity\Store,
 
 /**
  * ArticleController
  *
  * @author Daan Wendelen <daanwendelen@gmail.com>
  */
-class StoreController extends \CudiBundle\Component\Controller\ActionController
+class StoreFactory
 {
-    public function createAction()
+	/**
+     * @throws \InvalidArgumentException
+     *
+     * @param string $name The name of the store
+     *
+     * @return Store
+     */
+    public function createStore($name)
     {
-        
+    	$store = new Store();
+    	$store->setName($name);
+
+    	return $store;
     }
 }

@@ -25,7 +25,22 @@ return array(
                         'action'     => 'index'
                     )
                 )
-            )
+            ),
+            'store' => array(
+                'type' => 'Zend\Mvc\Router\Http\Segment',
+                'options' => array(
+                    'route' => '/admin/store[/:action[/:id][/page/:page]][/]',
+                    'constraints' => array(
+                        'action'  => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id'      => '[0-9]*',
+                        'page'    => '[0-9]*',
+                    ),
+                    'defaults' => array(
+                        'controller' => 'store',
+                        'action'     => 'index',
+                    ),
+                )
+            ),
         )
     ),
     
@@ -40,12 +55,12 @@ return array(
         'driver' => array(
             'orm_default' => array(
                 'drivers' => array(
-                    'NewsBundle\Entity' => 'orm_annotation_driver'
+                    'StoreBundle\Entity' => 'orm_annotation_driver'
                 ),
             ),
             'orm_annotation_driver' => array(
                 'paths' => array(
-                    'newsbundle' => __DIR__ . '/../../Entity',
+                    'storebundle' => __DIR__ . '/../../Entity',
                 ),
             ),
         ),
@@ -68,7 +83,8 @@ return array(
     
     'controllers' => array(
         'invokables' => array(
-            'store_install' => 'StoreBundle\Controller\Admin\InstallController'
+            'store_install' => 'StoreBundle\Controller\Admin\InstallController',
+            'store' => 'StoreBundle\Controller\Admin\StoreController'
         )
     ),
 );

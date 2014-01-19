@@ -13,12 +13,12 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace StoreBundle\Entity\Store;
+namespace StoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="StoreBundle\Repository\Store\Store")
+ * @ORM\Entity(repositoryClass="StoreBundle\Repository\Store")
  * @ORM\Table(name="store.store")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="inheritance_type", type="string")
@@ -27,8 +27,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 abstract class Store
 {
-    
-    
     public function __construct()
     {
     }
