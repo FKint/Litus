@@ -15,6 +15,8 @@
 
 namespace StoreBundle\Entity\Store;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * @ORM\Entity(repositoryClass="StoreBundle\Repository\Store\Store")
  * @ORM\Table(name="store.store")
