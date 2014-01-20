@@ -28,6 +28,8 @@ class Store
 {
     public function __construct()
     {
+        $this->editRoles = new ArrayCollection();
+        $this->useRoles = new ArrayCollection();
     }
 
     /**
@@ -39,7 +41,7 @@ class Store
     }
 
     /**
-     * @var integer The ID of this article
+     * @var integer
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -60,7 +62,7 @@ class Store
      *
      * @param string $name
      *
-     * @return \StoreBundle\Entity\Store\Store
+     * @return \StoreBundle\Entity\Store
      */
     public function setName($name)
     {
@@ -76,9 +78,107 @@ class Store
     private $name;
 
     /**
+     * @param \CommonBundle\Entity\Acl\Role $role
+     * 
+     * @return boolean
+     */
+    public function canBeEditedByRole($role)
+    {
+        return $this->getEditRoles->contains($role);
+    }
+
+    /**
+     * @param \CommonBundle\Entity\Acl\Role $editRole
+     * 
+     * @return \StoreBundle\Entity\Store
+     */
+    public function addEditRole($editRole)
+    {
+        $this->editRoles[] = $editRole;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
+    protected function getEditRoles()
+    {
+        return $this->editRoles;
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\ArrayCollection $editRoles
+     * 
+     * @return \StoreBundle\Entity\Store
+     */
+    protected function setEditRoles($editRoles)
+    {
+        $this->editRoles = $editRoles;
+        return $this;
+    }
+
+    /**
      * @var \Doctrine\Common\Collections\ArrayCollection The roles that can edit this store
      *
      * @ORM\ManyToMany(targetEntity="CommonBundle\Entity\Acl\Role")
+     * @ORM\JoinTable(
+     *      name="store.store_edit_roles",
+     *      joinColumns={@ORM\JoinColumn(name="store", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="role", referencedColumnName="name")}
+     * )
      */
     private $editRoles;
+
+    /**
+     * @param \CommonBundle\Entity\Acl\Role $role
+     * 
+     * @return boolean
+     */
+    public function canUsedByRole($role)
+    {
+        return $this->getUseRoles->contains($role);
+    }
+
+    /**
+     * @param \CommonBundle\Entity\Acl\Role $useRole
+     * 
+     * @return \StoreBundle\Entity\Store
+     */
+    public function addUseRole($useRole)
+    {
+        $this->useRole[] = $useRole;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
+    protected function getUseRoles()
+    {
+        return $this->useRole;
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\ArrayCollection $useRole
+     * 
+     * @return \StoreBundle\Entity\Store
+     */
+    protected function setUseRoles($useRole)
+    {
+        $this->useRole = $useRole;
+        return $this;
+    }
+
+    /**
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     *          The roles that can use the store. For example: the whole
+     *          fakbarteam can use the fakbar-store.
+     *
+     * @ORM\ManyToMany(targetEntity="CommonBundle\Entity\Acl\Role")
+     * @ORM\JoinTable(
+     *      name="store.store_use_roles",
+     *      joinColumns={@ORM\JoinColumn(name="store", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="role", referencedColumnName="name")}
+     * )
+     */
+    private $useRole;
+
 }
