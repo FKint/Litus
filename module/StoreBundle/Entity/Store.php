@@ -74,4 +74,11 @@ class Store
      * @ORM\Column(type="string")
      */
     private $name;
+
+    /**
+     * @var \Doctrine\Common\Collections\ArrayCollection The roles that can edit this store
+     *
+     * @ORM\ManyToMany(targetEntity="CommonBundle\Entity\Acl\Role")
+     */
+    private $editRoles;
 }
