@@ -21,8 +21,7 @@ namespace StoreBundle\Factory;
 use StoreBundle\Entity\Storage;
 
 /**
- * ArticleController
- *
+ * 
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class StorageFactory
@@ -32,7 +31,7 @@ class StorageFactory
      *
      * @param string $name The name of the store
      *
-     * @return Store
+     * @return \StoreBundle\Entity\Storage
      */
     public function createStorage($name)
     {

@@ -18,26 +18,26 @@
 
 namespace StoreBundle\Factory;
 
-use StoreBundle\Entity\Store;
+use StoreBundle\Entity\Unit;
 
 /**
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class StoreFactory
+class UnitFactory
 {
     /**
      * @throws \InvalidArgumentException
      *
-     * @param string $name The name of the store
+     * @param string $name The name of the unit
      *
-     * @return StoreBundle\Entity\Store
+     * @return \StoreBundle\Entity\Unit
      */
-    public function createStore($name)
+    public function createUnit($name)
     {
-        $store = new Store();
-        $store->setName($name);
+        $unit = new Unit();
+        $unit->setName($name);
 
-        return $store;
+        return $unit;
     }
 }

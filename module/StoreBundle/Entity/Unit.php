@@ -21,12 +21,11 @@ namespace StoreBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="StoreBundle\Repository\Storage")
- * @ORM\Table(name="store.storage")
+ * @ORM\Entity
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class Storage
+class Unit
 {
     public function __construct()
     {
@@ -62,7 +61,7 @@ class Storage
      *
      * @param string $name
      *
-     * @return \StoreBundle\Entity\Storage
+     * @return \StoreBundle\Entity\Unit
      */
     public function setName($name)
     {
@@ -71,7 +70,7 @@ class Storage
     }
 
     /**
-     * @var string The name of this storage
+     * @var string The name of this unit
      *
      * @ORM\Column(type="string")
      */

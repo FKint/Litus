@@ -24,8 +24,6 @@ use Doctrine\ORM\Mapping as ORM,
 /**
  * @ORM\Entity(repositoryClass="StoreBundle\Repository\Store")
  * @ORM\Table(name="store.store")
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="inheritance_type", type="string")
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
@@ -127,7 +125,6 @@ class Store
      * @ORM\ManyToMany(targetEntity="CommonBundle\Entity\Acl\Role")
      * @ORM\JoinTable(
      *      name="store.store_edit_roles",
-     *      joinColumns={@ORM\JoinColumn(name="store", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="role", referencedColumnName="name")}
      * )
      */
@@ -180,7 +177,6 @@ class Store
      * @ORM\ManyToMany(targetEntity="CommonBundle\Entity\Acl\Role")
      * @ORM\JoinTable(
      *      name="store.store_use_roles",
-     *      joinColumns={@ORM\JoinColumn(name="store", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="role", referencedColumnName="name")}
      * )
      */
@@ -215,6 +211,9 @@ class Store
     
     /**
      * @var \Doctrine\Common\Collections\ArrayCollection
+     * 
+     * @ORM\ManyToMany(targetEntity="\StoreBundle\Entity\Storage", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="store.store_storage")
      */
     private $storages;
 }
