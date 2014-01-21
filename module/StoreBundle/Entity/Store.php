@@ -18,7 +18,8 @@
 
 namespace StoreBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping as ORM,
+	Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass="StoreBundle\Repository\Store")
@@ -88,7 +89,7 @@ class Store
      */
     public function canBeEditedByRole($role)
     {
-        return $this->getEditRoles->contains($role);
+        return $this->getEditRoles()->contains($role);
     }
 
     /**
@@ -185,4 +186,35 @@ class Store
      */
     private $useRole;
 
+    /**
+     * @param \StoreBundle\Entity\Storage $storage
+     */
+    public function addStorage($storage)
+    {
+    	$this->storages[] = $storage;
+    }
+    
+    /**
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
+    protected function getStorages()
+    {
+    	return $this->storages;
+    }
+    
+    /**
+     * @param \Doctrine\Common\Collections\ArrayCollection $storages
+     *
+     * @return \StoreBundle\Entity\Store
+     */
+    protected function setStorages($storages)
+    {
+    	$this->storages = $storages;
+    	return $this;
+    }
+    
+    /**
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     */
+    private $storages;
 }

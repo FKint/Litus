@@ -18,14 +18,14 @@
 
 namespace StoreBundle\Factory;
 
-use StoreBundle\Entity\Store;
+use StoreBundle\Entity\Storage;
 
 /**
- * StoreController
+ * ArticleController
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class StoreFactory
+class StorageFactory
 {
     /**
      * @throws \InvalidArgumentException
@@ -34,11 +34,11 @@ class StoreFactory
      *
      * @return Store
      */
-    public function createStore($name)
+    public function createStorage($name)
     {
-        $store = new Store();
-        $store->setName($name);
+        $storage = new Storage();
+        $storage->setName($name);
 
-        return $store;
+        return $storage;
     }
 }
