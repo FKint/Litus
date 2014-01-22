@@ -29,6 +29,9 @@ use Doctrine\ORM\Mapping as ORM,
  */
 class Store
 {
+	/**
+	 * Factory Only
+	 */
     public function __construct()
     {
         $this->editRoles = new ArrayCollection();

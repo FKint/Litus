@@ -21,12 +21,11 @@ namespace StoreBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="StoreBundle\Repository\Storage")
- * @ORM\Table(name="store.storage")
+ * @ORM\Entity
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class Storage
+class UnitType
 {
 	/**
 	 * Factory Only
@@ -65,7 +64,7 @@ class Storage
      *
      * @param string $name
      *
-     * @return \StoreBundle\Entity\Storage
+     * @return \StoreBundle\Entity\UnitType
      */
     public function setName($name)
     {
@@ -74,9 +73,47 @@ class Storage
     }
 
     /**
-     * @var string The name of this storage
+     * @var string The name of this unit type
      *
      * @ORM\Column(type="string")
      */
     private $name;
+    
+    /**
+     * @return \StoreBundle\Entity\UnitType | null
+     */
+    public function getSubType()
+    {
+    	return $this->subType;
+    }
+    
+    /**
+     * Factory Only
+     *
+     * @param \StoreBundle\Entity\UnitType | null $subType
+     *
+     * @return \StoreBundle\Entity\UnitType
+     */
+    public function setSubType($subType)
+    {
+    	$this->subType = $subType;
+    	return $this;
+    }
+    
+    /**
+     * @var \StoreBundle\Entity\UnitType | null The subtype of this unit type
+     *
+     * @ORM\Column(type="string")
+     */
+    private $subType;
+    
+    /**
+     * Returns true if this unitType is a countUnit.
+     * 
+     * @return boolean
+     */
+    public function isCountUnit()
+    {
+    	
+    }
 }

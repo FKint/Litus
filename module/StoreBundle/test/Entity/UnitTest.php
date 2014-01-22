@@ -1,4 +1,4 @@
-<!--
+<?php
 /**
  * Litus is a project by a group of students from the KU Leuven. The goal is to create
  * various applications to support the IT needs of student unions.
@@ -15,10 +15,16 @@
  *
  * @license http://litus.cc/LICENSE
  */
--->
 
-<phpunit bootstrap="Bootstrap.php">
-    <testsuite name="Store Tests">
-        <directory>./</directory>
-    </testsuite>
-</phpunit>
+use StoreBundle\Entity\Unit;
+use StoreBundle\Factory\UnitFactory;
+
+class UnitTest extends PHPUnit_Framework_TestCase
+{
+    public function testFactory()
+    {
+        $f = new UnitFactory();
+        $u = $f->createUnit("Test");
+        $this->assertEquals("Test", $u->getName());
+    }
+}

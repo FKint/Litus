@@ -19,6 +19,7 @@
 namespace StoreBundle\Factory;
 
 use StoreBundle\Entity\Unit;
+use StoreBundle\Entity\UnitType;
 
 /**
  *
@@ -39,5 +40,19 @@ class UnitFactory
         $unit->setName($name);
 
         return $unit;
+    }
+    
+    public function createCountUnitType($name)
+    {
+    	$unitType = new UnitType();
+    	$unitType->setName($name);
+    	$unitType->setSubType(null);
+    }
+    
+    public function createUnitType($name, $subUnitType)
+    {
+    	$unitType = new UnitType();
+    	$unitType->setName($name);
+    	$unitType->setSubType($subUnitType);
     }
 }
