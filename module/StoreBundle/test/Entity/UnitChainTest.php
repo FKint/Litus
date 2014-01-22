@@ -2,6 +2,7 @@
 use StoreBundle\Entity\UnitChain;
 use StoreBundle\Entity\UnitType;
 use StoreBundle\Factory\UnitFactory;
+use StoreBundle\test\Factory\TestUnitFactory;
 /**
  * Litus is a project by a group of students from the KU Leuven. The goal is to create
  * various applications to support the IT needs of student unions.
@@ -23,7 +24,7 @@ class UnitChainTest extends PHPUnit_Framework_TestCase
 {
 	public function testSimple()
 	{
-		$uf = new UnitFactory();
+		$uf = new TestUnitFactory();
 		$us = new UnitChain();
 		
 		$fles = $uf->createCountUnitType("Flesje");
@@ -33,8 +34,7 @@ class UnitChainTest extends PHPUnit_Framework_TestCase
 		$us->addUnitTypeToChain($fles, 1);
 		$us->addUnitTypeToChain($bak, 24);
 		$us->addUnitTypeToChain($pallet, 100);
-		
-		$this->assertEquals(2400, $us->getNbCountingUnitsInUnitType($bak));
+		$this->assertEquals(2400, $us->getNbCountingUnitsInUnitType($pallet));
 	}
 	
     public function testGabs()
@@ -49,7 +49,7 @@ class UnitChainTest extends PHPUnit_Framework_TestCase
 		 *	T4			10
 		 */
     	
-    	$uf = new UnitFactory();
+    	$uf = new TestUnitFactory();
     	$us = new UnitChain();
     	
     	$count = $uf->createCountUnitType("Count");
@@ -83,7 +83,7 @@ class UnitChainTest extends PHPUnit_Framework_TestCase
     	*/
     	$this->assertTrue($us->containsGab($t1));
     	
-    	$us->addUnitTypeToChain($count, 10);
+    	$us->addUnitTypeToChain($count, 1);
     	/*
     	 *	Chain:
     	*	count
@@ -108,7 +108,7 @@ class UnitChainTest extends PHPUnit_Framework_TestCase
     	*	T4
     	*/
     	$this->assertTrue($us->containsGab($t4));
-    	$this->assertFalse($us->canAddToChain($t3side));
+    	$this->assertTrue($us->canAddToChain($t3side));
     	
     	$us->addUnitTypeToChain($t3, 10);
     	/*
@@ -122,8 +122,8 @@ class UnitChainTest extends PHPUnit_Framework_TestCase
     	$this->assertFalse($us->containsGab($t3));
     	$this->assertFalse($us->containsGab($t4));
     	
-    	$this->assertFalse($us->canAddToChain($t3side));
+    	$this->assertTrue($us->canAddToChain($t3side));
     	
-    	$assertEquals(1000, $us->getNbCountingUnitsInUnitType($t3));
+    	$this->assertEquals(1000, $us->getNbCountingUnitsInUnitType($t3));
     }
 }

@@ -42,6 +42,17 @@ class UnitType
         return $this->id;
     }
 
+	/**
+     * @param integer $id
+     *
+     * @return \StoreBundle\Entity\UnitType
+     */
+    protected function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+    
     /**
      * @var integer
      *
@@ -112,8 +123,16 @@ class UnitType
      * 
      * @return boolean
      */
-    public function isCountUnit()
+    public function isCountType()
     {
+    	return $this->subType == false;
+    }
+    
+    public function getCountSubType()
+    {
+    	if($this->isCountType())
+    		return $this;
     	
+    	return $this->getSubType()->getCountSubType();
     }
 }

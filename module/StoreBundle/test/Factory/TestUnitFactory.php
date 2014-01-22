@@ -16,43 +16,35 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace StoreBundle\Factory;
+namespace StoreBundle\test\Factory;
 
 use StoreBundle\Entity\Unit;
 use StoreBundle\Entity\UnitType;
+use StoreBundle\Factory\UnitFactory;
+use StoreBundle\test\Entity\TestUnitType;
 
 /**
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class UnitFactory
+class TestUnitFactory extends UnitFactory
 {
-    /**
-     * @throws \InvalidArgumentException
-     *
-     * @param string $name The name of the unit
-     *
-     * @return \StoreBundle\Entity\Unit
-     */
-    public function createUnit($name)
-    {
-        $unit = new Unit();
-        $unit->setName($name);
-
-        return $unit;
-    }
+    private $c = 0;
     
-    public function createCountUnitType($name)
-    {
-    	return $this->createUnitType($name, null);
-    }
     
     public function createUnitType($name, $subUnitType)
     {
-    	$unitType = new UnitType();
+    	$unitType = new TestUnitType();
     	$unitType->setName($name);
     	$unitType->setSubType($subUnitType);
     	
+    	return $this->setId($unitType);
+    }
+    
+    protected function setId($unitType)
+    {
+    	$unitType->setId($this->c);
+    	$this->c++;
     	return $unitType;
     }
 }

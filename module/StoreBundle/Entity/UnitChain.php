@@ -19,6 +19,7 @@
 namespace StoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity
@@ -29,6 +30,7 @@ class UnitChain
 {
     public function __construct()
     {
+    	$this->map = new ArrayCollection();
     }
 
     /**
@@ -53,26 +55,27 @@ class UnitChain
      * 
      * Precondition: isChainable($unitType)
      * 
-     * @param StoreBundle\Entity\UnitType $unitType
+     * @param \StoreBundle\Entity\UnitType $unitType
      * @param integer $nbOfSubUnitsInUnit
      */
     public function addUnitTypeToChain($unitType, $nbOfSubUnitsInUnit)
     {
-    	
+    	$this->map[$unitType->getId()] = new UnitChainLink($unitType, $nbOfSubUnitsInUnit);
     }
     
     /**
-     * $unitType->getSubType creates a chain recursivly.
-     * 
-     * It is only possible to add a unitType to the chain if it can be added
-     * at the end or at the front of the chain. It is allowed to make a gab
+     * True if $unitType->getCountSubUnit() equals the count sub unit of each
+     * of the unitTypes already in the chain. It is allowed to make a gab
      * in the chain, if it will be filled later.
      * 
-     * @param StoreBundle\Entity\UnitType $unitType
+     * @param \StoreBundle\Entity\UnitType $unitType
      */
     public function canAddToChain($unitType)
     {
+    	if($this->map->isEmpty())
+    		return true;
     	
+    	return $this->map->first()->getUnitType()->getCountSubType() === $unitType->getCountSubType();
     }
     
     /**
@@ -80,11 +83,20 @@ class UnitChain
      * countingUnit. Returns also true if there is no $unitType added to the 
      * chain.
      * 
+     * @param	\StoreBundle\Entity\UnitType $unitType
+     * 
      * @return boolean
      */
     public function containsGab($unitType)
     {
+    	if($this->map->containsKey($unitType->getId())) {
+    		if($unitType->isCountType())
+    			return false;
+    			
+    		return $this->containsGab($unitType->getSubType());
+    	}
     	
+    	return true;
     }
     
     /**
@@ -92,10 +104,60 @@ class UnitChain
      * 
      * Precondition !containsGab($unitType)
      * 
-     * @param StoreBundle\Entity\UnitType $unitType
+     * @param \StoreBundle\Entity\UnitType $unitType
      */
     public function getNbCountingUnitsInUnitType($unitType)
     {
+    	if($unitType->isCountType())
+    		return $this->map[$unitType->getId()]->getNb();
     	
+    	return $this->map[$unitType->getId()]->getNb() * $this->getNbCountingUnitsInUnitType($unitType->getSubType());
     }
+    
+    /**
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     */
+    private $map;
 }
+
+class UnitChainLink
+{
+	public function __construct($unitType, $nb)
+	{
+		$this->unitType = $unitType;
+		$this->nb = $nb;
+	}
+	
+	public function getUnitType()
+	{
+		return $this->unitType;
+	}
+	
+	protected function setUnitType($unitType)
+	{
+		$this->unitType = $unitType;
+		return $this;	
+	}
+	
+	private $unitType;
+	
+	
+	public function getNb()
+	{
+		return $this->nb;
+	}
+	
+	protected function setNb($nb)
+	{
+		$this->nb = $nb;
+		return $this;
+	}
+	
+	private $nb;
+	
+}
+
+
+
+
+
