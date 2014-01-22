@@ -53,7 +53,8 @@ class UnitChain
     /**
      * See unit tests for effect.
      * 
-     * Precondition: isChainable($unitType)
+     * Precondition: canAddToChain($unitType)
+     * Precondition: $unitType->getId() is set and unique within the chain
      * 
      * @param \StoreBundle\Entity\UnitType $unitType
      * @param integer $nbOfSubUnitsInUnit
@@ -83,6 +84,8 @@ class UnitChain
      * countingUnit. Returns also true if there is no $unitType added to the 
      * chain.
      * 
+     * Precondition: $unitType->getId() is set and unique within the chain
+     * 
      * @param	\StoreBundle\Entity\UnitType $unitType
      * 
      * @return boolean
@@ -103,6 +106,7 @@ class UnitChain
      * See unit tests for usage.
      * 
      * Precondition !containsGab($unitType)
+     * Precondition: $unitType->getId() is set and unique within the chain
      * 
      * @param \StoreBundle\Entity\UnitType $unitType
      */
