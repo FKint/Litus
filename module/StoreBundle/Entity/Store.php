@@ -19,7 +19,7 @@
 namespace StoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM,
-	Doctrine\Common\Collections\ArrayCollection;
+    Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass="StoreBundle\Repository\Store")
@@ -29,9 +29,9 @@ use Doctrine\ORM\Mapping as ORM,
  */
 class Store
 {
-	/**
-	 * Factory Only
-	 */
+    /**
+     * Factory Only
+     */
     public function __construct()
     {
         $this->editRoles = new ArrayCollection();
@@ -190,7 +190,7 @@ class Store
      */
     public function addStorage($storage)
     {
-    	$this->storages[] = $storage;
+        $this->storages[] = $storage;
     }
     
     /**
@@ -198,7 +198,7 @@ class Store
      */
     protected function getStorages()
     {
-    	return $this->storages;
+        return $this->storages;
     }
     
     /**
@@ -208,8 +208,8 @@ class Store
      */
     protected function setStorages($storages)
     {
-    	$this->storages = $storages;
-    	return $this;
+        $this->storages = $storages;
+        return $this;
     }
     
     /**

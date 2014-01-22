@@ -44,15 +44,15 @@ class UnitFactory
     
     public function createCountUnitType($name)
     {
-    	return $this->createUnitType($name, null);
+        return $this->createUnitType($name, null);
     }
     
     public function createUnitType($name, $subUnitType)
     {
-    	$unitType = new UnitType();
-    	$unitType->setName($name);
-    	$unitType->setSubType($subUnitType);
-    	
-    	return $unitType;
+        $unitType = new UnitType();
+        $unitType->setName($name);
+        $unitType->setSubType($subUnitType);
+        
+        return $unitType;
     }
 }

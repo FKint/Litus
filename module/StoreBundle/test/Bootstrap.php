@@ -17,27 +17,27 @@
  */
 
 function fakbarLoader1($class_name)
-{	
-	$file = '../../' . str_replace('\\', '/', $class_name) . '.php';
-	
-	if(is_file($file))
-		include $file;
+{    
+    $file = '../../' . str_replace('\\', '/', $class_name) . '.php';
+    
+    if(is_file($file))
+        include $file;
 };
 
 function fakbarLoader2($class_name)
-{	
-	$file = str_replace('_', '/', $class_name) . '.php';
-	
-	foreach(explode(':', get_include_path()) as $dir)
-	{
-	    $loc = $dir.'/'.$file;
-	    
-	    if(is_file($loc))
-	    {
-		    include $loc;
-		    return;
-	    }
-	}
+{    
+    $file = str_replace('_', '/', $class_name) . '.php';
+    
+    foreach(explode(':', get_include_path()) as $dir)
+    {
+        $loc = $dir.'/'.$file;
+        
+        if(is_file($loc))
+        {
+            include $loc;
+            return;
+        }
+    }
 
 };
 

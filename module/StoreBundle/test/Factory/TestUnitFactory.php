@@ -34,17 +34,17 @@ class TestUnitFactory extends UnitFactory
     
     public function createUnitType($name, $subUnitType)
     {
-    	$unitType = new TestUnitType();
-    	$unitType->setName($name);
-    	$unitType->setSubType($subUnitType);
-    	
-    	return $this->setId($unitType);
+        $unitType = new TestUnitType();
+        $unitType->setName($name);
+        $unitType->setSubType($subUnitType);
+        
+        return $this->setId($unitType);
     }
     
     protected function setId($unitType)
     {
-    	$unitType->setId($this->c);
-    	$this->c++;
-    	return $unitType;
+        $unitType->setId($this->c);
+        $this->c++;
+        return $unitType;
     }
 }

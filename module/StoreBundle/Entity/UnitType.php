@@ -27,9 +27,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class UnitType
 {
-	/**
-	 * Factory Only
-	 */
+    /**
+     * Factory Only
+     */
     public function __construct()
     {
     }
@@ -42,7 +42,7 @@ class UnitType
         return $this->id;
     }
 
-	/**
+    /**
      * @param integer $id
      *
      * @return \StoreBundle\Entity\UnitType
@@ -95,7 +95,7 @@ class UnitType
      */
     public function getSubType()
     {
-    	return $this->subType;
+        return $this->subType;
     }
     
     /**
@@ -107,8 +107,8 @@ class UnitType
      */
     public function setSubType($subType)
     {
-    	$this->subType = $subType;
-    	return $this;
+        $this->subType = $subType;
+        return $this;
     }
     
     /**
@@ -125,14 +125,14 @@ class UnitType
      */
     public function isCountType()
     {
-    	return $this->subType == false;
+        return $this->subType == false;
     }
     
     public function getCountSubType()
     {
-    	if($this->isCountType())
-    		return $this;
-    	
-    	return $this->getSubType()->getCountSubType();
+        if($this->isCountType())
+            return $this;
+        
+        return $this->getSubType()->getCountSubType();
     }
 }

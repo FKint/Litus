@@ -23,15 +23,15 @@ use StoreBundle\Entity\UnitType;
 
 class TestUnitType extends UnitType
 {
-	/**
-	 * Factory Only
-	 */
+    /**
+     * Factory Only
+     */
     public function __construct()
     {
-    	parent::__construct();
+        parent::__construct();
     }
 
-	/**
+    /**
      * @param integer $id
      *
      * @return \StoreBundle\Entity\UnitType

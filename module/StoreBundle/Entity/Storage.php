@@ -28,9 +28,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Storage
 {
-	/**
-	 * Factory Only
-	 */
+    /**
+     * Factory Only
+     */
     public function __construct()
     {
     }

@@ -30,7 +30,7 @@ class UnitChain
 {
     public function __construct()
     {
-    	$this->map = new ArrayCollection();
+        $this->map = new ArrayCollection();
     }
 
     /**
@@ -61,7 +61,7 @@ class UnitChain
      */
     public function addUnitTypeToChain($unitType, $nbOfSubUnitsInUnit)
     {
-    	$this->map[$unitType->getId()] = new UnitChainLink($unitType, $nbOfSubUnitsInUnit);
+        $this->map[$unitType->getId()] = new UnitChainLink($unitType, $nbOfSubUnitsInUnit);
     }
     
     /**
@@ -73,10 +73,10 @@ class UnitChain
      */
     public function canAddToChain($unitType)
     {
-    	if($this->map->isEmpty())
-    		return true;
-    	
-    	return $this->map->first()->getUnitType()->getCountSubType() === $unitType->getCountSubType();
+        if($this->map->isEmpty())
+            return true;
+        
+        return $this->map->first()->getUnitType()->getCountSubType() === $unitType->getCountSubType();
     }
     
     /**
@@ -86,20 +86,20 @@ class UnitChain
      * 
      * Precondition: $unitType->getId() is set and unique within the chain
      * 
-     * @param	\StoreBundle\Entity\UnitType $unitType
+     * @param    \StoreBundle\Entity\UnitType $unitType
      * 
      * @return boolean
      */
     public function containsGab($unitType)
     {
-    	if($this->map->containsKey($unitType->getId())) {
-    		if($unitType->isCountType())
-    			return false;
-    			
-    		return $this->containsGab($unitType->getSubType());
-    	}
-    	
-    	return true;
+        if($this->map->containsKey($unitType->getId())) {
+            if($unitType->isCountType())
+                return false;
+                
+            return $this->containsGab($unitType->getSubType());
+        }
+        
+        return true;
     }
     
     /**
@@ -112,10 +112,10 @@ class UnitChain
      */
     public function getNbCountingUnitsInUnitType($unitType)
     {
-    	if($unitType->isCountType())
-    		return $this->map[$unitType->getId()]->getNb();
-    	
-    	return $this->map[$unitType->getId()]->getNb() * $this->getNbCountingUnitsInUnitType($unitType->getSubType());
+        if($unitType->isCountType())
+            return $this->map[$unitType->getId()]->getNb();
+        
+        return $this->map[$unitType->getId()]->getNb() * $this->getNbCountingUnitsInUnitType($unitType->getSubType());
     }
     
     /**
@@ -126,39 +126,39 @@ class UnitChain
 
 class UnitChainLink
 {
-	public function __construct($unitType, $nb)
-	{
-		$this->unitType = $unitType;
-		$this->nb = $nb;
-	}
-	
-	public function getUnitType()
-	{
-		return $this->unitType;
-	}
-	
-	protected function setUnitType($unitType)
-	{
-		$this->unitType = $unitType;
-		return $this;	
-	}
-	
-	private $unitType;
-	
-	
-	public function getNb()
-	{
-		return $this->nb;
-	}
-	
-	protected function setNb($nb)
-	{
-		$this->nb = $nb;
-		return $this;
-	}
-	
-	private $nb;
-	
+    public function __construct($unitType, $nb)
+    {
+        $this->unitType = $unitType;
+        $this->nb = $nb;
+    }
+    
+    public function getUnitType()
+    {
+        return $this->unitType;
+    }
+    
+    protected function setUnitType($unitType)
+    {
+        $this->unitType = $unitType;
+        return $this;    
+    }
+    
+    private $unitType;
+    
+    
+    public function getNb()
+    {
+        return $this->nb;
+    }
+    
+    protected function setNb($nb)
+    {
+        $this->nb = $nb;
+        return $this;
+    }
+    
+    private $nb;
+    
 }
 
 
