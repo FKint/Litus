@@ -76,7 +76,7 @@ class UnitChain
         if($this->map->isEmpty())
             return true;
         
-        return $this->map->first()->getUnitType()->getCountSubType() === $unitType->getCountSubType();
+        return $this->map->first()->getUnitType()->getPortionSubType() === $unitType->getPortionSubType();
     }
     
     /**
@@ -93,7 +93,7 @@ class UnitChain
     public function containsGab($unitType)
     {
         if($this->map->containsKey($unitType->getId())) {
-            if($unitType->isCountType())
+            if($unitType->isPortionType())
                 return false;
                 
             return $this->containsGab($unitType->getSubType());
@@ -110,12 +110,12 @@ class UnitChain
      * 
      * @param \StoreBundle\Entity\UnitType $unitType
      */
-    public function getNbCountingUnitsInUnitType($unitType)
+    public function getNbPortionsInUnitType($unitType)
     {
-        if($unitType->isCountType())
+        if($unitType->isPortionType())
             return $this->map[$unitType->getId()]->getNb();
         
-        return $this->map[$unitType->getId()]->getNb() * $this->getNbCountingUnitsInUnitType($unitType->getSubType());
+        return $this->map[$unitType->getId()]->getNb() * $this->getNbPortionsInUnitType($unitType->getSubType());
     }
     
     /**

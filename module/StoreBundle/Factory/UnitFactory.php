@@ -27,6 +27,11 @@ use StoreBundle\Entity\UnitType;
  */
 class UnitFactory
 {
+    public function __construct()
+    {
+        $this->last = null;
+    }
+    
     /**
      * @throws \InvalidArgumentException
      *
@@ -42,7 +47,7 @@ class UnitFactory
         return $unit;
     }
     
-    public function createCountUnitType($name)
+    public function createPortionUnitType($name)
     {
         return $this->createUnitType($name, null);
     }
@@ -55,4 +60,20 @@ class UnitFactory
         
         return $unitType;
     }
+    
+    /**
+     * Creates a new unit type. The first time you invoke this methode, a
+     * portion unit type will be returned, the next invokation, a unit type
+     * will be created with that portion unit type as subtype. The next one
+     * created will have the previously created unit type as its subtype.
+     * 
+     * @param string $name
+     */
+    public function createNextChainedUnitType($name)
+    {
+        $this->last = $this->createUnitType($name, $this->last);
+        return $this->last;
+    }
+    
+    private $last;
 }

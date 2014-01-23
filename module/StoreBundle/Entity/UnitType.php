@@ -119,20 +119,20 @@ class UnitType
     private $subType;
     
     /**
-     * Returns true if this unitType is a countUnit.
+     * Returns true if this unitType is a portion type.
      * 
      * @return boolean
      */
-    public function isCountType()
+    public function isPortionType()
     {
         return $this->subType == false;
     }
     
-    public function getCountSubType()
+    public function getPortionSubType()
     {
-        if($this->isCountType())
+        if($this->isPortionType())
             return $this;
         
-        return $this->getSubType()->getCountSubType();
+        return $this->getSubType()->getPortionSubType();
     }
 }

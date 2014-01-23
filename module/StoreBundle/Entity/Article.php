@@ -19,6 +19,7 @@
 namespace StoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use StoreBundle\Entity\Valuta\Valuta;
 
 /**
  * @author Daan Wendelen <daan.wendelen@litus.cc>
@@ -76,20 +77,6 @@ class Article
      * @ORM\Column(type="string")
      */
     private $name;
-
-    /**
-     * @return float
-     */
-    public function getPortionsInCountingUnit()
-    {
-    }
-    
-    /**
-     * @param float $portionsInCountingUnit
-     */
-    public function setPortionsInCountingUnit($portionsInCountingUnit)
-    {
-    }
     
     /**
      * @return \StoreBundle\Entity\UnitChain
@@ -117,9 +104,57 @@ class Article
     }
     
     /**
+     * @param \StoreBundle\Entity\Valuta\Valuta $sellingPrice
+     */
+    public function setSellingPrice($sellingPrice)
+    {
+    }
+    
+    /**
+     * Returns the purchase price of one portion.
+     * 
      * @return \StoreBundle\Entity\Valuta\Valuta
      */
-    public function getBuyingPrice()
+    public function getPurchasePricePortion()
     {
+    }
+    
+    /**
+     * Precondition !getUnitChain()->containsGab($unitType)
+     * 
+     * @param \StoreBundle\Entity\UnitType $unitType
+     * 
+     * @return \StoreBundle\Entity\Valuta\Valuta
+     */
+    public function getPurchasePrice($unitType)
+    {
+    }
+    
+    /**
+     * @param \StoreBundle\Entity\Valuta\Valuta $purchasePrice
+     */
+    public function setPurchasePricePortion($purchasePrice)
+    {
+        
+    }
+    
+    /**
+     * Precondition !getUnitChain()->containsGab($unitType)
+     * 
+     * @param \StoreBundle\Entity\Valuta\Valuta $purchasePrice
+     * @param \StoreBundle\Entity\UnitType $unitType
+     */
+    public function setPurchasePrice($purchasePrice, $unitType)
+    {
+    }
+    
+    private $purchasePrice;
+    
+    /**
+     * @return \StoreBundle\Entity\Valuta\Valuta
+     */
+    public function getMarginPerPortion()
+    {
+        
     }
 }
