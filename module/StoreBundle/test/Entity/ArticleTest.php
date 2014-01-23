@@ -21,12 +21,13 @@ use StoreBundle\Factory\StorageFactory;
 use StoreBundle\Factory\ArticleFactory;
 use StoreBundle\Factory\UnitFactory;
 use StoreBundle\Factory\Valuta\ValutaFactory;
+use StoreBundle\test\Factory\TestUnitFactory;
 
 class ArticleTest extends PHPUnit_Framework_TestCase
 {
     public function testStella()
     {
-        $uf = new UnitFactory();        
+        $uf = new TestUnitFactory();        
         $af = new ArticleFactory();
         $vf = new ValutaFactory();
         
@@ -40,7 +41,7 @@ class ArticleTest extends PHPUnit_Framework_TestCase
         
         $s->setPurchasePrice($vf->createExcl(800, 0.21), $pallet);
         
-        $this->assertEquals(100, $s->getPurchasePriceCountUnit()->getExcl());
+        $this->assertEquals(0.5, $s->getPurchasePricePortion()->getExcl());
         $this->assertEquals(100, $s->getPurchasePrice($vat)->getExcl());
         $this->assertEquals(800, $s->getPurchasePrice($pallet)->getExcl());
         

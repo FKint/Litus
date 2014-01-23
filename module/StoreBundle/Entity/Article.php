@@ -83,6 +83,7 @@ class Article
      */
     public function getUnitChain()
     {
+        return $this->unitChain;
     }
     
     /**
@@ -94,13 +95,21 @@ class Article
      */
     public function setUnitChain($unitChain)
     {
+        $this->unitChain = $unitChain;
     }
+    
+    /**
+     * @var \StoreBundle\Entity\UnitChain
+     */
+    private $unitChain;
+    
     
     /**
      * @return \StoreBundle\Entity\Valuta\Valuta
      */
     public function getSellingPrice()
     {
+        return $this->sellingPrice;
     }
     
     /**
@@ -108,7 +117,13 @@ class Article
      */
     public function setSellingPrice($sellingPrice)
     {
+        $this->sellingPrice = $sellingPrice;
     }
+    
+    /**
+     * @var \StoreBundle\Entity\Valuta\Valuta
+     */
+    private $sellingPrice;
     
     /**
      * Returns the purchase price of one portion.
@@ -117,6 +132,7 @@ class Article
      */
     public function getPurchasePricePortion()
     {
+        return $this->purchasePrice;
     }
     
     /**
@@ -128,14 +144,19 @@ class Article
      */
     public function getPurchasePrice($unitType)
     {
+        return $this->getPurchasePricePortion()->multiply(
+                $this->getUnitChain()
+                ->getNbPortionsInUnitType($unitType));
     }
+    
+    
     
     /**
      * @param \StoreBundle\Entity\Valuta\Valuta $purchasePrice
      */
     public function setPurchasePricePortion($purchasePrice)
     {
-        
+        $this->purchasePrice = $purchasePrice;
     }
     
     /**
@@ -146,8 +167,14 @@ class Article
      */
     public function setPurchasePrice($purchasePrice, $unitType)
     {
+        $this->setPurchasePricePortion($purchasePrice->divide(
+                $this->getUnitChain()
+                    ->getNbPortionsInUnitType($unitType)));
     }
     
+    /**
+     * @var \StoreBundle\Entity\Valuta\Valuta
+     */
     private $purchasePrice;
     
     /**
@@ -155,6 +182,6 @@ class Article
      */
     public function getMarginPerPortion()
     {
-        
+        return $this->getSellingPrice()->subtract($this->getPurchasePricePortion());
     }
 }
