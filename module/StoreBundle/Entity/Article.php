@@ -82,7 +82,6 @@ class Article
      */
     public function getPortionsInCountingUnit()
     {
-        
     }
     
     /**
@@ -90,7 +89,6 @@ class Article
      */
     public function setPortionsInCountingUnit($portionsInCountingUnit)
     {
-        
     }
     
     /**
@@ -98,7 +96,6 @@ class Article
      */
     public function getUnitChain()
     {
-        
     }
     
     /**
@@ -109,6 +106,20 @@ class Article
      * @return \StoreBundle\Entity\UnitChain
      */
     public function setUnitChain($unitChain)
+    {
+    }
+    
+    /**
+     * @return \StoreBundle\Entity\Valuta\Valuta
+     */
+    public function getSellingPrice()
+    {
+    }
+    
+    /**
+     * @return \StoreBundle\Entity\Valuta\Valuta
+     */
+    public function getBuyingPrice()
     {
     }
 }
