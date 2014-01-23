@@ -35,7 +35,7 @@ class ArticleTest extends PHPUnit_Framework_TestCase
         $vat = $uf->createNextChainedUnitType("Vat");
         $pallet = $uf->createNextChainedUnitType("Pallet");
         
-        $s->getUnitChain()->addUnitTypeToChain($vat, 180);
+        $s->getUnitChain()->addUnitTypeToChain($vat, 200);
         $s->getUnitChain()->addUnitTypeToChain($pallet, 8);
         
         $s->setPurchasePrice($vf->createExcl(800, 0.21), $pallet);
@@ -44,8 +44,10 @@ class ArticleTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(100, $s->getPurchasePrice($vat)->getExcl());
         $this->assertEquals(800, $s->getPurchasePrice($pallet)->getExcl());
         
-        $s->setSellingPrice($vf->createIncl(1, 0.21));
+        $s->setSellingPrice($vf->createIncl(1.21, 0.21));
         
-        $this->assertEquals(1, $s->getSellingPrice()->getIncl());
+        $this->assertEquals(1.21, $s->getSellingPrice()->getIncl());
+        
+        $this->assertEquals(0.5, $s->getMarginPerPortion()->getExcl());
     }
 }
