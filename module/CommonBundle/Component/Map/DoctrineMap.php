@@ -19,11 +19,13 @@
 namespace CommonBundle\Component\Map;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Selectable;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class DoctrineMap extends Map
+class DoctrineMap extends Map implements Selectable
 {
     public function __construct()
     {
@@ -45,6 +47,11 @@ class DoctrineMap extends Map
         return $this->map->containsKey($hash);
     }
     
+    protected function removeItem($hash)
+    {
+        $this->map->remove($hash);
+    }
+    
     /**
      * @var \Doctrine\Common\Collections\ArrayCollection
      */
@@ -60,5 +67,15 @@ class DoctrineMap extends Map
     public function getFirst()
     {
         return $this->map->first();
+    }
+    
+    public function count()
+    {
+        return $this->map->count();
+    }
+    
+    public function matching(Criteria $criteria)
+    {
+        return $this->map->matching($criteria);
     }
 }

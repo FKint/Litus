@@ -73,7 +73,7 @@ class MapTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($map->hasKey($k[2]));
         $this->assertFalse($map->hasKey($k[3]));
         
-        $map->set($k[1], $v1);
+        $map[$k[1]] = $v1;
         
         $this->assertFalse($map->isEmpty());
         $this->assertTrue($map->hasKey($k[1]));
@@ -83,11 +83,15 @@ class MapTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($v1, $map->get($k[1]));
         $this->assertEquals($v1, $map->getFirst($k[1]));
         
-        $map->set($k[2], $v2);
+        $map[$k[2]] = $v2;
         
         $this->assertTrue($map->hasKey($k[1]));
         $this->assertTrue($map->hasKey($k[2]));
         $this->assertFalse($map->hasKey($k[3]));
+        
+        $this->assertTrue(isset($map[$k[1]]));
+        $this->assertTrue(isset($map[$k[2]]));
+        $this->assertFalse(isset($map[$k[3]]));
         
         $this->assertEquals($v1, $map->get($k[1]));
         $this->assertEquals($v2, $map->get($k[2]));
@@ -101,7 +105,13 @@ class MapTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($v1, $map->get($k[1]));
         $this->assertEquals($v2, $map->get($k[2]));
         $this->assertEquals($v3, $map->get($k[3]));
+        
+        unset($map[$k[2]]);
+        $this->assertTrue(isset($map[$k[1]]));
+        $this->assertFalse(isset($map[$k[2]]));
+        $this->assertTrue(isset($map[$k[3]]));
     }
+    
 }
 
 class F implements MapFactory

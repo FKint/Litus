@@ -18,12 +18,14 @@
 
 namespace CommonBundle\Component\Map;
 
+use Closure, Countable, IteratorAggregate, ArrayAccess;
+
 /**
  * This interface represents a map that allows objects to be used as keys.
  * 
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-abstract class Map
+abstract class Map implements Countable, ArrayAccess//, IteratorAggregate
 {
     
     /**
@@ -41,8 +43,14 @@ abstract class Map
         return $this->getItem($this->getHash($key));
     }
     
+    public function offsetGet($offset)
+    {
+        return $this->get($offset);
+    }
+    
     /**
      * Precondition: $hash is no object and not null and not a array
+     * Precondition: hasItemWithHash($hash)
      * 
      * @param mixed $hash
      * 
@@ -88,6 +96,11 @@ abstract class Map
         $this->setItem($this->getHash($key), $value);
     }
     
+    public function offsetSet($offset, $value)
+    {
+        $this->set($offset, $value);
+    }
+    
     /**
      * Precondition: $hash is no object and not null and not a array
      * 
@@ -110,12 +123,43 @@ abstract class Map
         return $this->hasItemWithHash($this->getHash($key));
     }
     
+    public function offsetExists($offset)
+    {
+        return $this->hasKey($offset);
+    }
+    
     /**
      * Precondition: $hash is no object and not null and not a array
      *
      * @param mixed $hash
      */
     protected abstract function hasItemWithHash($hash);
+    
+    /**
+     * Removes the element with key $key from the map.
+     * 
+     * Precondition: hasKey($key)
+     * Precondition: $key is not null and not a array
+     * 
+     * @param mixed $key
+     */
+    public function remove($key)
+    {
+        $this->removeItem($this->getHash($key));
+    }
+    
+    public function offsetUnset($offset)
+    {
+        $this->remove($offset);
+    }
+    
+    /**
+     * Precondition: $hash is no object and not null and not a array
+     * Precondition: hasItemWithHash($hash)
+     *
+     * @param mixed $hash
+     */
+    protected abstract function removeItem($hash);
     
     /**
      * Precondition: $key is not null and not a array
