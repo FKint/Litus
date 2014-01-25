@@ -71,4 +71,9 @@ class ArrayMap extends Map
     {
         return new ArrayIterator($this->map);
     }
+    
+    public function getValues()
+    {
+        return array_values($this->map);
+    }
 }

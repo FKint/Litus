@@ -83,4 +83,9 @@ class DoctrineMap extends Map implements Selectable
     {
         return $this->map->getIterator();
     }
+    
+    public function getValues()
+    {
+        return $this->map->getValues();
+    }
 }

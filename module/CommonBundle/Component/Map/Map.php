@@ -210,4 +210,9 @@ abstract class Map implements Countable, ArrayAccess, IteratorAggregate
      * @return mixed
      */
     public abstract function getFirst();
+    
+    /**
+     * Returns all the values in the map.
+     */
+    public abstract function getValues();
 }

@@ -129,6 +129,11 @@ class MapTest extends PHPUnit_Framework_TestCase
             $this->assertTrue($k[1] === $key || $k[3] === $key);
             $this->assertTrue($v1 === $value || $v3 === $value);
         }
+        
+        $vs = $map->getValues();
+        $this->assertTrue(in_array($v1, $vs));
+        $this->assertFalse(in_array($v2, $vs));
+        $this->assertTrue(in_array($v3, $vs));
     }
     
 }
