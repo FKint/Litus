@@ -24,58 +24,80 @@ class MapTest extends PHPUnit_Framework_TestCase
 {
     public function testArrayMap()
     {
-        $this->tMap(new ArrayMap());
+        $this->tObjects(new ArrayMap());
+        $this->tScalar(new ArrayMap());
     }
     
     public function testDoctrineMap()
     {
-        $this->tMap(new DoctrineMap());
+        $this->tObjects(new DoctrineMap());
+        $this->tScalar(new ArrayMap());
+    }
+    
+    private function tScalar($map)
+    {
+        $k = array();
+        $k[1] = "k1";
+        $k[2] = "k2";
+        $k[3] = "k3";
+        
+        $this->t($map, $k);
+    }
+    
+    /**
+     *
+     * @param CommonBundle\Component\Map\Map $map
+     */
+    private function tObjects($map)
+    {
+        $k = array();
+        $k[1] = new O("k1");
+        $k[2] = new O("k2");
+        $k[3] = new O("k3");
+        
+        $this->t($map, $k);
     }
     
     /**
      * 
      * @param CommonBundle\Component\Map\Map $map
      */
-    private function tMap($map)
-    {
-        $k1 = new O("k1");
-        $k2 = new O("k2");
-        $k3 = new O("k2");
-        
+    private function t($map, $k)
+    {        
         $v1 = new O("v1");
         $v2 = new O("v2");
         $v3 = new O("v3");
         
-        $this->assertFalse($map->hasKey($k1));
-        $this->assertFalse($map->hasKey($k2));
-        $this->assertFalse($map->hasKey($k3));
+        $this->assertFalse($map->hasKey($k[1]));
+        $this->assertFalse($map->hasKey($k[2]));
+        $this->assertFalse($map->hasKey($k[3]));
         
-        $map->set($k1, $v1);
+        $map->set($k[1], $v1);
         
-        $this->assertTrue($map->hasKey($k1));
-        $this->assertFalse($map->hasKey($k2));
-        $this->assertFalse($map->hasKey($k3));
+        $this->assertTrue($map->hasKey($k[1]));
+        $this->assertFalse($map->hasKey($k[2]));
+        $this->assertFalse($map->hasKey($k[3]));
         
-        $this->assertEquals($v1, $map->get($k1));
+        $this->assertEquals($v1, $map->get($k[1]));
         
-        $map->set($k2, $v2);
+        $map->set($k[2], $v2);
         
-        $this->assertTrue($map->hasKey($k1));
-        $this->assertTrue($map->hasKey($k2));
-        $this->assertFalse($map->hasKey($k3));
+        $this->assertTrue($map->hasKey($k[1]));
+        $this->assertTrue($map->hasKey($k[2]));
+        $this->assertFalse($map->hasKey($k[3]));
         
-        $this->assertEquals($v1, $map->get($k1));
-        $this->assertEquals($v2, $map->get($k2));
+        $this->assertEquals($v1, $map->get($k[1]));
+        $this->assertEquals($v2, $map->get($k[2]));
         
-        $map->getOrCreate($k3, new F($v3));
+        $map->getOrCreate($k[3], new F($v3));
         
-        $this->assertTrue($map->hasKey($k1));
-        $this->assertTrue($map->hasKey($k2));
-        $this->assertTrue($map->hasKey($k3));
+        $this->assertTrue($map->hasKey($k[1]));
+        $this->assertTrue($map->hasKey($k[2]));
+        $this->assertTrue($map->hasKey($k[3]));
         
-        $this->assertEquals($v1, $map->get($k1));
-        $this->assertEquals($v2, $map->get($k2));
-        $this->assertEquals($v3, $map->get($k3));
+        $this->assertEquals($v1, $map->get($k[1]));
+        $this->assertEquals($v2, $map->get($k[2]));
+        $this->assertEquals($v3, $map->get($k[3]));
     }
 }
 
