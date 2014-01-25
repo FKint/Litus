@@ -48,13 +48,13 @@ class StockCountTest extends PHPUnit_Framework_TestCase
         
         $cola->getUnitChain()->addUnitTypeToChain($fles, 4);
         $cola->getUnitChain()->addUnitTypeToChain($bak, 12);
-        $cola->setPurchasePricePortion($vf->createIncl(1, 0));
+        $cola->setPurchasePrice($vf->createIncl(1, 0), $fles);
         $cola->setSellingPrice($vf->createIncl(2, 0));
         
         $fanta->getUnitChain()->addUnitTypeToChain($fles, 1);
         $fanta->getUnitChain()->addUnitTypeToChain($bak, 24);
-        $cola->setPurchasePricePortion($vf->createIncl(1.5, 0));
-        $cola->setSellingPrice($vf->createIncl(2, 0));
+        $fanta->setPurchasePrice($vf->createIncl(0.5, 0), $fles);
+        $fanta->setSellingPrice($vf->createIncl(2, 0));
         
         /*
          * Begintelling:
@@ -77,11 +77,11 @@ class StockCountTest extends PHPUnit_Framework_TestCase
          * | Verkoopprijs   |   2       |   2       |
          * | # porties      |   4       |   1       |
          * | Verbruik       |   27      |   29      |
-         * | Kost           |   6.75    |   14.5    |
+         * | Kost           |   27      |   14.5    |
          * | Inkomsten      |   54      |   58      |
          * 
-         * Inkomsten    = 112
-         * Kost         = 21.25
+         * Inkomsten    = 274
+         * Kost         = 41.5
          */
         
         #Begin cola
@@ -172,7 +172,7 @@ class StockCountTest extends PHPUnit_Framework_TestCase
         $t->setArticle($fanta);
         $cf->setTupleValue($t, 10);
         
-        $this->assertEquals(112, $cf->getIncome());
-        $this->assertEquals(21.25, $cf->getCost());
+        $this->assertEquals(274, $cf->getIncome()->getIncl());
+        $this->assertEquals(41.5, $cf->getCost()->getIncl());
     }
 }

@@ -33,12 +33,12 @@ class BeginEndCount implements AmountCount
         $this->end = $nextFactory->create();
     }
     
-    public function getAmount()
+    public function getAmount($unitChain)
     {
-        $b = $this->begin->getAmount();
-        $e = $this->end->getAmount();
+        $b = $this->begin->getAmount($unitChain);
+        $e = $this->end->getAmount($unitChain);
         
-        return $b->subtract($e);
+        return $b - $e;
     }
     
     public function setTupleValue($tuple, $value)

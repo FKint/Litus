@@ -62,6 +62,9 @@ class UnitChain
     public function addUnitTypeToChain($unitType, $nbOfSubUnitsInUnit)
     {
         $this->map->set($unitType, new UnitChainLink($unitType, $nbOfSubUnitsInUnit));
+        
+        /*if($unitType->isPortionType())
+            $this->portionUnits = $nbOfSubUnitsInUnit;*/
     }
     
     /**
@@ -115,10 +118,25 @@ class UnitChain
         return $this->map->get($unitType)->getNb() * $this->getNbPortionsInUnitType($unitType->getSubType());
     }
     
+    /*public function getNbPortionsInPortionUnit()
+    {
+        return $this->portionUnits;
+    }
+    
+    public function getNbPortionUnitsInUnitType($unitType)
+    {
+        if($unitType->isPortionType())
+            return 1;
+    
+        return $this->map->get($unitType)->getNb() * $this->getNbPortionUnitsInUnitType($unitType->getSubType());
+    }*/
+    
     /**
      * @var \CommonBundle\Component\Map\Map
      */
     private $map;
+    
+    //private $portionUnits;
 }
 
 class UnitChainLink

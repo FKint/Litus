@@ -19,6 +19,7 @@
 namespace StoreBundle\Entity\StockCount;
 
 use Doctrine\ORM\Mapping as ORM;
+use StoreBundle\Factory\Valuta\ValutaFactory;
 
 /**
  *
@@ -36,8 +37,15 @@ class StorageCount extends AbstractCount implements AmountCount
         return $tuple->getStorage();
     }
     
-    public function getAmount()
+    public function getAmount($unitChain)
     {
-    
+        $t = 0;
+        
+        foreach($this->getMap() as $k => $v)
+        {
+            $vt = $v->getAmount($unitChain);
+            $t += $vt;
+        }
+        return $t;
     }
 }

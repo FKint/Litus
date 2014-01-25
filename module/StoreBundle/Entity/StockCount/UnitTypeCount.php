@@ -31,13 +31,23 @@ class UnitTypeCount extends AbstractCount implements AmountCount
         parent::__construct($nextFactory);
     }
     
+    
     public function selectTupleItem($tuple)
     {
         return $tuple->getUnitType();
     }
     
-    public function getAmount()
+    public function getAmount($unitChain)
     {
+        $t = 0;
         
+        foreach($this->getMap() as $k => $v)
+        {
+            
+            $vt = $v->getAmount($unitChain);
+            $m = $unitChain->getNbPortionsInUnitType($k);
+            $t += $vt*$m;
+        }
+        return $t;
     }
 }

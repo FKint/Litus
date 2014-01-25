@@ -20,6 +20,7 @@ namespace StoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use StoreBundle\Entity\StockCount\AbstractCount;
+use StoreBundle\Factory\Valuta\ValutaFactory;
 
 /**
  *
@@ -31,12 +32,28 @@ class StockCount extends AbstractCount
     
     public function getIncome()
     {
+        $t = (new ValutaFactory())->create0();
         
+        foreach($this->getMap() as $k => $v)
+        {
+            $vt = $v->getAmount($k->getUnitChain());
+            $t = $t->add($k->getSellingPrice()->multiply($vt));
+        }
+        
+        return $t;
     }
     
     public function getCost()
     {
+        $t = (new ValutaFactory())->create0();
         
+        foreach($this->getMap() as $k => $v)
+        {
+            $vt = $v->getAmount($k->getUnitChain());
+            $t = $t->add($k->getPurchasePricePortion()->multiply($vt));
+        }
+        
+        return $t;
     }
     
     /**

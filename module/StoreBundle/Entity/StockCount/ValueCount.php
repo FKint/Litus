@@ -31,7 +31,7 @@ class ValueCount implements AmountCount
         $this->value = $value;
     }
     
-    public function getAmount()
+    public function getAmount($unitChain)
     {
         return $this->value;
     }

@@ -47,9 +47,9 @@ abstract class AbstractCount
     
     protected abstract function selectTupleItem($tuple);
     
-    protected function getValues()
+    protected function getMap()
     {
-        return $this->map->getValues();
+        return $this->map;
     }
     
     /**

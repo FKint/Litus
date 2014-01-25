@@ -33,7 +33,9 @@ interface AmountCount
     public function setTupleValue($tuple, $value);
     
     /**
-     * @return \StoreBundle\Entity\Valuta\Valuta
+     * @param \StoreBundle\Entity\UnitChain $unitChain
+     * 
+     * @return integer | float
      */
-    public function getAmount();
+    public function getAmount($unitChain);
 }

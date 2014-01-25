@@ -69,4 +69,9 @@ class ValutaFactory
         $r->setExcl($excl);
         return $r;
     }
+    
+    public function create0()
+    {
+        return $this->create(0, 0);
+    }
 }
