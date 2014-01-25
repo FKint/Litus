@@ -44,4 +44,14 @@ class ArrayMap extends Map
     }
     
     private $map;
+    
+    public function isEmpty()
+    {
+        return !$this->map;
+    }
+    
+    public function getFirst()
+    {
+        return reset($this->map);
+    }
 }
