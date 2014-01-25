@@ -47,7 +47,7 @@ class StockCountTuple
         return $this->article;
     }
     
-    private function setArticle($article)
+    public function setArticle($article)
     {
         $this->article = $article;
     }

@@ -19,6 +19,7 @@
 namespace StoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use StoreBundle\Entity\StockCount\AbstractCount;
 
 /**
  *
@@ -28,10 +29,6 @@ class StockCount extends AbstractCount
 {
     public function __construct()
     {
-    }
-    
-    public function setTupleValue($tuple, $value)
-    {        
     }
     
     public function getIncome()
@@ -44,30 +41,12 @@ class StockCount extends AbstractCount
         
     }
     
-    
-}
-
-abstract class AbstractCount
-{
-    public function __construct($nextFactory)
+    /**
+     * (non-PHPdoc)
+     * @see \StoreBundle\Entity\StockCount\AbstractCount::selectTupleItem()
+     */
+    protected function selectTupleItem($tuple)
     {
-        $this->nextFactory = $nextFactory;
+        return $tuple->getArticle();
     }
-    
-    public function setTupleValue($tuple, $value)
-    {
-        $i = $this->selectTupleItem($tuple);
-        if(!array_key_exists($i, $this->map))
-        {
-            $this->map[$i] = $this->nextFactory->create();
-        }
-        
-        $this->map[$i]->setTupleValue($tuple, $value);
-    }
-    
-    private $nextFactory;
-    
-    protected abstract function selectTupleItem($tuple);
-    
-    private $map;
 }

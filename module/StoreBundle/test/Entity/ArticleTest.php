@@ -27,7 +27,7 @@ class ArticleTest extends PHPUnit_Framework_TestCase
 {
     public function testStella()
     {
-        $uf = new TestUnitFactory();        
+        $uf = new UnitFactory();        
         $af = new ArticleFactory();
         $vf = new ValutaFactory();
         

@@ -19,21 +19,25 @@
 namespace StoreBundle\Factory\StockCount;
 
 use Doctrine\ORM\Mapping as ORM;
-use StoreBundle\Entity\StockCount\StorageCount;
+use CommonBundle\Component\Map\MapFactory;
 
 /**
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class StorageCountFactory extends AmountCountFactory
+abstract class AmountCountFactory implements MapFactory
 {
-    public function __construct()
+    public function __construct($nextFactory)
     {
-        parent::__construct(null);
+        $this->nextFactory = $nextFactory;
     }
     
-    public function create()
+    protected function getNextFactory()
     {
-        return new StorageCount();
+        return $this->nextFactory;
     }
+    
+    private $nextFactory;
+    
+    public abstract function create();
 }

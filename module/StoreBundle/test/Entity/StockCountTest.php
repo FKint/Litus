@@ -23,6 +23,7 @@ use StoreBundle\Factory\StockCountFactory;
 use StoreBundle\Factory\UnitFactory;
 use StoreBundle\Factory\StorageFactory;
 use StoreBundle\Entity\StockCountTuple;
+use StoreBundle\Factory\Valuta\ValutaFactory;
 
 class StockCountTest extends PHPUnit_Framework_TestCase
 {
@@ -31,6 +32,7 @@ class StockCountTest extends PHPUnit_Framework_TestCase
         $af = new ArticleFactory();
         $uf = new UnitFactory();
         $sf = new StorageFactory();
+        $vf = new ValutaFactory();
         
         $scf = new StockCountFactory();
         $cf = $scf->createStockCount();
@@ -46,9 +48,13 @@ class StockCountTest extends PHPUnit_Framework_TestCase
         
         $cola->getUnitChain()->addUnitTypeToChain($fles, 4);
         $cola->getUnitChain()->addUnitTypeToChain($bak, 12);
+        $cola->setPurchasePricePortion($vf->createIncl(1, 0));
+        $cola->setSellingPrice($vf->createIncl(2, 0));
         
         $fanta->getUnitChain()->addUnitTypeToChain($fles, 1);
         $fanta->getUnitChain()->addUnitTypeToChain($bak, 24);
+        $cola->setPurchasePricePortion($vf->createIncl(1.5, 0));
+        $cola->setSellingPrice($vf->createIncl(2, 0));
         
         /*
          * Begintelling:

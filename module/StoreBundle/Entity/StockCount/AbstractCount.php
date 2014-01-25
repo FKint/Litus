@@ -41,7 +41,15 @@ abstract class AbstractCount
     
     private $nextFactory;
     
+    /**
+     * @param \StoreBundle\Entity\StockCountTuple $tuple
+     */
     protected abstract function selectTupleItem($tuple);
+    
+    protected function getValues()
+    {
+        
+    }
     
     /**
      * @var \CommonBundle\Component\Map\Map

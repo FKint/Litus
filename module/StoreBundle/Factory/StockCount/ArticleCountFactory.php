@@ -25,7 +25,7 @@ use StoreBundle\Entity\StockCount\ArticleCount;
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class ArticleCountFactory extends AbstractCountFactory
+class ArticleCountFactory extends AmountCountFactory
 {
     public function __construct($nextFactory)
     {

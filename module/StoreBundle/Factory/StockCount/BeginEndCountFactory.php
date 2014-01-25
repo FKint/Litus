@@ -19,25 +19,21 @@
 namespace StoreBundle\Factory\StockCount;
 
 use Doctrine\ORM\Mapping as ORM;
-use CommonBundle\Component\Map\MapFactory;
+use StoreBundle\Entity\StockCount\BeginEndCount;
 
 /**
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-abstract class AbstractCountFactory implements MapFactory
+class BeginEndCountFactory extends AmountCountFactory
 {
     public function __construct($nextFactory)
     {
-        $this->nextFactory = $nextFactory;
+        parent::__construct($nextFactory);
     }
     
-    protected function getNextFactory()
+    public function create()
     {
-        return $this->nextFactory;
+        return new BeginEndCount($this->getNextFactory());
     }
-    
-    private $nextFactory;
-    
-    public abstract function create();
 }

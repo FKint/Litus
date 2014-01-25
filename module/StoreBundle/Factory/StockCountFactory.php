@@ -23,6 +23,7 @@ use StoreBundle\Factory\StockCount\StorageCountFactory;
 use StoreBundle\Factory\StockCount\UnitTypeCountFactory;
 use StoreBundle\Factory\StockCount\ArticleCountFactory;
 use StoreBundle\Entity\StockCount;
+use StoreBundle\Factory\StockCount\BeginEndCountFactory;
 
 /**
  * 
@@ -33,9 +34,9 @@ class StockCountFactory
     public function createStockCount()
     {
         $f = new StorageCountFactory();
+        $f = new BeginEndCountFactory($f);
         $f = new UnitTypeCountFactory($f);
         $f = new ArticleCountFactory($f);
-        
         $sc = new StockCount($f);
         
         return $sc;
