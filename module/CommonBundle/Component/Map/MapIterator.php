@@ -18,57 +18,48 @@
 
 namespace CommonBundle\Component\Map;
 
-use \ArrayIterator;
-
+use \Iterator;
 /**
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class ArrayMap extends Map
+class MapIterator implements Iterator
 {
-    public function __construct()
+    public function __construct($iterator, $keys)
     {
-        $this->map = array();
+        $this->iterator = $iterator;
+        $this->keys = $keys;
     }
     
-    protected function getItem($hash)
+    /**
+     * 
+     * @var Iterator
+     */
+    private $iterator;
+    
+    /**
+     * @var array
+     */
+    private $keys;
+    
+    public function current()
     {
-        return $this->map[$hash];
+        return $this->iterator->current();
     }
     
-    protected function setItem($hash, $value)
+    public function key()
     {
-        $this->map[$hash] = $value;
+        return $this->keys[$this->iterator->key()];
+    }
+    
+    public function rewind() {
+        $this->iterator->rewind();
     }
 
-    protected function hasItemWithHash($hash)
-    {
-        return array_key_exists($hash, $this->map);
+    function next() {
+        $this->iterator->next();
     }
-    
-    protected function removeItem($hash)
-    {
-        unset($this->map[$hash]);
-    }
-    
-    private $map;
-    
-    public function isEmpty()
-    {
-        return !$this->map;
-    }
-    
-    public function getFirst()
-    {
-        return reset($this->map);
-    }
-    
-    public function count()
-    {
-        return count($this->map);
-    }
-    
-    protected function getIter()
-    {
-        return new ArrayIterator($this->map);
+
+    function valid() {
+        return $this->iterator->valid();
     }
 }

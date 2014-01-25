@@ -25,9 +25,12 @@ use Closure, Countable, IteratorAggregate, ArrayAccess;
  * 
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-abstract class Map implements Countable, ArrayAccess//, IteratorAggregate
+abstract class Map implements Countable, ArrayAccess, IteratorAggregate
 {
-    
+    public function __construct()
+    {
+        $this->keys = array();
+    }
     /**
      * Returns a element from the map with key $key
      * 
@@ -73,14 +76,13 @@ abstract class Map implements Countable, ArrayAccess//, IteratorAggregate
      */
     public function getOrCreate($key, $factory)
     {
-        $hash = $this->getHash($key);
-        if(!$this->hasItemWithHash($hash))
+        if(!$this->hasKey($key))
         {
             $value = $factory->create();
-            $this->setItem($hash, $value);
-        }
-        
-        return $this->getItem($hash);
+            $this->set($key, $value);
+        }    
+
+        return $this->get($key);
     }
     
     /**
@@ -93,7 +95,9 @@ abstract class Map implements Countable, ArrayAccess//, IteratorAggregate
      */
     public function set($key, $value)
     {
-        $this->setItem($this->getHash($key), $value);
+        $hash = $this->getHash($key);
+        $this->keys[$hash] = $key;
+        $this->setItem($hash, $value);
     }
     
     public function offsetSet($offset, $value)
@@ -145,7 +149,9 @@ abstract class Map implements Countable, ArrayAccess//, IteratorAggregate
      */
     public function remove($key)
     {
-        $this->removeItem($this->getHash($key));
+        $hash = $this->getHash($key);
+        unset ($this->keys[$hash]);
+        $this->removeItem($hash);
     }
     
     public function offsetUnset($offset)
@@ -160,6 +166,13 @@ abstract class Map implements Countable, ArrayAccess//, IteratorAggregate
      * @param mixed $hash
      */
     protected abstract function removeItem($hash);
+    
+    public function getIterator()
+    {
+        return new MapIterator($this->getIter(), $this->keys);
+    }
+    
+    protected abstract function getIter();
     
     /**
      * Precondition: $key is not null and not a array
@@ -177,6 +190,11 @@ abstract class Map implements Countable, ArrayAccess//, IteratorAggregate
         else
             return $key;
     }
+    
+    /**
+     * @var array
+     */
+    private $keys;
     
     /**
      * @return boolean

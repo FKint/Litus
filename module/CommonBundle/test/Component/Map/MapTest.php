@@ -83,6 +83,12 @@ class MapTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($v1, $map->get($k[1]));
         $this->assertEquals($v1, $map->getFirst($k[1]));
         
+        foreach($map as $key => $value)
+        {
+            $this->assertEquals($k[1], $key);
+            $this->assertEquals($v1, $value);
+        }
+        
         $map[$k[2]] = $v2;
         
         $this->assertTrue($map->hasKey($k[1]));
@@ -96,20 +102,33 @@ class MapTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($v1, $map->get($k[1]));
         $this->assertEquals($v2, $map->get($k[2]));
         
+        $this->assertEquals(2, count($map));
+        foreach($map as $key => $value)
+        {
+            $this->assertTrue($k[1] === $key || $k[2] === $key);
+            $this->assertTrue($v1 === $value || $v2 === $value);
+        }
+        
         $map->getOrCreate($k[3], new F($v3));
         
         $this->assertTrue($map->hasKey($k[1]));
         $this->assertTrue($map->hasKey($k[2]));
         $this->assertTrue($map->hasKey($k[3]));
         
-        $this->assertEquals($v1, $map->get($k[1]));
-        $this->assertEquals($v2, $map->get($k[2]));
-        $this->assertEquals($v3, $map->get($k[3]));
+        $this->assertEquals($v1, $map[$k[1]]);
+        $this->assertEquals($v2, $map[$k[2]]);
+        $this->assertEquals($v3, $map[$k[3]]);
         
         unset($map[$k[2]]);
         $this->assertTrue(isset($map[$k[1]]));
         $this->assertFalse(isset($map[$k[2]]));
         $this->assertTrue(isset($map[$k[3]]));
+        
+        foreach($map as $key => $value)
+        {
+            $this->assertTrue($k[1] === $key || $k[3] === $key);
+            $this->assertTrue($v1 === $value || $v3 === $value);
+        }
     }
     
 }

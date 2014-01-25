@@ -78,4 +78,9 @@ class DoctrineMap extends Map implements Selectable
     {
         return $this->map->matching($criteria);
     }
+    
+    protected function getIter()
+    {
+        return $this->map->getIterator();
+    }
 }
