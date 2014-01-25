@@ -17,8 +17,8 @@
  */
 -->
 
-<phpunit bootstrap="Bootstrap.php">
+<phpunit bootstrap="init_autoloader.php">
     <testsuite name="Common Tests">
-        <directory>./</directory>
+        <directory>./module/CommonBundle/test</directory>
     </testsuite>
 </phpunit>

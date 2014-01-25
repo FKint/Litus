@@ -43,6 +43,11 @@ class ArrayMap extends Map
         return array_key_exists($hash, $this->map);
     }
     
+    protected function removeItem($hash)
+    {
+        unset($this->map[$hash]);
+    }
+    
     private $map;
     
     public function isEmpty()
@@ -53,5 +58,10 @@ class ArrayMap extends Map
     public function getFirst()
     {
         return reset($this->map);
+    }
+    
+    public function count()
+    {
+        return count($this->map);
     }
 }
