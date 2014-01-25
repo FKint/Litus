@@ -19,15 +19,44 @@
 namespace StoreBundle\Entity\StockCount;
 
 use Doctrine\ORM\Mapping as ORM;
+use StoreBundle\Factory\Valuta\ValutaFactory;
 
 /**
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class BeginEndCount extends AbstractCount
+class BeginEndCount implements AmountCount
 {
     public function __construct($nextFactory)
     {
-        parent::__construct($nextFactory);
+        $this->begin = $nextFactory->create();
+        $this->end = $nextFactory->create();
     }
+    
+    public function getAmount()
+    {
+        $b = $this->begin->getAmount();
+        $e = $this->end->getAmount();
+        
+        return $b->subtract($e);
+    }
+    
+    public function setTupleValue($tuple, $value)
+    {
+        if($tuple->isBeginCount())
+            $this->begin->setTupleValue($tuple, $value);
+        else
+            $this->end->setTupleValue($tuple, $value);
+    }
+        
+    
+    /**
+     * @var \StoreBundle\Entity\StockCount\AmountCount
+     */
+    private $begin;
+    
+    /**
+     * @var \StoreBundle\Entity\StockCount\AmountCount
+     */
+    private $end;
 }

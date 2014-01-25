@@ -25,7 +25,7 @@ use StoreBundle\Entity\StockCount\UnitTypeCount;
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class UnitTypeCountFactory extends AmountCountFactory
+class UnitTypeCountFactory extends ChainedCountFactory
 {
     public function __construct($nextFactory)
     {

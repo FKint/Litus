@@ -16,18 +16,20 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace StoreBundle\Entity\StockCount;
+namespace StoreBundle\Factory\StockCount;
 
 use Doctrine\ORM\Mapping as ORM;
+use StoreBundle\Entity\StockCount\ArticleCount;
+use StoreBundle\Entity\StockCount\ValueCount;
 
 /**
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class ArticleCount extends AbstractCount
+class ValueCountFactory implements AmountCountFactory
 {
-    public function __construct($nextFactory)
+    public function create()
     {
-        parent::__construct($nextFactory);
+        return new ValueCount();
     }
 }

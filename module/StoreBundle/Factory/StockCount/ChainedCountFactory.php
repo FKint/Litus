@@ -19,21 +19,41 @@
 namespace StoreBundle\Factory\StockCount;
 
 use Doctrine\ORM\Mapping as ORM;
-use StoreBundle\Entity\StockCount\ArticleCount;
+use CommonBundle\Component\Map\MapFactory;
+use StoreBundle\Entity\StockCount\AmountCount;
 
 /**
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class ArticleCountFactory extends AmountCountFactory
+abstract class ChainedCountFactory implements AmountCountFactory
 {
+    /**
+     * @param \StoreBundle\Factory\StockCount\AmountCountFactory $nextFactory
+     */
     public function __construct($nextFactory)
     {
-        parent::__construct($nextFactory);
+        $this->nextFactory = $nextFactory;
     }
     
-    public function create()
+    /**
+     * @return \StoreBundle\Factory\StockCount\AmountCountFactory
+     */
+    protected function getNextFactory()
     {
-        return new ArticleCount($this->getNextFactory());
+        return $this->nextFactory;
     }
+    
+    /**
+     * @var \StoreBundle\Factory\StockCount\AmountCountFactory
+     */
+    private $nextFactory;
+    
+    /**
+     * (non-PHPdoc)
+     * @see \CommonBundle\Component\Map\MapFactory::create()
+     * 
+     * @return  \StoreBundle\Entity\StockCount\AmountCount
+     */
+    public abstract function create();
 }

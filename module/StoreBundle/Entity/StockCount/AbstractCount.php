@@ -19,6 +19,7 @@
 namespace StoreBundle\Entity\StockCount;
 
 use Doctrine\ORM\Mapping as ORM;
+use CommonBundle\Component\Map\DoctrineMap;
 
 /**
  *
@@ -26,9 +27,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 abstract class AbstractCount
 {
+    
     public function __construct($nextFactory)
     {
         $this->nextFactory = $nextFactory;
+        $this->map = new DoctrineMap();
     }
     
     public function setTupleValue($tuple, $value)
@@ -41,14 +44,12 @@ abstract class AbstractCount
     
     private $nextFactory;
     
-    /**
-     * @param \StoreBundle\Entity\StockCountTuple $tuple
-     */
+    
     protected abstract function selectTupleItem($tuple);
     
     protected function getValues()
     {
-        
+        return $this->map->getValues();
     }
     
     /**

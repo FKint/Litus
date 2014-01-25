@@ -16,28 +16,26 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace StoreBundle\Factory\StockCount;
+namespace StoreBundle\Entity\StockCount;
 
 use Doctrine\ORM\Mapping as ORM;
-use StoreBundle\Entity\StockCount\BeginEndCount;
 
 /**
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class BeginEndCountFactory extends ChainedCountFactory
+class ValueCount implements AmountCount
 {
-    public function __construct($nextFactory)
+    public function setTupleValue($tuple, $value)
     {
-        parent::__construct($nextFactory);
+        $this->value = $value;
     }
     
-    /**
-     * (non-PHPdoc)
-     * @see \StoreBundle\Factory\StockCount\AmountCountFactory::create()
-     */
-    public function create()
+    public function getAmount()
     {
-        return new BeginEndCount($this->getNextFactory());
+        return $this->value;
     }
+    
+    private $value;
+    
 }

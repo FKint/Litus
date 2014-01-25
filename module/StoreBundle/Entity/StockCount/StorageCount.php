@@ -24,10 +24,20 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class StorageCount extends AbstractCount
+class StorageCount extends AbstractCount implements AmountCount
 {
     public function __construct($nextFactory)
     {
         parent::__construct($nextFactory);
+    }
+    
+    public function selectTupleItem($tuple)
+    {
+        return $tuple->getStorage();
+    }
+    
+    public function getAmount()
+    {
+    
     }
 }

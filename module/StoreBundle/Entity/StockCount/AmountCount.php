@@ -19,17 +19,21 @@
 namespace StoreBundle\Entity\StockCount;
 
 use Doctrine\ORM\Mapping as ORM;
+use StoreBundle\Entity\Valuta\Valuta;
 
 /**
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-abstract class AmountCount extends AbstractCount
+interface AmountCount
 {
-    public function __construct($nextFactory)
-    {
-        parent::__construct($nextFactory);
-    }
+    /**
+     * @param \StoreBundle\Entity\StockCountTuple $tuple
+     */
+    public function setTupleValue($tuple, $value);
     
-    public abstract function getAmount();
+    /**
+     * @return \StoreBundle\Entity\Valuta\Valuta
+     */
+    public function getAmount();
 }

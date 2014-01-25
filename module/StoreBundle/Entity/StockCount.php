@@ -27,9 +27,7 @@ use StoreBundle\Entity\StockCount\AbstractCount;
  */
 class StockCount extends AbstractCount
 {
-    public function __construct()
-    {
-    }
+
     
     public function getIncome()
     {

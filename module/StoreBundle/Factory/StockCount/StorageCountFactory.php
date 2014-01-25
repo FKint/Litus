@@ -25,15 +25,15 @@ use StoreBundle\Entity\StockCount\StorageCount;
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class StorageCountFactory extends AmountCountFactory
+class StorageCountFactory extends ChainedCountFactory
 {
-    public function __construct()
+    public function __construct($nextFactory)
     {
-        parent::__construct(null);
+        parent::__construct($nextFactory);
     }
     
     public function create()
     {
-        return new StorageCount();
+        return new StorageCount($this->getNextFactory());
     }
 }
