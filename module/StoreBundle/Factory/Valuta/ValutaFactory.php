@@ -29,6 +29,8 @@ class ValutaFactory
      * @param integer | float | double $incl
      * @param integer | float | double $btw
      * 
+     * Precondition: $btw != -1
+     * 
      * @return \StoreBundle\Factory\Valuta\Valuta
      */
     public function createIncl($incl, $btw)
