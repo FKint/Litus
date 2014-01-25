@@ -20,6 +20,7 @@ namespace StoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use CommonBundle\Component\Map\DoctrineMap;
 
 /**
  * @ORM\Entity
@@ -30,7 +31,7 @@ class UnitChain
 {
     public function __construct()
     {
-        $this->map = new ArrayCollection();
+        $this->map = new DoctrineMap();
     }
 
     /**
@@ -54,14 +55,13 @@ class UnitChain
      * See unit tests for effect.
      * 
      * Precondition: canAddToChain($unitType)
-     * Precondition: $unitType->getId() is set and unique within the chain
      * 
      * @param \StoreBundle\Entity\UnitType $unitType
      * @param integer $nbOfSubUnitsInUnit
      */
     public function addUnitTypeToChain($unitType, $nbOfSubUnitsInUnit)
     {
-        $this->map[$unitType->getId()] = new UnitChainLink($unitType, $nbOfSubUnitsInUnit);
+        $this->map->set($unitType, new UnitChainLink($unitType, $nbOfSubUnitsInUnit));
     }
     
     /**
@@ -76,7 +76,7 @@ class UnitChain
         if($this->map->isEmpty())
             return true;
         
-        return $this->map->first()->getUnitType()->getPortionSubType() === $unitType->getPortionSubType();
+        return $this->map->getFirst()->getUnitType()->getPortionSubType() === $unitType->getPortionSubType();
     }
     
     /**
@@ -84,15 +84,13 @@ class UnitChain
      * countingUnit. Returns also true if there is no $unitType added to the 
      * chain.
      * 
-     * Precondition: $unitType->getId() is set and unique within the chain
-     * 
      * @param    \StoreBundle\Entity\UnitType $unitType
      * 
      * @return boolean
      */
     public function containsGab($unitType)
     {
-        if($this->map->containsKey($unitType->getId())) {
+        if($this->map->hasKey($unitType)) {
             if($unitType->isPortionType())
                 return false;
                 
@@ -106,20 +104,19 @@ class UnitChain
      * See unit tests for usage.
      * 
      * Precondition !containsGab($unitType)
-     * Precondition: $unitType->getId() is set and unique within the chain
      * 
      * @param \StoreBundle\Entity\UnitType $unitType
      */
     public function getNbPortionsInUnitType($unitType)
     {
         if($unitType->isPortionType())
-            return $this->map[$unitType->getId()]->getNb();
+            return $this->map->get($unitType)->getNb();
         
-        return $this->map[$unitType->getId()]->getNb() * $this->getNbPortionsInUnitType($unitType->getSubType());
+        return $this->map->get($unitType)->getNb() * $this->getNbPortionsInUnitType($unitType->getSubType());
     }
     
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection
+     * @var \CommonBundle\Component\Map\Map
      */
     private $map;
 }

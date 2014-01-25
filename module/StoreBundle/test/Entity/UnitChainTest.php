@@ -24,7 +24,7 @@ class UnitChainTest extends PHPUnit_Framework_TestCase
 {
     public function testSimple()
     {
-        $uf = new TestUnitFactory();
+        $uf = new UnitFactory();
         $us = new UnitChain();
         
         $fles = $uf->createPortionUnitType("Flesje");
@@ -42,14 +42,14 @@ class UnitChainTest extends PHPUnit_Framework_TestCase
         /*
          *    Chain:        #subUnits
          *
-         *    count        1
+         *    count         1
          *    T1            10
          *    T2            10
-         *    T3    T3Side    10
+         *    T3    T3Side  10
          *    T4            10
          */
         
-        $uf = new TestUnitFactory();
+        $uf = new UnitFactory();
         $us = new UnitChain();
         
         $count = $uf->createPortionUnitType("Count");
