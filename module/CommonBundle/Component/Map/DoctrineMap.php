@@ -49,4 +49,16 @@ class DoctrineMap extends Map
      * @var \Doctrine\Common\Collections\ArrayCollection
      */
     private $map;
+    
+
+    public function isEmpty()
+    {
+        return $this->map->isEmpty();
+    }
+    
+
+    public function getFirst()
+    {
+        return $this->map->first();
+    }
 }

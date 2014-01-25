@@ -68,17 +68,20 @@ class MapTest extends PHPUnit_Framework_TestCase
         $v2 = new O("v2");
         $v3 = new O("v3");
         
+        $this->assertTrue($map->isEmpty());
         $this->assertFalse($map->hasKey($k[1]));
         $this->assertFalse($map->hasKey($k[2]));
         $this->assertFalse($map->hasKey($k[3]));
         
         $map->set($k[1], $v1);
         
+        $this->assertFalse($map->isEmpty());
         $this->assertTrue($map->hasKey($k[1]));
         $this->assertFalse($map->hasKey($k[2]));
         $this->assertFalse($map->hasKey($k[3]));
         
         $this->assertEquals($v1, $map->get($k[1]));
+        $this->assertEquals($v1, $map->getFirst($k[1]));
         
         $map->set($k[2], $v2);
         

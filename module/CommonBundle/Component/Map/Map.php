@@ -133,4 +133,19 @@ abstract class Map
         else
             return $key;
     }
+    
+    /**
+     * @return boolean
+     */
+    public abstract function isEmpty();
+    
+    /**
+     * Sets the internal iterator to the first element in the collection
+     * and returns this element.
+     * 
+     * Precondition: !isEmpty()
+     * 
+     * @return mixed
+     */
+    public abstract function getFirst();
 }
