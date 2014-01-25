@@ -25,11 +25,12 @@ namespace CommonBundle\Component\Map;
  */
 abstract class Map
 {
+    
     /**
      * Returns a element from the map with key $key
      * 
      * Precondition: hasKey($key)
-     * Precondition: $key is not null
+     * Precondition: $key is not null and not a array
      * 
      * @param mixed $key
      * 
@@ -41,7 +42,7 @@ abstract class Map
     }
     
     /**
-     * Precondition: $hash is no object and not null
+     * Precondition: $hash is no object and not null and not a array
      * 
      * @param mixed $hash
      * 
@@ -53,7 +54,7 @@ abstract class Map
      * Returns a element from the map with key $key. If there is no such
      * element, a new element will be created, added to the map and returned.
      * 
-     * Precondition: $key is not null
+     * Precondition: $key is not null and not a array
      * 
      * @param mixed $key
      * 
@@ -77,7 +78,7 @@ abstract class Map
     /**
      * Adds a element with key $key.
      * 
-     * Precondition: $key is not null
+     * Precondition: $key is not null and not a array
      * 
      * @param mixed $key
      * @param mixed $value
@@ -88,7 +89,7 @@ abstract class Map
     }
     
     /**
-     * Precondition: $hash is no object and not null
+     * Precondition: $hash is no object and not null and not a array
      * 
      * @param mixed $hash
      * @param mixed $value
@@ -98,7 +99,7 @@ abstract class Map
     /**
      * Returns true if the map contains the key $key. Otherwise false.
      * 
-     * Precondition: $key is not null
+     * Precondition: $key is not null and not a array
      * 
      * @param mixed $key
      * 
@@ -110,16 +111,16 @@ abstract class Map
     }
     
     /**
-     * Precondition: $hash is no object and not null
+     * Precondition: $hash is no object and not null and not a array
      *
      * @param mixed $hash
      */
     protected abstract function hasItemWithHash($hash);
     
     /**
-     * Precondition: $key is not null
+     * Precondition: $key is not null and not a array
      * 
-     * Postcondition: return is not null and no object
+     * Postcondition: return is not null and no object and not a array
      * 
      * @param mixed $key
      * 
