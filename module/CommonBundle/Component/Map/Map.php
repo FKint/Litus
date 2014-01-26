@@ -35,7 +35,7 @@ abstract class Map implements Countable, ArrayAccess, IteratorAggregate
      * Returns a element from the map with key $key
      * 
      * Precondition: hasKey($key)
-     * Precondition: $key is not null and not a array
+     * Precondition: $key is a string, integer or a object
      * 
      * @param mixed $key
      * 
@@ -43,6 +43,7 @@ abstract class Map implements Countable, ArrayAccess, IteratorAggregate
      */
     public function get($key)
     {
+        assert($this->hasKey($key));
         return $this->getItem($this->getHash($key));
     }
     
@@ -52,10 +53,9 @@ abstract class Map implements Countable, ArrayAccess, IteratorAggregate
     }
     
     /**
-     * Precondition: $hash is no object and not null and not a array
      * Precondition: hasItemWithHash($hash)
      * 
-     * @param mixed $hash
+     * @param string | integer $hash
      * 
      * @return  mixed
      */
@@ -65,7 +65,7 @@ abstract class Map implements Countable, ArrayAccess, IteratorAggregate
      * Returns a element from the map with key $key. If there is no such
      * element, a new element will be created, added to the map and returned.
      * 
-     * Precondition: $key is not null and not a array
+     * Precondition: $key is a string, integer or a object
      * 
      * @param mixed $key
      * 
@@ -88,7 +88,7 @@ abstract class Map implements Countable, ArrayAccess, IteratorAggregate
     /**
      * Adds a element with key $key.
      * 
-     * Precondition: $key is not null and not a array
+     * Precondition: $key is a string, integer or a object
      * 
      * @param mixed $key
      * @param mixed $value
@@ -106,9 +106,7 @@ abstract class Map implements Countable, ArrayAccess, IteratorAggregate
     }
     
     /**
-     * Precondition: $hash is no object and not null and not a array
-     * 
-     * @param mixed $hash
+     * @param string | integer $hash
      * @param mixed $value
      */
     protected abstract function setItem($hash, $value);
@@ -116,7 +114,7 @@ abstract class Map implements Countable, ArrayAccess, IteratorAggregate
     /**
      * Returns true if the map contains the key $key. Otherwise false.
      * 
-     * Precondition: $key is not null and not a array
+     * Precondition: $key is a string, integer or a object
      * 
      * @param mixed $key
      * 
@@ -133,9 +131,7 @@ abstract class Map implements Countable, ArrayAccess, IteratorAggregate
     }
     
     /**
-     * Precondition: $hash is no object and not null and not a array
-     *
-     * @param mixed $hash
+     * @param string | integer $hash
      */
     protected abstract function hasItemWithHash($hash);
     
@@ -143,12 +139,13 @@ abstract class Map implements Countable, ArrayAccess, IteratorAggregate
      * Removes the element with key $key from the map.
      * 
      * Precondition: hasKey($key)
-     * Precondition: $key is not null and not a array
+     * Precondition: $key is a string, integer or a object
      * 
      * @param mixed $key
      */
     public function remove($key)
     {
+        assert($this->hasKey($key));
         $hash = $this->getHash($key);
         unset ($this->keys[$hash]);
         $this->removeItem($hash);
@@ -160,10 +157,9 @@ abstract class Map implements Countable, ArrayAccess, IteratorAggregate
     }
     
     /**
-     * Precondition: $hash is no object and not null and not a array
      * Precondition: hasItemWithHash($hash)
      *
-     * @param mixed $hash
+     * @param string | integer $hash
      */
     protected abstract function removeItem($hash);
     
@@ -175,13 +171,11 @@ abstract class Map implements Countable, ArrayAccess, IteratorAggregate
     protected abstract function getIter();
     
     /**
-     * Precondition: $key is not null and not a array
-     * 
-     * Postcondition: return is not null and no object and not a array
+     * Precondition: $key is a string, integer or a object
      * 
      * @param mixed $key
      * 
-     * @return mixed
+     * @return string
      */
     private function getHash($key)
     {
