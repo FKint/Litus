@@ -21,22 +21,35 @@ namespace StoreBundle\Entity\StockCount;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- *
+ * This count handles the unit types.
+ * 
+ * @see \StoreBundle\Entity\StockCount\AmountCount
+ * 
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class UnitTypeCount extends AbstractCount implements AmountCount
 {
+    /**
+     * @param @see \StoreBundle\Entity\StockCount\AmountCount $nextFactory
+     */
     public function __construct($nextFactory)
     {
         parent::__construct($nextFactory);
     }
     
-    
+    /**
+     * (non-PHPdoc)
+     * @see \StoreBundle\Entity\StockCount\AbstractCount::selectTupleItem()
+     */
     public function selectTupleItem($tuple)
     {
         return $tuple->getUnitType();
     }
     
+    /**
+     * (non-PHPdoc)
+     * @see \StoreBundle\Entity\StockCount\AmountCount::getAmount()
+     */
     public function getAmount($unitChain)
     {
         $t = 0;

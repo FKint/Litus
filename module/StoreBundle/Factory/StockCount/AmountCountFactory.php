@@ -23,7 +23,6 @@ use CommonBundle\Component\Map\MapFactory;
 use StoreBundle\Entity\StockCount\AmountCount;
 
 /**
- *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 interface AmountCountFactory extends MapFactory

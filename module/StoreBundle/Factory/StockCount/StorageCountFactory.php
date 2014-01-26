@@ -22,7 +22,6 @@ use Doctrine\ORM\Mapping as ORM;
 use StoreBundle\Entity\StockCount\StorageCount;
 
 /**
- *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class StorageCountFactory extends ChainedCountFactory
@@ -32,6 +31,10 @@ class StorageCountFactory extends ChainedCountFactory
         parent::__construct($nextFactory);
     }
     
+    /**
+     * (non-PHPdoc)
+     * @see \StoreBundle\Factory\StockCount\ChainedCountFactory::create()
+     */
     public function create()
     {
         return new StorageCount($this->getNextFactory());

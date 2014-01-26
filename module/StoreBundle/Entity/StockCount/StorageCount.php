@@ -22,21 +22,35 @@ use Doctrine\ORM\Mapping as ORM;
 use StoreBundle\Factory\Valuta\ValutaFactory;
 
 /**
- *
+ * This count handles the storages.
+ * 
+ * @see \StoreBundle\Entity\StockCount\AmountCount
+ * 
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class StorageCount extends AbstractCount implements AmountCount
 {
+    /**
+     * @param @see \StoreBundle\Entity\StockCount\AmountCount $nextFactory
+     */
     public function __construct($nextFactory)
     {
         parent::__construct($nextFactory);
     }
     
+    /**
+     * (non-PHPdoc)
+     * @see \StoreBundle\Entity\StockCount\AbstractCount::selectTupleItem()
+     */
     public function selectTupleItem($tuple)
     {
         return $tuple->getStorage();
     }
     
+    /**
+     * (non-PHPdoc)
+     * @see \StoreBundle\Entity\StockCount\AmountCount::getAmount()
+     */
     public function getAmount($unitChain)
     {
         $t = 0;

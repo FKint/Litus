@@ -22,7 +22,6 @@ use Doctrine\ORM\Mapping as ORM;
 use StoreBundle\Entity\StockCount\UnitTypeCount;
 
 /**
- *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class UnitTypeCountFactory extends ChainedCountFactory
@@ -32,6 +31,10 @@ class UnitTypeCountFactory extends ChainedCountFactory
         parent::__construct($nextFactory);
     }
     
+    /**
+     * (non-PHPdoc)
+     * @see \StoreBundle\Factory\StockCount\ChainedCountFactory::create()
+     */
     public function create()
     {
         return new UnitTypeCount($this->getNextFactory());

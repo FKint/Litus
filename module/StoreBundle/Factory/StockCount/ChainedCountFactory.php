@@ -23,7 +23,9 @@ use CommonBundle\Component\Map\MapFactory;
 use StoreBundle\Entity\StockCount\AmountCount;
 
 /**
- *
+ * Factories extending this class will all create a link that is not the end
+ * of the chain.
+ * 
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 abstract class ChainedCountFactory implements AmountCountFactory

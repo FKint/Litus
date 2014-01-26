@@ -22,7 +22,6 @@ use Doctrine\ORM\Mapping as ORM;
 use StoreBundle\Entity\StockCount\BeginEndCount;
 
 /**
- *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class BeginEndCountFactory extends ChainedCountFactory

@@ -27,22 +27,21 @@ use StoreBundle\Factory\StockCount\BeginEndCountFactory;
 use StoreBundle\Factory\StockCount\ValueCountFactory;
 
 /**
- * 
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class StockCountFactory
 {
     public function createStockCount()
     {
-        #ValueCount terminates the chain
+        //ValueCount terminates the chain
         $f = new ValueCountFactory();
         
-        #Add and link as many AmountCount factories as you like
+        //Add and link as many AmountCount factories as you like
         $f = new StorageCountFactory($f);
         $f = new BeginEndCountFactory($f);
         $f = new UnitTypeCountFactory($f);
         
-        #Add the chain to the stock count
+        //Add the chain to the stock count
         $sc = new StockCount($f);
         
         return $sc;

@@ -21,21 +21,33 @@ namespace StoreBundle\Entity\StockCount;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- *
+ * This class terminates the count chain. It simply returns the value it
+ * received.
+ * 
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class ValueCount implements AmountCount
 {
+    /**
+     * (non-PHPdoc)
+     * @see \StoreBundle\Entity\StockCount\AmountCount::setTupleValue()
+     */
     public function setTupleValue($tuple, $value)
     {
         $this->value = $value;
     }
     
+    /**
+     * (non-PHPdoc)
+     * @see \StoreBundle\Entity\StockCount\AmountCount::getAmount()
+     */
     public function getAmount($unitChain)
     {
         return $this->value;
     }
     
+    /**
+     * @var float | integer
+     */
     private $value;
-    
 }

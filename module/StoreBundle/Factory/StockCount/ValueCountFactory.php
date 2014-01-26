@@ -23,11 +23,14 @@ use StoreBundle\Entity\StockCount\ArticleCount;
 use StoreBundle\Entity\StockCount\ValueCount;
 
 /**
- *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class ValueCountFactory implements AmountCountFactory
 {
+    /**
+     * (non-PHPdoc)
+     * @see \StoreBundle\Factory\StockCount\AmountCountFactory::create()
+     */
     public function create()
     {
         return new ValueCount();

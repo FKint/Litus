@@ -23,6 +23,11 @@ use StoreBundle\Entity\StockCount\AbstractCount;
 use StoreBundle\Factory\Valuta\ValutaFactory;
 
 /**
+ * This class is responsible for storing StockCountTuples and calculating
+ * the cost and theoretical income.
+ * 
+ * For making this calculation, the tuple will be passed along a chain of
+ * AmountCounts. This chain will be terminated by a ValueCount.
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */

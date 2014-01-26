@@ -22,17 +22,27 @@ use Doctrine\ORM\Mapping as ORM;
 use StoreBundle\Factory\Valuta\ValutaFactory;
 
 /**
- *
+ * This count handles the begin and end count.
+ * 
+ * @see \StoreBundle\Entity\StockCount\AmountCount
+ * 
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class BeginEndCount implements AmountCount
 {
+    /**
+     * @param @see \StoreBundle\Entity\StockCount\AmountCount $nextFactory
+     */
     public function __construct($nextFactory)
     {
         $this->begin = $nextFactory->create();
         $this->end = $nextFactory->create();
     }
     
+    /**
+     * (non-PHPdoc)
+     * @see \StoreBundle\Entity\StockCount\AmountCount::getAmount()
+     */
     public function getAmount($unitChain)
     {
         $b = $this->begin->getAmount($unitChain);
@@ -41,6 +51,10 @@ class BeginEndCount implements AmountCount
         return $b - $e;
     }
     
+    /**
+     * (non-PHPdoc)
+     * @see \StoreBundle\Entity\StockCount\AmountCount::setTupleValue()
+     */
     public function setTupleValue($tuple, $value)
     {
         if($tuple->isBeginCount())
@@ -51,11 +65,15 @@ class BeginEndCount implements AmountCount
         
     
     /**
+     * The begin count
+     * 
      * @var \StoreBundle\Entity\StockCount\AmountCount
      */
     private $begin;
     
     /**
+     * The end count
+     * 
      * @var \StoreBundle\Entity\StockCount\AmountCount
      */
     private $end;

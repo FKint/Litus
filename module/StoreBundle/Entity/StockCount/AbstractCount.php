@@ -20,20 +20,27 @@ namespace StoreBundle\Entity\StockCount;
 
 use Doctrine\ORM\Mapping as ORM;
 use CommonBundle\Component\Map\DoctrineMap;
+use StoreBundle\Entity\StockCountTuple;
 
 /**
+ * Reduces duplication in the implementations of AmountCount.
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 abstract class AbstractCount
 {
-    
+    /**
+     * @param \StoreBundle\Factory\StockCount\AmountCountFactory $nextFactory
+     */
     public function __construct($nextFactory)
     {
         $this->nextFactory = $nextFactory;
         $this->map = new DoctrineMap();
     }
     
+    /**
+     * @see \StoreBundle\Entity\StockCount\AmountCount::setTupleValue()
+     */
     public function setTupleValue($tuple, $value)
     {
         $i = $this->selectTupleItem($tuple);
@@ -42,17 +49,35 @@ abstract class AbstractCount
             ->setTupleValue($tuple, $value);
     }
     
+    /**
+     * @var \StoreBundle\Factory\StockCount\AmountCountFactory
+     */
     private $nextFactory;
     
-    
+    /**
+     * Returns the element that this Count will handle from the tuple.
+     * 
+     * @param \StoreBundle\Entity\StockCountTuple $tuple
+     * 
+     * @return mixed
+     */
     protected abstract function selectTupleItem($tuple);
     
+    /**
+     * The map that maps the element of the tuple to the next Count
+     * in the chain.
+     * 
+     * @return \CommonBundle\Component\Map\Map
+     */
     protected function getMap()
     {
         return $this->map;
     }
     
     /**
+     * The map that maps the element of the tuple to the next Count
+     * in the chain.
+     * 
      * @var \CommonBundle\Component\Map\Map
      */
     private $map;
