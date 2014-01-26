@@ -23,8 +23,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use CommonBundle\Component\Map\DoctrineMap;
 
 /**
- * @ORM\Entity
- *
+ * This class couples a UnitType to a number. This number is the amount of
+ * units of UnitType::getSubType() in a UnitType. For example: a bottle crate
+ * contains 24 bottles. 24 will be coupled to the bottle crate (is a Unit Type).
+ * 
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class UnitChain
@@ -62,9 +64,6 @@ class UnitChain
     public function addUnitTypeToChain($unitType, $nbOfSubUnitsInUnit)
     {
         $this->map->set($unitType, new UnitChainLink($unitType, $nbOfSubUnitsInUnit));
-        
-        /*if($unitType->isPortionType())
-            $this->portionUnits = $nbOfSubUnitsInUnit;*/
     }
     
     /**
@@ -118,25 +117,10 @@ class UnitChain
         return $this->map->get($unitType)->getNb() * $this->getNbPortionsInUnitType($unitType->getSubType());
     }
     
-    /*public function getNbPortionsInPortionUnit()
-    {
-        return $this->portionUnits;
-    }
-    
-    public function getNbPortionUnitsInUnitType($unitType)
-    {
-        if($unitType->isPortionType())
-            return 1;
-    
-        return $this->map->get($unitType)->getNb() * $this->getNbPortionUnitsInUnitType($unitType->getSubType());
-    }*/
-    
     /**
      * @var \CommonBundle\Component\Map\Map
      */
     private $map;
-    
-    //private $portionUnits;
 }
 
 class UnitChainLink

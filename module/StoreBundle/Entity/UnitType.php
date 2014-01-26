@@ -21,8 +21,14 @@ namespace StoreBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- *
+ * This class represents a unit type. Some examples: a bottle, a bottle crate,
+ * a beer barrel, ... It is called a unit type because, for example, a bottle
+ * of 20cl is a unit.
+ * 
+ * A UnitType can also have a subtype. A example: a bottle crate has a bottle
+ * as subtype because a bottle crate contains bottles. If a UnitType has no
+ * subtype, we say it is a portion unit type.
+ * 
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class UnitType
@@ -128,6 +134,9 @@ class UnitType
         return $this->subType == false;
     }
     
+    /**
+     * @return \StoreBundle\Entity\UnitType
+     */
     public function getPortionSubType()
     {
         if($this->isPortionType())
