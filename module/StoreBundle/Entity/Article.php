@@ -145,8 +145,9 @@ class Article
     public function getPurchasePrice($unitType)
     {
         return $this->getPurchasePricePortion()->multiply(
-                $this->getUnitChain()
-                ->getNbPortionsInUnitType($unitType));
+            $this->getUnitChain()
+                ->getNbPortionsInUnitType($unitType)
+        );
     }
 
 
@@ -167,9 +168,12 @@ class Article
      */
     public function setPurchasePrice($purchasePrice, $unitType)
     {
-        $this->setPurchasePricePortion($purchasePrice->divide(
+        $this->setPurchasePricePortion(
+            $purchasePrice->divide(
                 $this->getUnitChain()
-                    ->getNbPortionsInUnitType($unitType)));
+                    ->getNbPortionsInUnitType($unitType)
+            )
+        );
     }
 
     /**

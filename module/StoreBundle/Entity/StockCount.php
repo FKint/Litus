@@ -37,8 +37,7 @@ class StockCount extends AbstractCount
     {
         $t = (new ValutaFactory())->create0();
 
-        foreach($this->getMap() as $k => $v)
-        {
+        foreach($this->getMap() as $k => $v) {
             $vt = $v->getAmount($k->getUnitChain());
             $t = $t->add($k->getSellingPrice()->multiply($vt));
         }
@@ -50,8 +49,7 @@ class StockCount extends AbstractCount
     {
         $t = (new ValutaFactory())->create0();
 
-        foreach($this->getMap() as $k => $v)
-        {
+        foreach($this->getMap() as $k => $v) {
             $vt = $v->getAmount($k->getUnitChain());
             $t = $t->add($k->getPurchasePricePortion()->multiply($vt));
         }

@@ -54,9 +54,7 @@ class UnitTypeCount extends AbstractCount implements AmountCount
     {
         $t = 0;
 
-        foreach($this->getMap() as $k => $v)
-        {
-
+        foreach($this->getMap() as $k => $v) {
             $vt = $v->getAmount($unitChain);
             $m = $unitChain->getNbPortionsInUnitType($k);
             $t += $vt*$m;
