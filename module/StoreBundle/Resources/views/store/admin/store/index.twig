@@ -2,9 +2,9 @@
 
 {% block content %}
     <ul>
-    {% for s in stores %}
-        <li>{{s.name}}</li>
-    {% endfor %}
+        {% for s in stores %}
+            <li>{{s.name}}</li>
+        {% endfor %}
         <li><a href="/admin/store/create">Nieuw</a></li>
     </ul>
 {% endblock %}

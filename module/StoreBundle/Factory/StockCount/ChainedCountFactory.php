@@ -18,14 +18,14 @@
 
 namespace StoreBundle\Factory\StockCount;
 
-use Doctrine\ORM\Mapping as ORM;
-use CommonBundle\Component\Map\MapFactory;
-use StoreBundle\Entity\StockCount\AmountCount;
+use Doctrine\ORM\Mapping as ORM,
+    CommonBundle\Component\Map\MapFactory,
+    StoreBundle\Entity\StockCount\AmountCount;
 
 /**
  * Factories extending this class will all create a link that is not the end
  * of the chain.
- * 
+ *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 abstract class ChainedCountFactory implements AmountCountFactory
@@ -37,7 +37,7 @@ abstract class ChainedCountFactory implements AmountCountFactory
     {
         $this->nextFactory = $nextFactory;
     }
-    
+
     /**
      * @return \StoreBundle\Factory\StockCount\AmountCountFactory
      */
@@ -45,16 +45,16 @@ abstract class ChainedCountFactory implements AmountCountFactory
     {
         return $this->nextFactory;
     }
-    
+
     /**
      * @var \StoreBundle\Factory\StockCount\AmountCountFactory
      */
     private $nextFactory;
-    
+
     /**
      * (non-PHPdoc)
      * @see \CommonBundle\Component\Map\MapFactory::create()
-     * 
+     *
      * @return  \StoreBundle\Entity\StockCount\AmountCount
      */
     public abstract function create();

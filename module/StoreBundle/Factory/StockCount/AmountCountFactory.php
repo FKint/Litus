@@ -18,9 +18,9 @@
 
 namespace StoreBundle\Factory\StockCount;
 
-use Doctrine\ORM\Mapping as ORM;
-use CommonBundle\Component\Map\MapFactory;
-use StoreBundle\Entity\StockCount\AmountCount;
+use Doctrine\ORM\Mapping as ORM,
+    CommonBundle\Component\Map\MapFactory,
+    StoreBundle\Entity\StockCount\AmountCount;
 
 /**
  * @author Daan Wendelen <daan.wendelen@litus.cc>
@@ -30,7 +30,7 @@ interface AmountCountFactory extends MapFactory
     /**
      * (non-PHPdoc)
      * @see \CommonBundle\Component\Map\MapFactory::create()
-     * 
+     *
      * @return  \StoreBundle\Entity\StockCount\AmountCount
      */
     public function create();

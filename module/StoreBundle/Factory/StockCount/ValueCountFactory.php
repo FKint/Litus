@@ -18,9 +18,9 @@
 
 namespace StoreBundle\Factory\StockCount;
 
-use Doctrine\ORM\Mapping as ORM;
-use StoreBundle\Entity\StockCount\ArticleCount;
-use StoreBundle\Entity\StockCount\ValueCount;
+use Doctrine\ORM\Mapping as ORM,
+    StoreBundle\Entity\StockCount\ArticleCount,
+    StoreBundle\Entity\StockCount\ValueCount;
 
 /**
  * @author Daan Wendelen <daan.wendelen@litus.cc>

@@ -18,11 +18,10 @@
 
 namespace StoreBundle\Factory;
 
-use StoreBundle\Entity\Unit;
-use StoreBundle\Entity\UnitType;
+use StoreBundle\Entity\Unit,
+    StoreBundle\Entity\UnitType;
 
 /**
- *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class UnitFactory
@@ -31,7 +30,7 @@ class UnitFactory
     {
         $this->last = null;
     }
-    
+
     /**
      * @throws \InvalidArgumentException
      *
@@ -46,27 +45,27 @@ class UnitFactory
 
         return $unit;
     }
-    
+
     public function createPortionUnitType($name)
     {
         return $this->createUnitType($name, null);
     }
-    
+
     public function createUnitType($name, $subUnitType)
     {
         $unitType = new UnitType();
         $unitType->setName($name);
         $unitType->setSubType($subUnitType);
-        
+
         return $unitType;
     }
-    
+
     /**
      * Creates a new unit type. The first time you invoke this methode, a
      * portion unit type will be returned, the next invokation, a unit type
      * will be created with that portion unit type as subtype. The next one
      * created will have the previously created unit type as its subtype.
-     * 
+     *
      * @param string $name
      */
     public function createNextChainedUnitType($name)
@@ -74,6 +73,6 @@ class UnitFactory
         $this->last = $this->createUnitType($name, $this->last);
         return $this->last;
     }
-    
+
     private $last;
 }

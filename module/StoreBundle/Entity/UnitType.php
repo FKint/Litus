@@ -24,11 +24,11 @@ use Doctrine\ORM\Mapping as ORM;
  * This class represents a unit type. Some examples: a bottle, a bottle crate,
  * a beer barrel, ... It is called a unit type because, for example, a bottle
  * of 20cl is a unit.
- * 
+ *
  * A UnitType can also have a subtype. A example: a bottle crate has a bottle
  * as subtype because a bottle crate contains bottles. If a UnitType has no
  * subtype, we say it is a portion unit type.
- * 
+ *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class UnitType
@@ -58,7 +58,7 @@ class UnitType
         $this->id = $id;
         return $this;
     }
-    
+
     /**
      * @var integer
      *
@@ -95,7 +95,7 @@ class UnitType
      * @ORM\Column(type="string")
      */
     private $name;
-    
+
     /**
      * @return \StoreBundle\Entity\UnitType | null
      */
@@ -103,7 +103,7 @@ class UnitType
     {
         return $this->subType;
     }
-    
+
     /**
      * Factory Only
      *
@@ -116,24 +116,24 @@ class UnitType
         $this->subType = $subType;
         return $this;
     }
-    
+
     /**
      * @var \StoreBundle\Entity\UnitType | null The subtype of this unit type
      *
      * @ORM\Column(type="string")
      */
     private $subType;
-    
+
     /**
      * Returns true if this unitType is a portion type.
-     * 
+     *
      * @return boolean
      */
     public function isPortionType()
     {
         return $this->subType == false;
     }
-    
+
     /**
      * @return \StoreBundle\Entity\UnitType
      */
@@ -141,7 +141,7 @@ class UnitType
     {
         if($this->isPortionType())
             return $this;
-        
+
         return $this->getSubType()->getPortionSubType();
     }
 }

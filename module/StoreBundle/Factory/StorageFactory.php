@@ -21,7 +21,6 @@ namespace StoreBundle\Factory;
 use StoreBundle\Entity\Storage;
 
 /**
- * 
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class StorageFactory

@@ -23,7 +23,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * This class represents a valuta and abstracts away all the inclusive /
  * exclusive problems.
- * 
+ *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class Valuta
@@ -31,7 +31,7 @@ class Valuta
     public function __construct()
     {
     }
-    
+
     /**
      * @return  integer | float | double
      */
@@ -39,22 +39,22 @@ class Valuta
     {
         return $this->incl;
     }
-    
+
     /**
      * Factory Only
-     * 
+     *
      * @param integer | float | double $incl
      */
     public function setIncl($incl)
     {
         $this->incl = $incl;
     }
-    
+
     /**
      * @var integer | float | double
      */
     private $incl;
-    
+
     /**
      * @return integer | float | double
      */
@@ -62,25 +62,25 @@ class Valuta
     {
         return $this->excl;
     }
-    
+
     /**
      * Factory Only
-     * 
+     *
      * @param integer | float | double $excl
      */
     public function setExcl($excl)
     {
         $this->excl = $excl;
     }
-    
+
     /**
      * @var integer | float | double
      */
     private $excl;
-    
+
     /**
      * @param \StoreBundle\Entity\Valuta\Valuta $valuta
-     * 
+     *
      * @return \StoreBundle\Entity\Valuta\Valuta
      */
     public function add($valuta)
@@ -90,7 +90,7 @@ class Valuta
         $r->setExcl($this->getExcl() + $valuta->getExcl());
         return $r;
     }
-    
+
     /**
      * @param \StoreBundle\Entity\Valuta\Valuta $valuta
      *
@@ -103,7 +103,7 @@ class Valuta
         $r->setExcl($this->getExcl() - $valuta->getExcl());
         return $r;
     }
-    
+
     /**
      * @param integer | float | double $scalar
      *
@@ -116,7 +116,7 @@ class Valuta
         $r->setExcl($this->getExcl() * $scalar);
         return $r;
     }
-    
+
     /**
      * @param integer | float | double $scalar
      *
