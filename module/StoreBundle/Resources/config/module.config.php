@@ -46,9 +46,7 @@ return array(
             ),
         )
     ),
-    
-    
-    
+
     'view_manager' => array(
         'template_path_stack' => array(
             'store_view' => __DIR__ . '/../views',
@@ -82,8 +80,7 @@ return array(
             ),
         ),
     ),
-    
-    
+
     'controllers' => array(
         'invokables' => array(
             'store_install' => 'StoreBundle\Controller\Admin\InstallController',

@@ -18,14 +18,14 @@
 
 namespace StoreBundle\Entity\StockCount;
 
-use Doctrine\ORM\Mapping as ORM;
-use StoreBundle\Factory\Valuta\ValutaFactory;
+use Doctrine\ORM\Mapping as ORM,
+    StoreBundle\Factory\Valuta\ValutaFactory;
 
 /**
  * This count handles the begin and end count.
- * 
+ *
  * @see \StoreBundle\Entity\StockCount\AmountCount
- * 
+ *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class BeginEndCount implements AmountCount
@@ -38,7 +38,7 @@ class BeginEndCount implements AmountCount
         $this->begin = $nextFactory->create();
         $this->end = $nextFactory->create();
     }
-    
+
     /**
      * (non-PHPdoc)
      * @see \StoreBundle\Entity\StockCount\AmountCount::getAmount()
@@ -47,10 +47,10 @@ class BeginEndCount implements AmountCount
     {
         $b = $this->begin->getAmount($unitChain);
         $e = $this->end->getAmount($unitChain);
-        
+
         return $b - $e;
     }
-    
+
     /**
      * (non-PHPdoc)
      * @see \StoreBundle\Entity\StockCount\AmountCount::setTupleValue()
@@ -62,18 +62,18 @@ class BeginEndCount implements AmountCount
         else
             $this->end->setTupleValue($tuple, $value);
     }
-        
-    
+
+
     /**
      * The begin count
-     * 
+     *
      * @var \StoreBundle\Entity\StockCount\AmountCount
      */
     private $begin;
-    
+
     /**
      * The end count
-     * 
+     *
      * @var \StoreBundle\Entity\StockCount\AmountCount
      */
     private $end;

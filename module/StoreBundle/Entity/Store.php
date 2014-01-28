@@ -85,7 +85,7 @@ class Store
 
     /**
      * @param \CommonBundle\Entity\Acl\Role $role
-     * 
+     *
      * @return boolean
      */
     public function canBeEditedByRole($role)
@@ -95,7 +95,7 @@ class Store
 
     /**
      * @param \CommonBundle\Entity\Acl\Role $editRole
-     * 
+     *
      * @return \StoreBundle\Entity\Store
      */
     public function addEditRole($editRole)
@@ -113,7 +113,7 @@ class Store
 
     /**
      * @param \Doctrine\Common\Collections\ArrayCollection $editRoles
-     * 
+     *
      * @return \StoreBundle\Entity\Store
      */
     protected function setEditRoles($editRoles)
@@ -135,7 +135,7 @@ class Store
 
     /**
      * @param \CommonBundle\Entity\Acl\Role $role
-     * 
+     *
      * @return boolean
      */
     public function canUsedByRole($role)
@@ -145,7 +145,7 @@ class Store
 
     /**
      * @param \CommonBundle\Entity\Acl\Role $useRole
-     * 
+     *
      * @return \StoreBundle\Entity\Store
      */
     public function addUseRole($useRole)
@@ -163,7 +163,7 @@ class Store
 
     /**
      * @param \Doctrine\Common\Collections\ArrayCollection $useRole
-     * 
+     *
      * @return \StoreBundle\Entity\Store
      */
     protected function setUseRoles($useRole)
@@ -192,7 +192,7 @@ class Store
     {
         $this->storages[] = $storage;
     }
-    
+
     /**
      * @return \Doctrine\Common\Collections\ArrayCollection
      */
@@ -200,7 +200,7 @@ class Store
     {
         return $this->storages;
     }
-    
+
     /**
      * @param \Doctrine\Common\Collections\ArrayCollection $storages
      *
@@ -211,10 +211,10 @@ class Store
         $this->storages = $storages;
         return $this;
     }
-    
+
     /**
      * @var \Doctrine\Common\Collections\ArrayCollection
-     * 
+     *
      * @ORM\ManyToMany(targetEntity="\StoreBundle\Entity\Storage", cascade={"persist", "remove"})
      * @ORM\JoinTable(name="store.store_storage")
      */

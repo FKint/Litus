@@ -18,8 +18,8 @@
 
 namespace StoreBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use StoreBundle\Entity\Valuta\Valuta;
+use Doctrine\ORM\Mapping as ORM,
+    StoreBundle\Entity\Valuta\Valuta;
 
 /**
  * @author Daan Wendelen <daan.wendelen@litus.cc>
@@ -77,7 +77,7 @@ class Article
      * @ORM\Column(type="string")
      */
     private $name;
-    
+
     /**
      * @return \StoreBundle\Entity\UnitChain
      */
@@ -85,25 +85,25 @@ class Article
     {
         return $this->unitChain;
     }
-    
+
     /**
      * Factory only
-     * 
+     *
      * @param \StoreBundle\Entity\UnitChain $unitChain
-     * 
+     *
      * @return \StoreBundle\Entity\UnitChain
      */
     public function setUnitChain($unitChain)
     {
         $this->unitChain = $unitChain;
     }
-    
+
     /**
      * @var \StoreBundle\Entity\UnitChain
      */
     private $unitChain;
-    
-    
+
+
     /**
      * @return \StoreBundle\Entity\Valuta\Valuta
      */
@@ -111,7 +111,7 @@ class Article
     {
         return $this->sellingPrice;
     }
-    
+
     /**
      * @param \StoreBundle\Entity\Valuta\Valuta $sellingPrice
      */
@@ -119,38 +119,39 @@ class Article
     {
         $this->sellingPrice = $sellingPrice;
     }
-    
+
     /**
      * @var \StoreBundle\Entity\Valuta\Valuta
      */
     private $sellingPrice;
-    
+
     /**
      * Returns the purchase price of one portion.
-     * 
+     *
      * @return \StoreBundle\Entity\Valuta\Valuta
      */
     public function getPurchasePricePortion()
     {
         return $this->purchasePrice;
     }
-    
+
     /**
      * Precondition !getUnitChain()->containsGab($unitType)
-     * 
+     *
      * @param \StoreBundle\Entity\UnitType $unitType
-     * 
+     *
      * @return \StoreBundle\Entity\Valuta\Valuta
      */
     public function getPurchasePrice($unitType)
     {
         return $this->getPurchasePricePortion()->multiply(
-                $this->getUnitChain()
-                ->getNbPortionsInUnitType($unitType));
+            $this->getUnitChain()
+                ->getNbPortionsInUnitType($unitType)
+        );
     }
-    
-    
-    
+
+
+
     /**
      * @param \StoreBundle\Entity\Valuta\Valuta $purchasePrice
      */
@@ -158,25 +159,28 @@ class Article
     {
         $this->purchasePrice = $purchasePrice;
     }
-    
+
     /**
      * Precondition !getUnitChain()->containsGab($unitType)
-     * 
+     *
      * @param \StoreBundle\Entity\Valuta\Valuta $purchasePrice
      * @param \StoreBundle\Entity\UnitType $unitType
      */
     public function setPurchasePrice($purchasePrice, $unitType)
     {
-        $this->setPurchasePricePortion($purchasePrice->divide(
+        $this->setPurchasePricePortion(
+            $purchasePrice->divide(
                 $this->getUnitChain()
-                    ->getNbPortionsInUnitType($unitType)));
+                    ->getNbPortionsInUnitType($unitType)
+            )
+        );
     }
-    
+
     /**
      * @var \StoreBundle\Entity\Valuta\Valuta
      */
     private $purchasePrice;
-    
+
     /**
      * @return \StoreBundle\Entity\Valuta\Valuta
      */

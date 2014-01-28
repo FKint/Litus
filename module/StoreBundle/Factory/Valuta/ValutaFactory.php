@@ -18,8 +18,8 @@
 
 namespace StoreBundle\Factory\Valuta;
 
-
 use StoreBundle\Entity\Valuta\Valuta;
+
 /**
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
@@ -28,9 +28,9 @@ class ValutaFactory
     /**
      * @param integer | float | double $incl
      * @param integer | float | double $btw
-     * 
+     *
      * Precondition: $btw != -1
-     * 
+     *
      * @return \StoreBundle\Factory\Valuta\Valuta
      */
     public function createIncl($incl, $btw)
@@ -40,11 +40,11 @@ class ValutaFactory
         $r->setExcl($incl / (1 + $btw));
         return $r;
     }
-    
+
     /**
      * @param integer | float | double $excl
      * @param integer | float | double $btw
-     * 
+     *
      * @return \StoreBundle\Entity\Valuta\Valuta
      */
     public function createExcl($excl, $btw)
@@ -54,12 +54,12 @@ class ValutaFactory
         $r->setExcl($excl);
         return $r;
     }
-    
+
     /**
-     * 
+     *
      * @param integer | float | double $incl
      * @param integer | float | double $excl
-     * 
+     *
      * @return \StoreBundle\Entity\Valuta\Valuta
      */
     public function create($incl, $excl)
@@ -69,7 +69,7 @@ class ValutaFactory
         $r->setExcl($excl);
         return $r;
     }
-    
+
     public function create0()
     {
         return $this->create(0, 0);

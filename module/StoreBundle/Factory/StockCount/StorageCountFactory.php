@@ -18,8 +18,8 @@
 
 namespace StoreBundle\Factory\StockCount;
 
-use Doctrine\ORM\Mapping as ORM;
-use StoreBundle\Entity\StockCount\StorageCount;
+use Doctrine\ORM\Mapping as ORM,
+    StoreBundle\Entity\StockCount\StorageCount;
 
 /**
  * @author Daan Wendelen <daan.wendelen@litus.cc>
@@ -30,7 +30,7 @@ class StorageCountFactory extends ChainedCountFactory
     {
         parent::__construct($nextFactory);
     }
-    
+
     /**
      * (non-PHPdoc)
      * @see \StoreBundle\Factory\StockCount\ChainedCountFactory::create()

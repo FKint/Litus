@@ -21,7 +21,6 @@ namespace StoreBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class StockCountTuple
@@ -29,52 +28,52 @@ class StockCountTuple
     public function __construct()
     {
     }
-    
+
     public function getStorage()
     {
         return $this->storage;
     }
-    
+
     public function setStorage($storage)
     {
         $this->storage = $storage;
     }
-    
+
     private $storage;
-    
+
     public function getArticle()
     {
         return $this->article;
     }
-    
+
     public function setArticle($article)
     {
         $this->article = $article;
     }
-    
+
     private $article;
-    
+
     public function isBeginCount()
     {
         return $this->beginCount;
     }
-    
+
     public function setBeginCount($beginCount)
     {
         $this->beginCount = $beginCount;
     }
-    
+
     private $beginCount;
-    
+
     public function getUnitType()
     {
         return $this->unitType;
     }
-    
+
     public function setUnitType($unitType)
     {
         $this->unitType = $unitType;
     }
-    
+
     private $unitType;
 }

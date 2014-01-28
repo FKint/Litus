@@ -18,15 +18,15 @@
 
 namespace StoreBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use CommonBundle\Component\Map\DoctrineMap;
+use Doctrine\ORM\Mapping as ORM,
+    Doctrine\Common\Collections\ArrayCollection,
+    CommonBundle\Component\Map\DoctrineMap;
 
 /**
  * This class couples a UnitType to a number. This number is the amount of
  * units of UnitType::getSubType() in a UnitType. For example: a bottle crate
  * contains 24 bottles. 24 will be coupled to the bottle crate (is a Unit Type).
- * 
+ *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class UnitChain
@@ -52,12 +52,12 @@ class UnitChain
      * @ORM\Column(chain="bigint")
      */
     private $id;
-    
+
     /**
      * See unit tests for effect.
-     * 
+     *
      * Precondition: canAddToChain($unitType)
-     * 
+     *
      * @param \StoreBundle\Entity\UnitType $unitType
      * @param integer $nbOfSubUnitsInUnit
      */
@@ -65,29 +65,29 @@ class UnitChain
     {
         $this->map->set($unitType, new UnitChainLink($unitType, $nbOfSubUnitsInUnit));
     }
-    
+
     /**
      * True if $unitType->getCountSubUnit() equals the count sub unit of each
      * of the unitTypes already in the chain. It is allowed to make a gab
      * in the chain, if it will be filled later.
-     * 
+     *
      * @param \StoreBundle\Entity\UnitType $unitType
      */
     public function canAddToChain($unitType)
     {
         if($this->map->isEmpty())
             return true;
-        
+
         return $this->map->getFirst()->getUnitType()->getPortionSubType() === $unitType->getPortionSubType();
     }
-    
+
     /**
      * Returns true if the chain contains a gab between the unitType and the
-     * countingUnit. Returns also true if there is no $unitType added to the 
+     * countingUnit. Returns also true if there is no $unitType added to the
      * chain.
-     * 
+     *
      * @param    \StoreBundle\Entity\UnitType $unitType
-     * 
+     *
      * @return boolean
      */
     public function containsGab($unitType)
@@ -95,28 +95,28 @@ class UnitChain
         if($this->map->hasKey($unitType)) {
             if($unitType->isPortionType())
                 return false;
-                
+
             return $this->containsGab($unitType->getSubType());
         }
-        
+
         return true;
     }
-    
+
     /**
      * See unit tests for usage.
-     * 
+     *
      * Precondition !containsGab($unitType)
-     * 
+     *
      * @param \StoreBundle\Entity\UnitType $unitType
      */
     public function getNbPortionsInUnitType($unitType)
     {
         if($unitType->isPortionType())
             return $this->map->get($unitType)->getNb();
-        
+
         return $this->map->get($unitType)->getNb() * $this->getNbPortionsInUnitType($unitType->getSubType());
     }
-    
+
     /**
      * @var \CommonBundle\Component\Map\Map
      */
@@ -130,34 +130,34 @@ class UnitChainLink
         $this->unitType = $unitType;
         $this->nb = $nb;
     }
-    
+
     public function getUnitType()
     {
         return $this->unitType;
     }
-    
+
     protected function setUnitType($unitType)
     {
         $this->unitType = $unitType;
-        return $this;    
+        return $this;
     }
-    
+
     private $unitType;
-    
-    
+
+
     public function getNb()
     {
         return $this->nb;
     }
-    
+
     protected function setNb($nb)
     {
         $this->nb = $nb;
         return $this;
     }
-    
+
     private $nb;
-    
+
 }
 
 

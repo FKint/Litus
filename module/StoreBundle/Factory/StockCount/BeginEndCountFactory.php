@@ -18,8 +18,8 @@
 
 namespace StoreBundle\Factory\StockCount;
 
-use Doctrine\ORM\Mapping as ORM;
-use StoreBundle\Entity\StockCount\BeginEndCount;
+use Doctrine\ORM\Mapping as ORM,
+    StoreBundle\Entity\StockCount\BeginEndCount;
 
 /**
  * @author Daan Wendelen <daan.wendelen@litus.cc>
@@ -30,7 +30,7 @@ class BeginEndCountFactory extends ChainedCountFactory
     {
         parent::__construct($nextFactory);
     }
-    
+
     /**
      * (non-PHPdoc)
      * @see \StoreBundle\Factory\StockCount\AmountCountFactory::create()

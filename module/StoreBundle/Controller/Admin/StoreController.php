@@ -33,8 +33,8 @@ class StoreController extends \CommonBundle\Component\Controller\ActionControlle
     public function indexAction()
     {
         $stores = $this->getEntityManager()
-                    ->getRepository('StoreBundle\Entity\Store')
-                    ->findAll();
+            ->getRepository('StoreBundle\Entity\Store')
+            ->findAll();
 
         return new ViewModel(
             array(

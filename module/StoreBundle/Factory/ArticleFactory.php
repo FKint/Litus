@@ -18,12 +18,11 @@
 
 namespace StoreBundle\Factory;
 
-use StoreBundle\Entity\Storage;
-use StoreBundle\Entity\Article;
-use StoreBundle\Entity\UnitChain;
+use StoreBundle\Entity\Storage,
+    StoreBundle\Entity\Article,
+    StoreBundle\Entity\UnitChain;
 
 /**
- * 
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class ArticleFactory
@@ -34,7 +33,7 @@ class ArticleFactory
         $uc = new UnitChain();
         $a->setUnitChain($uc);
         $a->setName($name);
-        
+
         return $a;
     }
 }
