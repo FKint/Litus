@@ -16,67 +16,61 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace StoreBundle\Entity;
+namespace StoreBundle\Component\StockCount;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="StoreBundle\Repository\Storage")
- * @ORM\Table(name="store.storage")
- *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class Storage
+class StockCountTuple
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="bigint")
-     */
-    private $id;
+    private $storage;
+    private $unitType;
+    private $article;
+    private $beginCount;
     
-    /**
-     * @var string The name of this storage
-     *
-     * @ORM\Column(type="string")
-     */
-    private $name;
-    
-    /**
-     * Factory Only
-     */
     public function __construct()
     {
     }
 
-    /**
-     * @return integer
-     */
-    public function getId()
+    public function getStorage()
     {
-        return $this->id;
+        return $this->storage;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function setStorage($storage)
     {
-        return $this->name;
+        $this->storage = $storage;
     }
 
-    /**
-     * Factory Only
-     *
-     * @param string $name
-     *
-     * @return \StoreBundle\Entity\Storage
-     */
-    public function setName($name)
+    public function getArticle()
     {
-        $this->name = $name;
-        return $this;
+        return $this->article;
+    }
+
+    public function setArticle($article)
+    {
+        $this->article = $article;
+    }
+
+    public function isBeginCount()
+    {
+        return $this->beginCount;
+    }
+
+    public function setBeginCount($beginCount)
+    {
+        $this->beginCount = $beginCount;
+    }
+
+    public function getUnitType()
+    {
+        return $this->unitType;
+    }
+
+    public function setUnitType($unitType)
+    {
+        $this->unitType = $unitType;
     }
 }

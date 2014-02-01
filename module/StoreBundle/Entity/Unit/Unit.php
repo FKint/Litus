@@ -16,17 +16,16 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace StoreBundle\Entity;
+namespace StoreBundle\Entity\Unit;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="StoreBundle\Repository\Storage")
- * @ORM\Table(name="store.storage")
+ * @ORM\Entity
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class Storage
+class Unit
 {
     /**
      * @var integer
@@ -38,7 +37,7 @@ class Storage
     private $id;
     
     /**
-     * @var string The name of this storage
+     * @var string The name of this unit
      *
      * @ORM\Column(type="string")
      */
@@ -72,7 +71,7 @@ class Storage
      *
      * @param string $name
      *
-     * @return \StoreBundle\Entity\Storage
+     * @return \StoreBundle\Entity\Unit
      */
     public function setName($name)
     {

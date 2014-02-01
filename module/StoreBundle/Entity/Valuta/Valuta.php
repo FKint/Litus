@@ -28,6 +28,16 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Valuta
 {
+    /**
+     * @var integer | float | double
+     */
+    private $incl;
+    
+    /**
+     * @var integer | float | double
+     */
+    private $excl;
+    
     public function __construct()
     {
     }
@@ -51,11 +61,6 @@ class Valuta
     }
 
     /**
-     * @var integer | float | double
-     */
-    private $incl;
-
-    /**
      * @return integer | float | double
      */
     public function getExcl()
@@ -72,11 +77,6 @@ class Valuta
     {
         $this->excl = $excl;
     }
-
-    /**
-     * @var integer | float | double
-     */
-    private $excl;
 
     /**
      * @param \StoreBundle\Entity\Valuta\Valuta $valuta

@@ -30,6 +30,54 @@ use Doctrine\ORM\Mapping as ORM,
 class Store
 {
     /**
+     * @var integer
+     *
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="bigint")
+     */
+    private $id;
+
+    /**
+     * @var string The name of this store
+     *
+     * @ORM\Column(type="string")
+     */
+    private $name;
+    
+    /**
+     * @var \Doctrine\Common\Collections\ArrayCollection The roles that can edit this store
+     *
+     * @ORM\ManyToMany(targetEntity="CommonBundle\Entity\Acl\Role")
+     * @ORM\JoinTable(
+     *      name="store.store_edit_roles",
+     *      inverseJoinColumns={@ORM\JoinColumn(name="role", referencedColumnName="name")}
+     * )
+     */
+    private $editRoles;
+
+    /**
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     *          The roles that can use the store. For example: the whole
+     *          fakbarteam can use the fakbar-store.
+     *
+     * @ORM\ManyToMany(targetEntity="CommonBundle\Entity\Acl\Role")
+     * @ORM\JoinTable(
+     *      name="store.store_use_roles",
+     *      inverseJoinColumns={@ORM\JoinColumn(name="role", referencedColumnName="name")}
+     * )
+     */
+    private $useRole;
+
+    /**
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="\StoreBundle\Entity\Storage", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="store.store_storage")
+     */
+    private $storages;
+    
+    /**
      * Factory Only
      */
     public function __construct()
@@ -45,15 +93,6 @@ class Store
     {
         return $this->id;
     }
-
-    /**
-     * @var integer
-     *
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="bigint")
-     */
-    private $id;
 
     /**
      * @return string
@@ -75,13 +114,6 @@ class Store
         $this->name = $name;
         return $this;
     }
-
-    /**
-     * @var string The name of this store
-     *
-     * @ORM\Column(type="string")
-     */
-    private $name;
 
     /**
      * @param \CommonBundle\Entity\Acl\Role $role
@@ -123,17 +155,6 @@ class Store
     }
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection The roles that can edit this store
-     *
-     * @ORM\ManyToMany(targetEntity="CommonBundle\Entity\Acl\Role")
-     * @ORM\JoinTable(
-     *      name="store.store_edit_roles",
-     *      inverseJoinColumns={@ORM\JoinColumn(name="role", referencedColumnName="name")}
-     * )
-     */
-    private $editRoles;
-
-    /**
      * @param \CommonBundle\Entity\Acl\Role $role
      *
      * @return boolean
@@ -173,19 +194,6 @@ class Store
     }
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection
-     *          The roles that can use the store. For example: the whole
-     *          fakbarteam can use the fakbar-store.
-     *
-     * @ORM\ManyToMany(targetEntity="CommonBundle\Entity\Acl\Role")
-     * @ORM\JoinTable(
-     *      name="store.store_use_roles",
-     *      inverseJoinColumns={@ORM\JoinColumn(name="role", referencedColumnName="name")}
-     * )
-     */
-    private $useRole;
-
-    /**
      * @param \StoreBundle\Entity\Storage $storage
      */
     public function addStorage($storage)
@@ -211,12 +219,4 @@ class Store
         $this->storages = $storages;
         return $this;
     }
-
-    /**
-     * @var \Doctrine\Common\Collections\ArrayCollection
-     *
-     * @ORM\ManyToMany(targetEntity="\StoreBundle\Entity\Storage", cascade={"persist", "remove"})
-     * @ORM\JoinTable(name="store.store_storage")
-     */
-    private $storages;
 }
