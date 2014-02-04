@@ -71,7 +71,7 @@
                 <dt>{{ translate('I want to receive \'t Bakske by e-mail') }}</dt>
                 <dd>{% if metaData.bakskeByMail() %}Yes{% else %}No{% endif %}</dd>
                 <dt>{{ translate('T-shirt Size') }}</dt>
-                <dd>{{ metaData.getTshirtSizeName() }}</dd>
+                <dd>{{ metaData.getTshirtSizeName() }}&nbsp;</dd>
             </dl>
         </div>
         <div class="col-sm-3" style="text-align: left;">
@@ -92,7 +92,7 @@
             </ul>
         {% endfor %}
     {% endfor %}
-    <div class="form-actions hidden-phone" style="text-align: center;">
+    <div class="hidden-sm hidden-xs" style="text-align: center;">
         <a href="{{ url('common_account', {'action': 'edit'}) }}" class="btn btn-primary">{{ translate('Edit') }}</a>
     </div>
 {% endblock %}
