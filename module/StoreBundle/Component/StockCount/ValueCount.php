@@ -35,11 +35,11 @@ class ValueCount implements AmountCount
     
     /**
      * (non-PHPdoc)
-     * @see \StoreBundle\Entity\StockCount\AmountCount::setTupleValue()
+     * @see \StoreBundle\Component\StockCount\AmountCount::addCountTuple()
      */
-    public function setTupleValue($tuple, $value)
+    public function addCountTuple($tuple)
     {
-        $this->value = $value;
+        $this->value = $tuple->getValue();
     }
 
     /**

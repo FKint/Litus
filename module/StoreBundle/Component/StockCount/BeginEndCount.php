@@ -69,11 +69,11 @@ class BeginEndCount implements AmountCount
      * (non-PHPdoc)
      * @see \StoreBundle\Entity\StockCount\AmountCount::setTupleValue()
      */
-    public function setTupleValue($tuple, $value)
+    public function addCountTuple($tuple)
     {
         if($tuple->isBeginCount())
-            $this->begin->setTupleValue($tuple, $value);
+            $this->begin->addCountTuple($tuple);
         else
-            $this->end->setTupleValue($tuple, $value);
+            $this->end->addCountTuple($tuple);
     }    
 }

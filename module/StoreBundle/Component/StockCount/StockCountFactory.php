@@ -40,9 +40,10 @@ class StockCountFactory
         $f = new StorageCountFactory($f);
         $f = new BeginEndCountFactory($f);
         $f = new UnitTypeCountFactory($f);
-
+        $ac = new ArticleCount($f);
+        
         //Add the chain to the stock count
-        $sc = new StockCount($f);
+        $sc = new StockCount($ac);
 
         return $sc;
     }

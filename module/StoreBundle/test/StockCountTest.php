@@ -90,21 +90,24 @@ class StockCountTest extends PHPUnit_Framework_TestCase
         $t->setStorage($frigo);
         $t->setUnitType($fles);
         $t->setArticle($cola);
-        $cf->setTupleValue($t, 5);
+        $t->setValue(5);
+        $cf->addCountTuple($t);
         
         $t = new StockCountTuple();
         $t->setBeginCount(true);
         $t->setStorage($stock);
         $t->setUnitType($bak);
         $t->setArticle($cola);
-        $cf->setTupleValue($t, 3);
+        $t->setValue(3);
+        $cf->addCountTuple($t);
         
         $t = new StockCountTuple();
         $t->setBeginCount(true);
         $t->setStorage($stock);
         $t->setUnitType($fles);
         $t->setArticle($cola);
-        $cf->setTupleValue($t, 2);
+        $t->setValue(2);
+        $cf->addCountTuple($t);
         
         #Begin fanta
         $t = new StockCountTuple();
@@ -112,21 +115,24 @@ class StockCountTest extends PHPUnit_Framework_TestCase
         $t->setStorage($frigo);
         $t->setUnitType($fles);
         $t->setArticle($fanta);
-        $cf->setTupleValue($t, 10);
+        $t->setValue(10);
+        $cf->addCountTuple($t);
         
         $t = new StockCountTuple();
         $t->setBeginCount(true);
         $t->setStorage($stock);
         $t->setUnitType($bak);
         $t->setArticle($fanta);
-        $cf->setTupleValue($t, 1);
+        $t->setValue(1);
+        $cf->addCountTuple($t);
         
         $t = new StockCountTuple();
         $t->setBeginCount(true);
         $t->setStorage($stock);
         $t->setUnitType($fles);
         $t->setArticle($fanta);
-        $cf->setTupleValue($t, 20);
+        $t->setValue(20);
+        $cf->addCountTuple($t);
         
         #Eind cola
         $t = new StockCountTuple();
@@ -134,21 +140,24 @@ class StockCountTest extends PHPUnit_Framework_TestCase
         $t->setStorage($frigo);
         $t->setUnitType($fles);
         $t->setArticle($cola);
-        $cf->setTupleValue($t, 1);
+        $t->setValue(1);
+        $cf->addCountTuple($t);
         
         $t = new StockCountTuple();
         $t->setBeginCount(false);
         $t->setStorage($stock);
         $t->setUnitType($bak);
         $t->setArticle($cola);
-        $cf->setTupleValue($t, 1);
+        $t->setValue(1);
+        $cf->addCountTuple($t);
         
         $t = new StockCountTuple();
         $t->setBeginCount(false);
         $t->setStorage($stock);
         $t->setUnitType($fles);
         $t->setArticle($cola);
-        $cf->setTupleValue($t, 3);
+        $t->setValue(3);
+        $cf->addCountTuple($t);
         
         #Eind fanta
         $t = new StockCountTuple();
@@ -156,21 +165,24 @@ class StockCountTest extends PHPUnit_Framework_TestCase
         $t->setStorage($frigo);
         $t->setUnitType($fles);
         $t->setArticle($fanta);
-        $cf->setTupleValue($t, 15);
+        $t->setValue(15);
+        $cf->addCountTuple($t);
         
         $t = new StockCountTuple();
         $t->setBeginCount(false);
         $t->setStorage($stock);
         $t->setUnitType($bak);
         $t->setArticle($fanta);
-        $cf->setTupleValue($t, 0);
+        $t->setValue(0);
+        $cf->addCountTuple($t);
         
         $t = new StockCountTuple();
         $t->setBeginCount(false);
         $t->setStorage($stock);
         $t->setUnitType($fles);
         $t->setArticle($fanta);
-        $cf->setTupleValue($t, 10);
+        $t->setValue(10);
+        $cf->addCountTuple($t);
         
         $this->assertEquals(274, $cf->getIncome()->getIncl());
         $this->assertEquals(41.5, $cf->getCost()->getIncl());

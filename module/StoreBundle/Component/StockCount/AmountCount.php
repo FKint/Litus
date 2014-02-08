@@ -34,11 +34,13 @@ interface AmountCount
      * This method is called to pass a tuple and it's value along the chain.
      * Most of the time will the implementation of this method call this method
      * on the next link in the chain.
-     *
+     * 
+     * Precondition: $tuple.getValue() != null
+     * Precondition: Every field that is processed can not be null
+     * 
      * @param \StoreBundle\Entity\StockCountTuple $tuple
-     * @param float | integer $value
      */
-    public function setTupleValue($tuple, $value);
+    public function addCountTuple($tuple);
 
     /**
      * Returns the amount that the next Count in the chain has calculated.

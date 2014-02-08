@@ -29,6 +29,7 @@ class StockCountTuple
     private $unitType;
     private $article;
     private $beginCount;
+    private $value;
     
     public function __construct()
     {
@@ -72,5 +73,15 @@ class StockCountTuple
     public function setUnitType($unitType)
     {
         $this->unitType = $unitType;
+    }
+    
+    public function getValue()
+    {
+        return $this->value;
+    }
+    
+    public function setValue($value)
+    {
+        $this->value = $value;
     }
 }

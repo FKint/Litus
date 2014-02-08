@@ -53,12 +53,12 @@ abstract class AbstractCount
     /**
      * @see \StoreBundle\Entity\StockCount\AmountCount::setTupleValue()
      */
-    public function setTupleValue($tuple, $value)
+    public function addCountTuple($tuple)
     {
         $i = $this->selectTupleItem($tuple);
 
         $this->map->getOrCreate($i, $this->nextFactory)
-            ->setTupleValue($tuple, $value);
+            ->addCountTuple($tuple);
     }
 
     /**

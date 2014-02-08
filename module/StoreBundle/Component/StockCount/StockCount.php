@@ -31,38 +31,44 @@ use Doctrine\ORM\Mapping as ORM,
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class StockCount extends AbstractCount
+class StockCount
 {
+    /**
+     * 
+     * @var \StoreBundle\Component\StockCount\ArticleCount
+     */
+    private $articleCount;
+    
+    /**
+     * Constructor only
+     * 
+     * @param \StoreBundle\Component\StockCount\ArticleCount $articleCount
+     */
+    public function __construct($articleCount)
+    {
+        $this->articleCount = $articleCount;
+    }
+    
+    /**
+     * Adds a tuplevalue to the structure.
+     * 
+     * Precondition: $tuple.getValue() != null
+     * Precondition: Every field that is processed can not be null
+     * 
+     * @param \StoreBundle\Entity\StockCountTuple $tuple
+     */
+    public function addCountTuple($tuple)
+    {
+        $this->articleCount->addCountTuple($tuple);
+    }
+    
     public function getIncome()
     {
-        $t = (new ValutaFactory())->create0();
-
-        foreach($this->getMap() as $k => $v) {
-            $vt = $v->getAmount($k->getUnitChain());
-            $t = $t->add($k->getSellingPrice()->multiply($vt));
-        }
-
-        return $t;
+        return $this->articleCount->getIncome();
     }
 
     public function getCost()
     {
-        $t = (new ValutaFactory())->create0();
-
-        foreach($this->getMap() as $k => $v) {
-            $vt = $v->getAmount($k->getUnitChain());
-            $t = $t->add($k->getPurchasePricePortion()->multiply($vt));
-        }
-
-        return $t;
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see \StoreBundle\Entity\StockCount\AbstractCount::selectTupleItem()
-     */
-    protected function selectTupleItem($tuple)
-    {
-        return $tuple->getArticle();
+        return $this->articleCount->getCost();
     }
 }
