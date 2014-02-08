@@ -285,11 +285,7 @@
             } else {
                 $this.find('.startSale').addClass('disabled').unbind('click');
             }
-        }).typeaheadRemote(
-            {
-                source: settings.personTypeahead,
-            }
-        ).change(function (e) {
+        }).change(function (e) {
             if ($(this).data('value')) {
                 filterText.val($(this).data('value').universityIdentification);
                 settings.sendToSocket(
@@ -300,7 +296,11 @@
                     })
                 );
             }
-        });
+        }).typeaheadRemote(
+            {
+                'source': settings.personTypeahead,
+            }
+        );
 
         undoLastSale.click(function () {
             if (lastSold > 0) {
