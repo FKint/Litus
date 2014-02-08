@@ -20,7 +20,9 @@ namespace CommonBundle\Entity\General\Bank;
 
 use CommonBundle\Entity\General\Bank\BankDevice,
     CommonBundle\Entity\General\Bank\MoneyUnit,
-    Doctrine\ORM\Mapping as ORM;
+    Doctrine\ORM\Mapping as ORM,
+    Doctrine\Common\Collections\ArrayCollection,
+    CommonBundle\Entity\General\Bank\MoneyUnit\Amount;
 
 /**
  * A class that is used to store the contents of a counted register
@@ -57,6 +59,12 @@ class CashRegister
      */
     private $bankDeviceAmounts;
 
+    public function __construct()
+    {
+        $this->moneyUnitAmounts = new ArrayCollection();
+        $this->bankDeviceAmounts = new ArrayCollection();
+    }
+    
     /**
      * @return integer
      */
@@ -82,7 +90,8 @@ class CashRegister
     }
 
     /**
-     * Get the register's total amount.
+     * Get the register's total value multiplied by 100, which does not
+     * really makes sense.
      *
      * @return int
      */
@@ -98,7 +107,17 @@ class CashRegister
 
         return $amount;
     }
-
+    
+    /**
+     * Returns the value of the money in the cashregister.
+     * 
+     * @return number
+     */
+    public function getValueTotalAmount()
+    {
+        return $this->getTotalAmount()/100;
+    }
+    
     /**
      * Get the amount object for a unit.
      *
@@ -113,6 +132,14 @@ class CashRegister
         }
     }
 
+    /**
+     * @param CommonBundle\Entity\General\Bank\MoneyUnit\Amount $moneyAmount
+     */
+    public function addMoneyAmount($moneyAmount)
+    {
+        $this->moneyUnitAmounts[] = $moneyAmount;
+    }
+    
     /**
      * Get amount object for a bank device.
      *

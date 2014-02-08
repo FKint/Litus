@@ -61,6 +61,8 @@ class MoneyUnit
     }
 
     /**
+     * The unit set in the constructor. It is therefor multiplied by 100.
+     * 
      * @return float
      */
     public function getUnit()
