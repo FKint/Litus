@@ -16,26 +16,16 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace CommonBundle\Component\General;
+use StoreBundle\Entity\Store;
+use StoreBundle\Component\StoreFactory;
+use StoreBundle\Component\Article\ArticleFactory;
+use StoreBundle\Component\StockCount\StockCountFactory;
+use StoreBundle\Component\Unit\UnitFactory;
+use StoreBundle\Component\StorageFactory;
+use StoreBundle\Component\StockCount\StockCountTuple;
+use StoreBundle\Component\Valuta\ValutaFactory;
 
-use CommonBundle\Entity\General\Bank\MoneyUnit\Amount;
-use CommonBundle\Entity\General\Bank\CashRegister;
-
-/**
- * @author Daan Wendelen <daan.wendelen@litus.cc>
- */
-class BankFactory
+class CashCountTest extends PHPUnit_Framework_TestCase
 {
-
-    public function createMoneyAmount($register, $unit, $amount)
-    {
-        $a = new Amount($register, $unit, $amount);
-        $register->addMoneyAmount($a);
-        return $a;
-    }
     
-    public function createCashRegister()
-    {
-        return new CashRegister();
-    }
 }

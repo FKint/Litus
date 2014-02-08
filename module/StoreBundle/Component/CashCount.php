@@ -16,7 +16,7 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace StoreBundle\Entity;
+namespace StoreBundle\Component;
 
 use Doctrine\ORM\Mapping as ORM,
     Doctrine\Common\Collections\ArrayCollection;
@@ -36,16 +36,23 @@ class CashCount
      */
     private $id;
 
+    /**
+     * @var \CommonBundle\Entity\General\Bank\CashRegister
+     */
     private $cashRegisterBegin;
+    
+    /**
+     * @var \CommonBundle\Entity\General\Bank\CashRegister
+     */
     private $cashRegisterEnd;
-    
-    
-    
+
     /**
      * Factory Only
      */
-    public function __construct()
+    public function __construct($factory)
     {
+        $this->cashRegisterBegin = $factory->createCashRegister();
+        $this->cashRegisterBegin = $factory->createCashRegister();
     }
 
     /**
@@ -54,5 +61,29 @@ class CashCount
     public function getId()
     {
         return $this->id;
+    }
+    
+    public function getIncome()
+    {
+        return $this->cashRegisterEnd->getValueTotalAmount()
+            - $this->cashRegisterBegin->getValueTotalAmount();
+    }
+    
+    public function getCashRegisterBegin()
+    {
+        return $this->cashRegisterBegin;
+    }
+    
+    public function getCashRegisterEnd()
+    {
+        return $this->cashRegisterEnd;
+    }
+    
+    public function getCashRegister($isBegin)
+    {
+        if($isBegin)
+            return $this->getCashRegisterBegin();
+        else
+            return $this->getCashRegisterEnd();
     }
 }
