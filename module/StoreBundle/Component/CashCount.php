@@ -49,10 +49,10 @@ class CashCount
     /**
      * Factory Only
      */
-    public function __construct($factory)
+    public function __construct($cashRegisterBegin, $cashRegisterEnd)
     {
-        $this->cashRegisterBegin = $factory->createCashRegister();
-        $this->cashRegisterBegin = $factory->createCashRegister();
+        $this->cashRegisterBegin = $cashRegisterBegin;
+        $this->cashRegisterEnd = $cashRegisterEnd;
     }
 
     /**

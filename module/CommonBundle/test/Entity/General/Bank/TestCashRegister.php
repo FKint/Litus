@@ -16,17 +16,26 @@
  * @license http://litus.cc/LICENSE
  */
 
-use CommonBundle\test\Entity\General\Bank\TestCashRegister,
-    StoreBundle\Component\CashCount;
+namespace CommonBundle\test\Entity\General\Bank;
 
-class CashCountTest extends PHPUnit_Framework_TestCase
+use CommonBundle\Entity\General\Bank\CashRegister;
+
+
+class TestCashRegister extends CashRegister
 {
-    public function testSimple()
+    private $amount;
+    
+    public function __construct($amount)
     {
-        $cr1 = new TestCashRegister(120);
-        $cr2 = new TestCashRegister(150);
-        $cc = new CashCount($cr1, $cr2);
-        
-        $this->assertEquals(30, $cc->getIncome());
+        $this->amount = $amount;
+    }
+    
+    /**
+     * (non-PHPdoc)
+     * @see \CommonBundle\Entity\General\Bank\CashRegister::getValueTotalAmount()
+     */
+    public function getValueTotalAmount()
+    {
+        return $this->amount;
     }
 }

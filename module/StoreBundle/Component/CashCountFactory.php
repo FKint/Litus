@@ -16,17 +16,26 @@
  * @license http://litus.cc/LICENSE
  */
 
-use CommonBundle\test\Entity\General\Bank\TestCashRegister,
-    StoreBundle\Component\CashCount;
+namespace StoreBundle\Component;
 
-class CashCountTest extends PHPUnit_Framework_TestCase
+use StoreBundle\Entity\Storage;
+use CommonBundle\Component\General\BankFactory;
+
+/**
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
+class CashCountFactory
 {
-    public function testSimple()
+    /**
+     * @throws \InvalidArgumentException
+     *
+     * @param string $name The name of the store
+     *
+     * @return \StoreBundle\Entity\Storage
+     */
+    public function createCashCount()
     {
-        $cr1 = new TestCashRegister(120);
-        $cr2 = new TestCashRegister(150);
-        $cc = new CashCount($cr1, $cr2);
-        
-        $this->assertEquals(30, $cc->getIncome());
+        $bf = new BankFactory();
+        return new CashCount($bf->createCashRegister(), $bf->createCashRegister());
     }
 }
