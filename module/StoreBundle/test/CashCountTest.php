@@ -28,5 +28,11 @@ class CashCountTest extends PHPUnit_Framework_TestCase
         $cc = new CashCount($cr1, $cr2);
         
         $this->assertEquals(30, $cc->getIncome());
+        
+        $this->assertEquals($cr1, $cc->getCashRegisterBegin());
+        $this->assertEquals($cr2, $cc->getCashRegisterEnd());
+        
+        $this->assertEquals($cr1, $cc->getCashRegister(true));
+        $this->assertEquals($cr2, $cc->getCashRegister(false));
     }
 }
