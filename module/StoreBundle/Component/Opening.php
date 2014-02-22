@@ -27,24 +27,9 @@ use Doctrine\ORM\Mapping as ORM,
  */
 class Opening
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="bigint")
-     */
-    private $id;
-
-    private $cashCount;
-    
-    private $remarks;
-    
     private $stockCount;
     
-    private $responsibleBartender;
-    
-    private $startDate;
+    private $openingData;
     
     /**
      * Factory Only
@@ -53,12 +38,29 @@ class Opening
     {
     }
 
-    /**
-     * @return integer
-     */
-    public function getId()
+    public function getOpeningData()
     {
-        return $this->id;
+        return $this->openingData;
+    }
+    
+    public function setOpeningData($openingData)
+    {
+        $this->openingData = $openingData;
+    }
+    
+    public function getStockCount()
+    {
+        return $this->stockCount;
+    }
+    
+    public function setStockCount($stockCount)
+    {
+        $this->stockCount = $stockCount;
+    }
+    
+    public function getCashCount()
+    {
+        return $this->openingData->getCashCount();
     }
     
     public function getDelta()
@@ -68,12 +70,12 @@ class Opening
     
     public function getCost()
     {
-        return $this->stockCount->getCost();
+        return $this->getStockCount()->getCost();
     }
     
     public function getIncome()
     {
-        return $this->cashCount->getIncome();
+        return $this->getCashCount()->getIncome();
     }
     
     public function getProfit()

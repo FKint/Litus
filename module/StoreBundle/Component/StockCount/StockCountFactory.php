@@ -47,4 +47,16 @@ class StockCountFactory
 
         return $sc;
     }
+    
+    public function createStockCountFromStockCountTuples($stockCountTuples)
+    {
+        $sc = $this->createStockCount();
+        
+        foreach($stockCountTuples as $sct)
+        {
+            $sc->addCountTuple($sct);
+        }
+        
+        return $sc;
+    }
 }
