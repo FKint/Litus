@@ -40,6 +40,11 @@ class Opening
     
     private $remarks;
     
+    private $stockCount;
+    
+    private $responsibleBartender;
+    
+    private $startDate;
     
     /**
      * Factory Only
@@ -54,5 +59,30 @@ class Opening
     public function getId()
     {
         return $this->id;
+    }
+    
+    public function getDelta()
+    {
+        return $this->getIncome()->subtract($this->getExpectedIncome());
+    }
+    
+    public function getCost()
+    {
+        return $this->stockCount->getCost();
+    }
+    
+    public function getIncome()
+    {
+        return $this->cashCount->getIncome();
+    }
+    
+    public function getProfit()
+    {
+        return $this->getIncome()->subtract($this->getCost());
+    }
+    
+    public function getExpectedIncome()
+    {
+        return $this->stockCount->getIncome();
     }
 }
