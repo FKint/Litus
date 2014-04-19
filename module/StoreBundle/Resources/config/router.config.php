@@ -18,24 +18,13 @@
 
 return array(
     'routes' => array(
-        'store_install' => array(
-            'type' => 'Zend\Mvc\Router\Http\Segment',
-            'options' => array(
-                'route' => '/admin/install/store[/]',
-                'defaults' => array(
-                    'controller' => 'store_install',
-                    'action'     => 'index'
-                )
-            )
-        ),
         'store' => array(
             'type' => 'Zend\Mvc\Router\Http\Segment',
             'options' => array(
-                'route' => '/admin/store[/:action[/:id][/page/:page]][/]',
+                'route' => '/admin/store[/:action[/:id]][/]',
                 'constraints' => array(
                     'action'  => '[a-zA-Z][a-zA-Z0-9_-]*',
                     'id'      => '[0-9]*',
-                    'page'    => '[0-9]*',
                 ),
                 'defaults' => array(
                     'controller' => 'store',
@@ -46,7 +35,6 @@ return array(
     ),
     'controllers' => array(
         'invokables' => array(
-            'store_install' => 'StoreBundle\Controller\Admin\InstallController',
             'store' => 'StoreBundle\Controller\Admin\StoreController'
         )
     ),

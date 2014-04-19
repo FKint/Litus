@@ -29,5 +29,4 @@ return array(
             '@admin_js',
         ),
     ),
-    'routes' => array(),
 );

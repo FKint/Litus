@@ -17,5 +17,12 @@
  */
 
 return array(
-    'storebundle' => array()
+    'submenus' => array(
+        'Store' => array(
+            'subtitle' => array('Store'),
+            'items'    => array(
+                'store' => array('title' => 'Stores'),
+            ),
+        ),
+    ),
 );
