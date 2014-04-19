@@ -34,8 +34,6 @@ return array(
         ),
     ),
     'controllers' => array(
-        'invokables' => array(
-            'store' => 'StoreBundle\Controller\Admin\StoreController'
-        )
-    ),
+        'store' => 'StoreBundle\Controller\Admin\StoreController'
+    )
 );

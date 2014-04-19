@@ -15,14 +15,8 @@
  *
  * @license http://litus.cc/LICENSE
  */
-
 return array(
     'controllers'  => array(
-        'store_install' => array(
-            '@common_jquery',
-            '@admin_css',
-            '@admin_js',
-        ),
         'store' => array(
             '@common_jquery',
             '@admin_css',

@@ -19,7 +19,7 @@
 namespace StoreBundle\Controller\Admin;
 
 use StoreBundle\Entity\Store,
-    StoreBundle\Factory\StoreFactory,
+    StoreBundle\Component\StoreFactory,
     StoreBundle\Form\Admin\Store\Add,
     Zend\View\Model\ViewModel;
 
