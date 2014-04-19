@@ -16,14 +16,13 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace StoreBundle;
-
-use CommonBundle\Component\Module\Config;
-
-return Config::create(
-    array(
-        'namespace'         => __NAMESPACE__,
-        'directory'         => __DIR__,
-        'translation_files' => array('site'),
-    )
+return array(
+    'newsbundle' => array(
+        'news_admin_news' => array(
+            'add', 'delete', 'edit', 'manage'
+        ),
+        'news' => array(
+            'feed', 'overview', 'view'
+        ),
+    ),
 );

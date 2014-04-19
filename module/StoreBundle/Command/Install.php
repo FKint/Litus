@@ -16,14 +16,14 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace StoreBundle;
+namespace StoreBundle\Command;
 
-use CommonBundle\Component\Module\Config;
-
-return Config::create(
-    array(
-        'namespace'         => __NAMESPACE__,
-        'directory'         => __DIR__,
-        'translation_files' => array('site'),
-    )
-);
+/**
+ * InstallController
+ *
+ * @author Kristof Mariën <kristof.marien@litus.cc>
+ * @author Bram Gotink <bram.gotink@litus.cc>
+ */
+class Install extends \CommonBundle\Component\Console\Command\Install
+{
+}
