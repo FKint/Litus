@@ -43,8 +43,7 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
     public function viewAction()
     {
         if (!($event = $this->_getEvent())) {
-            $this->getResponse()->setStatusCode(404);
-            return new ViewModel();
+            return $this->notFoundAction();
         }
 
         $hasShifts = sizeof($this->getEntityManager()
@@ -67,8 +66,7 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
     public function posterAction()
     {
         if (!($event = $this->_getEventByPoster())) {
-            $this->getResponse()->setStatusCode(404);
-            return new ViewModel();
+            return $this->notFoundAction();
         }
 
         $filePath = $this->getEntityManager()
@@ -99,10 +97,8 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
         $date = $this->getParam('name');
         $first = DateTime::createFromFormat('d-m-Y H:i', '1-' . $date . ' 0:00');
 
-        if (!$first) {
-            $this->getResponse()->setStatusCode(404);
-            return new ViewModel();
-        }
+        if (!$first)
+            return $this->notFoundAction();
 
         $last = clone $first;
         $last->add(new DateInterval('P1M'));
@@ -120,6 +116,15 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
             'd MMM'
         );
 
+        $monthFormatter = new IntlDateFormatter(
+            $this->getTranslator()->getLocale(),
+            IntlDateFormatter::NONE,
+            IntlDateFormatter::NONE,
+            date_default_timezone_get(),
+            IntlDateFormatter::GREGORIAN,
+            'LLL'
+        );
+
         $hourFormatter = new IntlDateFormatter(
             $this->getTranslator()->getLocale(),
             IntlDateFormatter::NONE,
@@ -130,19 +135,34 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
         );
 
         $calendarItems = array();
-        foreach($events as $event) {
+        foreach ($events as $event) {
             $date = $event->getStartDate()->format('d-M');
             if (!isset($calendarItems[$date])) {
                 $calendarItems[$date] = (object) array(
-                    'date' => $dayFormatter->format($event->getStartDate()),
+                    'day' => ucfirst($event->getStartDate()->format('d')),
+                    'month' => $monthFormatter->format($event->getStartDate()),
                     'events' => array()
                 );
             }
+
+            $fullTime = '';
+            if (null !== $event->getEndDate()) {
+                if ($event->getEndDate()->format('d/M/Y') == $event->getStartDate()->format('d/M/Y')) {
+                    $fullTime = $hourFormatter->format($event->getStartDate()) . ' - ' . $hourFormatter->format($event->getEndDate());
+                } else {
+                    $fullTime = $dayFormatter->format($event->getStartDate()) . ' ' . $hourFormatter->format($event->getStartDate()) . ' - ' . $dayFormatter->format($event->getEndDate()) . ' ' . $hourFormatter->format($event->getEndDate());
+                }
+            } else {
+                $fullTime = $hourFormatter->format($event->getStartDate());
+            }
+
             $calendarItems[$date]->events[] = (object) array(
                 'id' => $event->getId(),
                 'title' => $event->getTitle($this->getLanguage()),
                 'startDate' => $hourFormatter->format($event->getStartDate()),
+                'summary' => $event->getSummary(100, $this->getLanguage()),
                 'content' => $event->getSummary(200, $this->getLanguage()),
+                'fullTime' => $fullTime,
                 'url' => $this->url()->fromRoute(
                     'calendar',
                     array(
@@ -217,7 +237,7 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
             ->getRepository('CalendarBundle\Entity\Node\Event')
             ->findAllActive(0);
 
-        foreach($events as $event) {
+        foreach ($events as $event) {
             $result .= 'BEGIN:VEVENT' . PHP_EOL;
             $result .= 'SUMMARY:' . $event->getTitle($this->getLanguage()) . PHP_EOL;
             $result .= 'DTSTART:' . $event->getStartDate()->format('Ymd\THis') . PHP_EOL;

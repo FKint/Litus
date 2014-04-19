@@ -1,8 +1,25 @@
 <?php
+/**
+ * Litus is a project by a group of students from the KU Leuven. The goal is to create
+ * various applications to support the IT needs of student unions.
+ *
+ * @author Niels Avonds <niels.avonds@litus.cc>
+ * @author Karsten Daemen <karsten.daemen@litus.cc>
+ * @author Koen Certyn <koen.certyn@litus.cc>
+ * @author Bram Gotink <bram.gotink@litus.cc>
+ * @author Dario Incalza <dario.incalza@litus.cc>
+ * @author Pieter Maene <pieter.maene@litus.cc>
+ * @author Kristof Mariën <kristof.marien@litus.cc>
+ * @author Lars Vierbergen <lars.vierbergen@litus.cc>
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ *
+ * @license http://litus.cc/LICENSE
+ */
 
 namespace NewsBundle\Repository\Node;
 
-use CommonBundle\Component\Doctrine\ORM\EntityRepository;
+use CommonBundle\Component\Doctrine\ORM\EntityRepository,
+    DateTime;
 
 /**
  * News
@@ -41,18 +58,22 @@ class News extends EntityRepository
         return $resultSet;
     }
 
-    public function findNbSiteQuery($nbResults = 3)
+    public function findNbSiteQuery($nbResults, DateTime $maxAge)
     {
         $query = $this->_em->createQueryBuilder();
         $resultSet = $query->select('n')
             ->from('NewsBundle\Entity\Node\News', 'n')
             ->where(
-                $query->expr()->orX(
-                    $query->expr()->gte('n.endDate', ':now'),
-                    $query->expr()->isNull('n.endDate')
+                $query->expr()->andX(
+                    $query->expr()->gt('n.creationTime', ':maxAge'),
+                    $query->expr()->orX(
+                        $query->expr()->gte('n.endDate', ':now'),
+                        $query->expr()->isNull('n.endDate')
+                    )
                 )
             )
             ->setParameter('now', new \DateTime())
+            ->setParameter('maxAge', $maxAge)
             ->orderBy('n.creationTime', 'DESC')
             ->setMaxResults($nbResults)
             ->getQuery();

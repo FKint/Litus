@@ -34,18 +34,19 @@ class HasAccess extends \Zend\View\Helper\AbstractHelper
     private $_driver = null;
 
     /**
-     * @param \CommonBundle\Component\Acl\Driver\HasAccess $driver The driver object
+     * @param  \CommonBundle\Component\Acl\Driver\HasAccess  $driver The driver object
      * @return \CommonBundle\Component\View\Helper\HasAccess
      */
     public function setDriver(HasAccessDriver $driver)
     {
         $this->_driver = $driver;
+
         return $this;
     }
 
     /**
-     * @param string $resource The resource that should be verified
-     * @param string $action The module that should be verified
+     * @param  string $resource The resource that should be verified
+     * @param  string $action   The module that should be verified
      * @return bool
      */
     public function __invoke($resource, $action)
@@ -53,10 +54,8 @@ class HasAccess extends \Zend\View\Helper\AbstractHelper
         if (null === $this->_driver)
             throw new Exception\RuntimeException('No driver object was provided');
 
-        $helper = $this->_driver;
+        $driver = $this->_driver;
 
-        return $helper(
-            $resource, $action
-        );
+        return $driver($resource, $action);
     }
 }

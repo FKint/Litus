@@ -43,7 +43,7 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
 
     /**
      * @param \Doctrine\ORM\EntityManager $entityManager The EntityManager instance
-     * @param null|string|int $name Optional name for the element
+     * @param null|string|int             $name          Optional name for the element
      */
     public function __construct(EntityManager $entityManager, $name = null)
     {
@@ -112,6 +112,15 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
     {
         $inputFilter = new InputFilter();
         $factory = new InputFactory();
+
+        $inputFilter->add(
+            $factory->createInput(
+                array(
+                    'name'     => 'payed',
+                    'required' => false,
+                )
+            )
+        );
 
         $inputFilter->add(
             $factory->createInput(

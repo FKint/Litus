@@ -37,8 +37,7 @@ use CommonBundle\Component\Form\Bootstrap\Element\Checkbox,
     Doctrine\ORM\EntityManager,
     Zend\InputFilter\InputFilter,
     Zend\InputFilter\Factory as InputFactory,
-    Zend\Form\Element\Submit,
-    Zend\Validator\File\Size as SizeValidator;
+    Zend\Form\Element\Submit;
 
 /**
  * Specifield Form Add
@@ -53,11 +52,11 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
     protected $_form;
 
     /**
-     * @param \Doctrine\ORM\EntityManager $entityManager
-     * @param \CommonBundle\Entity\General\Language $language
-     * @param \FormBundle\Entity\Node\Form $form
+     * @param \Doctrine\ORM\EntityManager            $entityManager
+     * @param \CommonBundle\Entity\General\Language  $language
+     * @param \FormBundle\Entity\Node\Form           $form
      * @param \CommonBundle\Entity\Users\Person|null $person
-     * @param null|string|int $name Optional name for the element
+     * @param null|string|int                        $name          Optional name for the element
      */
     public function __construct(EntityManager $entityManager, Language $language, Form $form, Person $person = null, $name = null)
     {
@@ -129,10 +128,12 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
             $this->add($field);
         }
 
-        $field = new Submit('save_as_draft');
-        $field->setValue('Save as Draft')
-            ->setAttribute('class', 'btn btn-info');
-        $this->add($field);
+        if ($form->isEditableByUser()) {
+            $field = new Submit('save_as_draft');
+            $field->setValue('Save as Draft')
+                ->setAttribute('class', 'btn btn-info');
+            $this->add($field);
+        }
 
         $field = new Submit('submit');
         $field->setValue($form->getSubmitText($language))
@@ -212,9 +213,14 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
                     $factory->createInput(
                         array(
                             'name'     => 'field-' . $fieldSpecification->getId(),
-                            'required' => $fieldSpecification->isRequired(),
+                            'required' => false,
                             'validators' => array(
-                                new SizeValidator(array('max' => $fieldSpecification->getMaxSize() . 'MB'))
+                                array(
+                                    'name' => 'filefilessize',
+                                    'options' => array(
+                                        'max' => $fieldSpecification->getMaxSize() . 'MB',
+                                    ),
+                                ),
                             ),
                         )
                     )

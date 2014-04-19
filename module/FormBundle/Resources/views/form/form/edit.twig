@@ -28,27 +28,27 @@
 {% block content_script %}
     <script type="text/javascript">
         $(document).ready(function () {
-            $('input[name="save_as_draft"]:disabled').addClass('disabled').removeAttr('disabled').tooltip({'trigger': 'hover', 'title': '{{ translate('You have already a draft of this form') }}'}).click(function (e) {
-                e.preventDefault();
-            });
+            {% if specification.isEditableByUser() %}
+                $('input[name="save_as_draft"]:disabled').addClass('disabled').removeAttr('disabled').tooltip({'trigger': 'hover', 'title': '{{ translate('You have already a draft of this form') }}'}).click(function (e) {
+                    e.preventDefault();
+                });
+            {% endif %}
 
             $('span[data-toggle=tooltip]').tooltip({'trigger': 'hover'});
             $('input[type=file]').each(function () {
                 if ($(this).data('file')) {
-                    $(this).closest('.fileinput').append(
-                        $('<div>', {'class': 'fileActions'}).append(
-                            $('<button>', {'class': 'btn btn-xs btn-default'}).html('{{ translate('Download') }}').downloadFile(
-                                '{{ url('form_view', {'action': 'downloadFile'}) }}' + $(this).data('file')
-                            ), ' ',
-                            $('<button>', {'class': 'btn btn-xs btn-danger'}).html('{{ translate('Remove') }}').click(function (e) {
-                                e.preventDefault();
-                                $(this).closest('.fileinput').append(
-                                    $('<input>', {'type': 'hidden', 'name': $(this).closest('.fileinput').find('input[type="file"]').attr('id') + '-removed'}).val(1)
-                                );
-                                $(this).closest('.fileActions').remove();
-                            })
-                        )
+                    var fileinput = $(this).closest('.fileinput');
+                    fileinput.find('.fileinput-filename').append($(this).data('name') ? $(this).data('name') : $(this).data('file'));
+                    fileinput.removeClass('fileinput-new').addClass('fileinput-exists');
+                    fileinput.find('a.input-group-addon:last').before(
+                        $('<a>', {'class': 'input-group-addon btn btn-default fileinput-exists', 'href': '{{ url('form_view', {'action': 'downloadFile'}) }}' + $(this).data('file')}).html('{{ translate('Download') }}')
                     );
+                    fileinput.find('a.input-group-addon:last').click(function (e) {
+                        $(this).closest('.fileinput').append(
+                            $('<input>', {'type': 'hidden', 'name': $(this).closest('.fileinput').find('input[type="file"]').attr('id') + '-removed'}).val(1)
+                        );
+                        $(this).closest('.fileActions').remove();
+                    });
                 }
             });
 
@@ -79,7 +79,7 @@
                             }
                             $this.trigger('change');
                         } else if ($(this).is('select')) {
-                            if ($(this).find('option:selected').html() == $this.data('visible_if_value') && $(this).is(':visible')) {
+                            if ($(this).find('option:selected').val() == $this.data('visible_if_value') && $(this).is(':visible')) {
                                 $this.closest('.form-group').show();
                             } else {
                                 $this.closest('.form-group').hide();
