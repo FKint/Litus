@@ -16,7 +16,7 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace CommonBundle\Test\Entity\Organization;
+namespace CommonBundle\Test\Entity\General\Organization;
 
 
 use CommonBundle\Entity\General\Organization\Unit;
