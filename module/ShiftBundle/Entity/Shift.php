@@ -180,38 +180,31 @@ class Shift
     private $editRoles;
 
     /**
+     * @var integer The amount of coins this shift is worth
+     *
+     * @ORM\Column(type="integer")
+     */
+    private $reward;
+
+    /**
+     * @var boolean Wheter or not the reward is payed at the event itself
+     *
+     * @ORM\Column(name="handled_on_event", type="boolean")
+     */
+    private $handledOnEvent;
+
+    /**
      * @param Person       $creationPerson
      * @param AcademicYear $academicYear
-     * @param DateTime     $startDate
-     * @param DateTime     $endDate
-     * @param Person       $manager
-     * @param integer      $nbResponsibles
-     * @param integer      $nbVolunteers
-     * @param Unit         $unit
-     * @param Location     $location
-     * @param string       $name
-     * @param string       $description
-     * @param array        $editRoles
      */
-    public function __construct(
-        Person $creationPerson, AcademicYear $academicYear, DateTime $startDate, DateTime $endDate, Person $manager, $nbResponsibles, $nbVolunteers, Unit $unit, Location $location, $name, $description, array $editRoles
-    )
+    public function __construct(Person $creationPerson, AcademicYear $academicYear)
     {
         $this->creationPerson = $creationPerson;
         $this->academicYear = $academicYear;
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-        $this->manager = $manager;
-        $this->nbResponsibles = $nbResponsibles;
-        $this->nbVolunteers = $nbVolunteers;
-        $this->unit = $unit;
-        $this->location = $location;
-        $this->name = $name;
-        $this->description = $description;
 
         $this->responsibles = new ArrayCollection();
         $this->volunteers = new ArrayCollection();
-        $this->editRoles = new ArrayCollection($editRoles);
+        $this->editRoles = new ArrayCollection();
     }
 
     /**
@@ -699,5 +692,43 @@ class Shift
         }
 
         return false;
+    }
+
+    /**
+     * @param  integer $reward
+     * @return self
+     */
+    public function setReward($reward)
+    {
+        $this->reward = $reward;
+
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getReward()
+    {
+        return $this->reward;
+    }
+
+    /**
+     * @param  boolean $handledOnEvent
+     * @return self
+     */
+    public function setHandledOnEvent($handledOnEvent)
+    {
+        $this->handledOnEvent = $handledOnEvent;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getHandledOnEvent()
+    {
+        return $this->handledOnEvent;
     }
 }

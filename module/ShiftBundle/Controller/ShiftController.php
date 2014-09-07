@@ -18,14 +18,12 @@
 
 namespace ShiftBundle\Controller;
 
-use DateTime,
+use CommonBundle\Component\Util\AcademicYear,
     DateInterval,
+    DateTime,
     ShiftBundle\Document\Token,
     ShiftBundle\Entity\Shift\Responsible,
     ShiftBundle\Entity\Shift\Volunteer,
-    ShiftBundle\Form\Shift\Search\Date as DateSearchForm,
-    ShiftBundle\Form\Shift\Search\Event as EventSearchForm,
-    ShiftBundle\Form\Shift\Search\Unit as UnitSearchForm,
     Zend\Http\Headers,
     Zend\Mail\Message,
     Zend\View\Model\ViewModel;
@@ -42,9 +40,9 @@ class ShiftController extends \CommonBundle\Component\Controller\ActionControlle
 {
     public function indexAction()
     {
-        $eventSearchForm = new EventSearchForm($this->getEntityManager(), $this->getLanguage());
-        $unitSearchForm = new UnitSearchForm($this->getEntityManager());
-        $dateSearchForm = new DateSearchForm($this->getEntityManager());
+        $eventSearchForm = $this->getForm('shift_shift_search_event', array('language' => $this->getLanguage()));
+        $unitSearchForm = $this->getForm('shift_shift_search_unit')
+        $dateSearchForm = $this->getForm('shift_shift_search_date');
 
         if (!$this->getAuthentication()->getPersonObject()) {
             $this->flashMessenger()->warn(
@@ -86,7 +84,7 @@ class ShiftController extends \CommonBundle\Component\Controller\ActionControlle
                 $eventSearchForm->setData($formData);
 
                 if ($eventSearchForm->isValid() && '' != $formData['event']) {
-                    $formData = $eventSearchForm->getFormData($formData);
+                    $formData = $eventSearchForm->getData();
 
                     $event = $this->getEntityManager()
                         ->getRepository('CalendarBundle\Entity\Node\Event')
@@ -110,7 +108,7 @@ class ShiftController extends \CommonBundle\Component\Controller\ActionControlle
                 $unitSearchForm->setData($formData);
 
                 if ($unitSearchForm->isValid() && '' != $formData['unit']) {
-                    $formData = $unitSearchForm->getFormData($formData);
+                    $formData = $unitSearchForm->getData();
 
                     $unit = $this->getEntityManager()
                         ->getRepository('CommonBundle\Entity\General\Organization\Unit')
@@ -134,7 +132,7 @@ class ShiftController extends \CommonBundle\Component\Controller\ActionControlle
                 $dateSearchForm->setData($formData);
 
                 if ($dateSearchForm->isValid() && '' != $formData['date']) {
-                    $formData = $dateSearchForm->getFormData($formData);
+                    $formData = $dateSearchForm->getData();
 
                     $start_date = DateTime::createFromFormat('d/m/Y' , $formData['date']);
                     if (!$start_date) {
@@ -311,10 +309,15 @@ class ShiftController extends \CommonBundle\Component\Controller\ActionControlle
             }
         }
 
+        $payed = false;
+        if ($shift->getHandledOnEvent())
+            $payed = true;
+
         $shift->addVolunteer(
             $this->getEntityManager(),
             new Volunteer(
-                $person
+                $person,
+                $payed
             )
         );
 
@@ -438,6 +441,81 @@ class ShiftController extends \CommonBundle\Component\Controller\ActionControlle
         return new ViewModel(
             array(
                 'result' => $result,
+            )
+        );
+    }
+
+    public function historyAction()
+    {
+        $academicYear = $this->getCurrentAcademicYear(true);
+
+        $asVolunteer = $this->getEntityManager()
+            ->getRepository('ShiftBundle\Entity\Shift')
+            ->findAllByPersonAsVolunteer($this->getAuthentication()->getPersonObject(), $academicYear);
+
+        $asResponsible = $this->getEntityManager()
+            ->getRepository('ShiftBundle\Entity\Shift')
+            ->findAllByPersonAsReponsible($this->getAuthentication()->getPersonObject(), $academicYear);
+
+        $now = new DateTime();
+
+        $shiftsAsVolunteer = array();
+        $shiftsAsVolunteerCount = 0;
+        $unPayedShifts = 0;
+        $unPayedCoins = 0;
+        $lastShift = new DateTime();
+        foreach ($asVolunteer as $shift) {
+            if ($shift->getStartDate() > $now)
+                continue;
+
+            //if ($shift->getEndDate() > $lastShift)
+                $lastShift = $shift->getEndDate();
+
+            if (!isset($shiftsAsVolunteer[$shift->getUnit()->getId()])) {
+                $shiftsAsVolunteer[$shift->getUnit()->getId()] = array(
+                    'count' => 1,
+                    'unitName' => $shift->getUnit()->getName()
+                );
+            } else {
+                $shiftsAsVolunteer[$shift->getUnit()->getId()]['count']++;
+            }
+
+            $shiftsAsVolunteerCount++;
+            foreach ($shift->getVolunteers() as $volunteer) {
+                if ($volunteer->getPerson() == $this->getAuthentication()->getPersonObject() && !($volunteer->isPayed())) {
+                    $unPayedShifts += 1;
+                    $unPayedCoins += $shift->getReward();
+                }
+            }
+        }
+
+        $shiftsAsResponsible = array();
+        $shiftsAsResponsibleCount = 0;
+        foreach ($asResponsible as $shift) {
+            if ($shift->getStartDate() > $now)
+                continue;
+
+            if (!isset($shiftsAsResponsible[$shift->getUnit()->getId()])) {
+                $shiftsAsResponsible[$shift->getUnit()->getId()] = array(
+                    'count' => 1,
+                    'unitName' => $shift->getUnit()->getName()
+                );
+            } else {
+                $shiftsAsResponsible[$shift->getUnit()->getId()]['count']++;
+            }
+
+            $shiftsAsResponsibleCount++;
+        }
+
+        return new ViewModel(
+            array(
+                'shiftsAsVolunteer' => $shiftsAsVolunteer,
+                'totalAsVolunteer' => $shiftsAsVolunteerCount,
+                'shiftsAsResponsible' => $shiftsAsResponsible,
+                'totalAsResponsible' => $shiftsAsResponsibleCount,
+                'unPayedShifts' => $unPayedShifts,
+                'unPayedCoins' => $unPayedCoins,
+                'lastShift' => $lastShift->format('d/m/Y')
             )
         );
     }
