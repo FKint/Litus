@@ -18,7 +18,8 @@
 namespace CommonBundle\Test\Entity\General;
 
 use CommonBundle\Entity\General\Address\City,
-    CommonBundle\Entity\General\Address\Street;
+    CommonBundle\Entity\General\Address\Street,
+    CommonBundle\Entity\General\Address;
 
 class AddressTest extends \PHPUnit_Framework_TestCase
 {
@@ -41,5 +42,29 @@ class AddressTest extends \PHPUnit_Framework_TestCase
         $this->assertContains($street2, $city);
         $this->assertContains($street3, $city);
         $this->assertContains($street4, $city);
+    }
+
+    public function testAddressGoodCountry()
+    {
+        $address = new Address('Galärvarvsvägen', '14', '', '115 21', 'Stockholm', 'SE');
+        $this->assertEquals('Galärvarvsvägen', $address->getStreet());
+        $this->assertEquals('14', $address->getNumber());
+        $this->assertEquals('', $address->getMailbox());
+        $this->assertEquals('115 21', $address->getPostal());
+        $this->assertEquals('Stockholm', $address->getCity());
+        $this->assertEquals('Sweden', $address->getCountry());
+        $this->assertEquals('SE', $address->getCountryCode());
+    }
+
+    public function testAddressBadCountry()
+    {
+        $address = new Address('Galärvarvsvägen', '14', '', '115 21', 'Stockholm', 'Sweden');
+        $this->assertEquals('Galärvarvsvägen', $address->getStreet());
+        $this->assertEquals('14', $address->getNumber());
+        $this->assertEquals('', $address->getMailbox());
+        $this->assertEquals('115 21', $address->getPostal());
+        $this->assertEquals('Stockholm', $address->getCity());
+        $this->assertEquals(null, $address->getCountry());
+        $this->assertEquals(null, $address->getCountryCode());
     }
 }
