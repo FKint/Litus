@@ -15,52 +15,50 @@
  *
  * @license http://litus.cc/LICENSE
  */
-
 namespace CommonBundle\Test\Entity\General;
-
 
 use CommonBundle\Entity\General\Bank\CashRegister,
     CommonBundle\Entity\General\Bank\BankDevice,
     CommonBundle\Entity\General\Bank\BankDevice\Amount as BAmount,
-    CommonBundle\Entity\General\Bank\MoneyUnit\Amount as MAmount;
-use CommonBundle\Entity\General\Bank\MoneyUnit;
-use Documents\Ecommerce\Money;
+    CommonBundle\Entity\General\Bank\MoneyUnit\Amount as MAmount,
+    CommonBundle\Entity\General\Bank\MoneyUnit;
 
 class BankTest extends \PHPUnit_Framework_TestCase
 {
+
     public function testBank()
     {
         $cashRegister = new CashRegister();
-        
+
         $bankDevice1 = new BankDevice('Device1');
         $bankDevice2 = new BankDevice('Device2');
-        
+
         $ba1_1 = new BAmount($cashRegister, $bankDevice1, 10);
         $ba1_2 = new BAmount($cashRegister, $bankDevice1, 3.5);
-        
+
         $ba2_1 = new BAmount($cashRegister, $bankDevice2, 5);
         $ba2_2 = new BAmount($cashRegister, $bankDevice2, 3);
-        
+
         $moneyUnit1 = new MoneyUnit(0.1);
         $moneyUnit2 = new MoneyUnit(2);
-        
+
         $ca1_1 = new MAmount($cashRegister, $moneyUnit1, 0);
         $ca1_2 = new MAmount($cashRegister, $moneyUnit1, 4);
-        
+
         $ca2_1 = new MAmount($cashRegister, $moneyUnit2, 15);
         $ca2_2 = new MAmount($cashRegister, $moneyUnit2, 83);
-        
-        //$this->assertEquals($expected, $cashRegister->);
+
+        // $this->assertEquals($expected, $cashRegister->);
         $this->assertEquals('Device1', $bankDevice1->getName());
         $this->assertEquals('Device2', $bankDevice2->getName());
         $this->assertEquals(10, $moneyUnit1->getUnit());
         $this->assertEquals(200, $moneyUnit2->getUnit());
-        
+
         $this->assertEquals(0, $ca1_1->getValue());
         $this->assertEquals(40, $ca1_2->getValue());
         $this->assertEquals(3000, $ca2_1->getValue());
         $this->assertEquals(16600, $ca2_2->getValue());
-        
+
         $this->assertEquals(21790, $cashRegister->getTotalAmount());
     }
 }

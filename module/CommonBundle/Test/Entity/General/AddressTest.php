@@ -15,11 +15,11 @@
  *
  * @license http://litus.cc/LICENSE
  */
-
 namespace CommonBundle\Test\Entity\General;
 
-use CommonBundle\Entity\General\Address\City;
-use CommonBundle\Entity\General\Address\Street;
+use CommonBundle\Entity\General\Address\City,
+    CommonBundle\Entity\General\Address\Street;
+
 class AddressTest extends \PHPUnit_Framework_TestCase
 {
     public function testCity()
@@ -29,11 +29,11 @@ class AddressTest extends \PHPUnit_Framework_TestCase
         $street2 = new Street($city, 2, 'Två');
         $street3 = new Street($city, 3, 'Tre');
         $street4 = new Street($city, 4, 'Fyra');
-        
+
         $this->assertEquals('Ett', $street1->getName());
-        //$this->assertEquals(1, $street1->getId());
-        //$this->assertEquals($city, $street1->getCity());
-        
+        // $this->assertEquals(1, $street1->getId());
+        // $this->assertEquals($city, $street1->getCity());
+
         $this->assertEquals('The city of the beast', $city->getName());
         $this->assertEquals(666, $city->getPostal());
         $this->assertEquals(4, count($city->getStreets()));

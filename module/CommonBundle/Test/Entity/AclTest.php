@@ -15,7 +15,6 @@
  *
  * @license http://litus.cc/LICENSE
  */
-
 namespace CommonBundle\Test\Entity;
 
 use CommonBundle\Entity\Acl\Role,
@@ -72,11 +71,17 @@ class AclTest extends \PHPUnit_Framework_TestCase
         $grandmom = new Role('Granny');
 
         $dad = new Role('Dad');
-        $dad->setParents(array($granddad));
-        $dad->setParents(array($grandmom));
+        $dad->setParents(array(
+            $granddad,
+        ));
+        $dad->setParents(array(
+            $grandmom,
+        ));
 
         $baby = new Role('Baby');
-        $baby->setParents(array($dad));
+        $baby->setParents(array(
+            $dad,
+        ));
 
         $aFortune = new Resource('A fortune');
 
