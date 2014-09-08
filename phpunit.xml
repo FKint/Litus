@@ -21,4 +21,7 @@
     <testsuite name="BR Tests">
         <directory>./module/BrBundle/Test</directory>
     </testsuite>
+    <testsuite name="Common Tests">
+        <directory>./module/CommonBundle/Test</directory>
+    </testsuite>
 </phpunit>
