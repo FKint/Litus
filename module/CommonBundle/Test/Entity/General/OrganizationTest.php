@@ -22,6 +22,11 @@ use CommonBundle\Entity\General\Organization\Unit,
 
 class UnitTest extends \PHPUnit_Framework_TestCase
 {
+    public function testOrganisation()
+    {
+        $organisation = new Organization('Org');
+        $this->assertEquals('Org', $organisation->getName());
+    }
 
     public function testUnit()
     {
