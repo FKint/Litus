@@ -21,6 +21,11 @@ namespace OgoneBundle\Component\Ogone\Impl\FormParameters;
 use OgoneBundle\Component\Ogone\Configuration,
     OgoneBundle\Component\Ogone\Order;
 
+/**
+ * AMOUNT-parameter.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 class Amount extends MandatoryInteger
 {
     protected function getKey()

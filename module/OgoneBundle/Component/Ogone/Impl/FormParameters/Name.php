@@ -21,7 +21,12 @@ namespace OgoneBundle\Component\Ogone\Impl\FormParameters;
 use OgoneBundle\Component\Ogone\Configuration,
     OgoneBundle\Component\Ogone\Order;
 
-class Language extends OptionalString
+/**
+ * CN-parameter.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
+class Name extends OptionalString
 {
     protected function getKey()
     {

@@ -20,25 +20,30 @@ namespace OgoneBundle\Component\Ogone\Impl;
 
 use OgoneBundle\Component\Ogone\HashCalculator;
 
+/**
+ * The class calculates the signature for the parameters that are to be send
+ * to Ogone. The pass phrase needs to be configured at Ogone.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 class FormSignatureCalculator
 {
     /**
      * @var string
      */
     private $passphrase;
-    
+
     /**
-     * 
-     * @var HashCalculator
+     * @var \OgoneBundle\Component\Ogone\HashCalculator
      */
     private $hashCal;
-    
+
     public function __construct(HashCalculator $hashCalculator, string $passphrase)
     {
         $this->passphrase = $passphrase;
         $this->hashCal = $hashCalculator;
     }
-    
+
     public function calculate($parametersToHash)
     {
         ksort($parametersToHash, SORT_STRING);

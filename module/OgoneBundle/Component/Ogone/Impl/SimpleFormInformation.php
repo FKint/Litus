@@ -18,22 +18,27 @@
 
 namespace OgoneBundle\Component\Ogone;
 
+/**
+ * A simple implementation.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 class SimpleFormInformation implements FormInformation
 {
     private $url;
     private $params;
-    
+
     public function __construct($url, $params)
     {
         $this->url = $url;
         $this->params = $params;
     }
-    
+
     public function getActionUrl()
     {
         return $this->url;
     }
-    
+
     public function getHiddenParameters()
     {
         return $this->params;

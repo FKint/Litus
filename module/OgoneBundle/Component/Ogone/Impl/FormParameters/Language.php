@@ -21,6 +21,11 @@ namespace OgoneBundle\Component\Ogone\Impl\FormParameters;
 use OgoneBundle\Component\Ogone\Configuration,
     OgoneBundle\Component\Ogone\Order;
 
+/**
+ * LANGUAGE-parameter.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 class Language extends MandatoryString
 {
     protected function getKey()

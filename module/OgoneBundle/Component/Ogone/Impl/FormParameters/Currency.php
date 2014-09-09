@@ -21,6 +21,11 @@ namespace OgoneBundle\Component\Ogone\Impl\FormParameters;
 use OgoneBundle\Component\Ogone\Configuration,
     OgoneBundle\Component\Ogone\Order;
 
+/**
+ * CURRENCY-parameter.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 class Currency extends MandatoryString
 {
     protected function getKey()

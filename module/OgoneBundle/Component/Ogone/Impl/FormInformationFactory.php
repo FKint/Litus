@@ -16,10 +16,23 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace OgoneBundle\Component\Ogone;
+namespace OgoneBundle\Component\Ogone\Impl;
 
+/**
+ * A factory to create FormInformation instances. Currently it only
+ * creates SimpleFormInformation's, but it is easily refactored to an
+ * abstract factory.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 class FormInformationFactory
 {
+    /**
+     * @param string $url
+     * @param string $params
+     * 
+     * @return \OgoneBundle\Component\Ogone\FormInformation
+     */
     public function create($url, $params)
     {
         return new SimpleFormInformation($url, $params);

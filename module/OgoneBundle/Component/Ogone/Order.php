@@ -18,30 +18,36 @@
 
 namespace OgoneBundle\Component\Ogone;
 
+/**
+ * An order. An implementation of this interface will typically interact
+ * with entities.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 interface Order
 {
     /**
      * Mandatory and must be unique. This value will be used to prevent the
-     * user from paying twice.  Max length: 30
+     * user from paying twice.  Max length: 30.
      * 
      * @return string
      */
     public function getOrderId();
-    
+
     /**
-     * The amount multiplied by 100. Mandatory. Max length: 15
+     * The amount multiplied by 100. Mandatory. Max length: 15.
      * 
      * @return integer
      */
     public function get100TimesTheAmount();
-    
+
     /**
-     * Mandatory, ISO standard. Max length: 2
+     * Mandatory, ISO standard. Max length: 2.
      *
      * @return string
      */
     public function getLanguageCode();
-    
+
     /**
      * Optional, usefull for customer. This description can be showed on
      * bank statements. Max length: 100.
@@ -49,53 +55,53 @@ interface Order
      * @return null|string
      */
     public function getDescription();
-    
+
     /**
-     * Optional, usefull for combating fraud. Max length: 35
+     * Optional, usefull for combating fraud. Max length: 35.
      * 
      * @return null|string
      */
     public function getClientName();
-    
+
     /**
-     * Optional, usefull for combating fraud. Max length: 50
+     * Optional, usefull for combating fraud. Max length: 50.
      *
      * @return null|string
     */
     public function getClientEmail();
-    
+
     /**
-     * Optional, usefull for combating fraud. Max length: 35
+     * Optional, usefull for combating fraud. Max length: 35.
      *
      * @return null|string
     */
     public function getClientAddress();
-    
+
     /**
-     * Optional, usefull for combating fraud. Max length: 10
+     * Optional, usefull for combating fraud. Max length: 10.
      *
      * @return null|string
     */
-    
+
     public function getClientZIP();
     /**
-     * Optional, usefull for combating fraud. Max length: 40
+     * Optional, usefull for combating fraud. Max length: 40.
      *
      * @return null|string
     */
     public function getClientTown();
-    
+
     /**
      * Country in ISO 3166-1-alpha-2. Optional, usefull for combating fraud.
-     * Max length: 2
+     * Max length: 2.
      *
      * @return null|string
     */
     public function getClientCountryCode();
-    
+
     /**
      * Special characters (+ or/ for instance) are allowed. Optional, usefull
-     * for combating fraud. Max length: 30
+     * for combating fraud. Max length: 30.
      *
      * @return null|string
     */

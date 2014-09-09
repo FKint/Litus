@@ -18,6 +18,12 @@
 
 namespace OgoneBundle\Component\Ogone;
 
+/**
+ * A parameter-object containing all the information that is needed in the last
+ * form the customer sees before checking in at Ogone.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 interface FormInformation
 {
     /**
@@ -26,12 +32,12 @@ interface FormInformation
      * @return string
      */
     public function getActionUrl();
-    
+
     /**
      * <input type="hidden" name="#KEY" value="#VALUE#">
      * 
      * @return array
      */
     public function getHiddenParameters();
-    
+
 }

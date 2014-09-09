@@ -18,7 +18,16 @@
 
 namespace OgoneBundle\Component\Ogone;
 
+/**
+ * Calculates a hash.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 interface HashCalculator
 {
+    /**
+     * Calculate the hash.
+     * @param string $stringToHash
+     */
     public function hash($stringToHash);
 }

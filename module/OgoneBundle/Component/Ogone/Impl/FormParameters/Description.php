@@ -21,6 +21,11 @@ namespace OgoneBundle\Component\Ogone\Impl\FormParameters;
 use OgoneBundle\Component\Ogone\Configuration,
     OgoneBundle\Component\Ogone\Order;
 
+/**
+ * COM-parameter.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 class Description extends OptionalString
 {
     protected function getKey()

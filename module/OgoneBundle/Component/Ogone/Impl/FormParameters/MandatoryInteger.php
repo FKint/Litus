@@ -18,6 +18,11 @@
 
 namespace OgoneBundle\Component\Ogone\Impl\FormParameters;
 
+/**
+ * A parameter that is not optional and requires a integer.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 abstract class MandatoryInteger extends FormParameter
 {
     abstract protected function isOptional()

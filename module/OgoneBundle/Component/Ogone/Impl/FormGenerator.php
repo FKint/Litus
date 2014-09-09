@@ -19,32 +19,44 @@
 namespace OgoneBundle\Component\Ogone\Impl;
 
 use OgoneBundle\Component\Ogone\Configuration,
-    OgoneBundle\Component\Ogone\FormInformationFactory,
     OgoneBundle\Component\Ogone\Order,
     OgoneBundle\Component\Ogone\Impl\FormParameters\Register;
 
+/**
+ * This class generates the FormInformation.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 class FormGenerator
 {
     /**
-     * @var Configuration
+     * @var \OgoneBundle\Component\Ogone\Configuration
      */
     private $configuration;
     
     /**
-     * @var FormSignatureCalculator
+     * @var \OgoneBundle\Component\Ogone\Impl\FormSignatureCalculator
      */
     private $formSignatureCalculator;
     
     /**
-     * @var FormInformationFactory
+     * @var \OgoneBundle\Component\Ogone\Impl\FormInformationFactory
      */
     private $factory;
     
     /**
-     * @var Register
+     * @var \OgoneBundle\Component\Ogone\Impl\FormParameters\Register
      */
     private $register;
     
+    /**
+     * C'tor.
+     * 
+     * @param \OgoneBundle\Component\Ogone\Configuration $configuration
+     * @param \OgoneBundle\Component\Ogone\Impl\FormSignatureCalculator $formSignatureCalculator
+     * @param \OgoneBundle\Component\Ogone\Impl\FormInformationFactory $factory
+     * @param \OgoneBundle\Component\Ogone\Impl\FormParameters\Register $register
+     */
     public function __construct(Configuration $configuration,
         FormSignatureCalculator $formSignatureCalculator,
         FormInformationFactory $factory,
@@ -56,6 +68,13 @@ class FormGenerator
         $this->register = $register;
     }
     
+    /**
+     * Generate the FormInformation.
+     * 
+     * @param \OgoneBundle\Component\Ogone\Order $order
+     * 
+     * @return \OgoneBundle\Component\Ogone\FormInformation
+     */
     public function generate(Order $order)
     {
         if($this->configuration->isProductionEnvironment())

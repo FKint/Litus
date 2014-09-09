@@ -21,6 +21,11 @@ namespace OgoneBundle\Component\Ogone\Impl\FormParameters;
 use OgoneBundle\Component\Ogone\Configuration,
     OgoneBundle\Component\Ogone\Order;
 
+/**
+ * PSPID-parameter.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 class PSPId extends MandatoryString
 {
     protected function getKey()

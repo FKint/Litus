@@ -20,38 +20,40 @@ use CommonBundle\Repository\General\Config;
 
 namespace \OgoneBundle\Component\LitusOgone;
 
+use \CommonBundle\Repository\General\Config;
+
 class Configuration implements \OgoneBundle\Component\Ogone\Configuration
 {
     /**
-     * @var Config
+     * @var \CommonBundle\Repository\General\Config
      */
     private $config;
-    
+
     public function __construct(Config $config)
     {
         return $this->config = $config;
     }
-    
-    public function getPSPId()
+
+    public function getPspId()
     {
         return $this->config->getConfigValue('ogone.pspid');
     }
-    
-    public function getSHAInPassphrase()
+
+    public function getShaInPassphrase()
     {
         return $this->config->getConfigValue('ogone.sha-in');
     }
 
-    public function getSHAOutPassphrase()
+    public function getShaOutPassphrase()
     {
         return $this->config->getConfigValue('ogone.sha-out');
     }
-    
+
     public function getCurrencyCode()
     {
         return $this->config->getConfigValue('ogone.currency');
     }
-    
+
     public function isProductionEnvironment()
     {
         return 'production' == getenv('APPLICATION_ENV');

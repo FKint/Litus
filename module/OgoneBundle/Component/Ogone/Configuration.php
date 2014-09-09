@@ -18,38 +18,43 @@
 
 namespace OgoneBundle\Component\Ogone;
 
+/**
+ * All system-wide configurations for Ogone.
+ * 
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 interface Configuration
 {
     /**
-     * Your Payment Service Provider ID at Ogone. Max length: 30
+     * Your Payment Service Provider ID at Ogone. Max length: 30.
      * 
      * @return string
      */
-    public function getPSPId();
-    
+    public function getPspId();
+
     /**
      * The passphrase that is used to calculate the SHA hash when we send
      * a client to Ogone to pay.
      * 
      * @return string
      */
-    public function getSHAInPassphrase();
-    
+    public function getShaInPassphrase();
+
     /**
      * The passphrase that is used to calculate the SHA hash when the client
      * is sent back to our website.
      *
      * @return string
      */
-    public function getSHAOutPassphrase();
-    
+    public function getShaOutPassphrase();
+
     /**
-     * ISO standard. eg. EUR, USD, SEK. Max length 3
+     * ISO standard. eg. EUR, USD, SEK. Max length 3.
      * 
      * @return string
      */
     public function getCurrencyCode();
-    
+
     /**
      * @return bool
      */

@@ -18,6 +18,11 @@
 
 namespace OgoneBundle\Component\Ogone\Impl\FormParameters;
 
+/**
+ * A parameter that is not optional and requires a string.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 abstract class MandatoryString extends FormParameter
 {
     abstract protected function isOptional()

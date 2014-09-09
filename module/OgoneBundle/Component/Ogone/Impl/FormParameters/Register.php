@@ -20,10 +20,19 @@ namespace OgoneBundle\Component\Ogone\Impl\FormParameters;
 
 use OgoneBundle\Component\Ogone\Order;
 use OgoneBundle\Component\Ogone\Configuration;
+
+/**
+ * This class collects all the FormParameters.
+ * 
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 class Register
 {
+    /**
+     * @var \OgoneBundle\Component\Ogone\Impl\FormParameters\FormParameter[]
+     */
     private $register;
-    
+
     public function __construct()
     {
         $register = array();
@@ -41,17 +50,25 @@ class Register
         $register[] = new Town();
         $register[] = new ZIP();
     }
-    
-    public function  createFormParametersIfValid(Order $order,
+
+    /**
+     * Executes addToArrayIfValid on all form parameters.
+     * 
+     * @param \OgoneBundle\Component\Ogone\Order $order
+     * @param \OgoneBundle\Component\Ogone\Configuration $configuration
+     * 
+     * @return array
+     */
+    public function createFormParametersIfValid(Order $order,
         Configuration $configuration)
     {
         $array = [];
  
-        foreach($register as $r)
+        foreach($this->register as $r)
         {
             $r->addToArrayIfValid($array, $configuration, $order);
         }
-        
+
         return $array;
     }
 }

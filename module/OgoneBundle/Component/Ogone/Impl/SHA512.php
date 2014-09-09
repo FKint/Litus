@@ -20,6 +20,11 @@ namespace OgoneBundle\Component\Ogone\Impl;
 
 use OgoneBundle\Component\Ogone\HashCalculator;
 
+/**
+ * Calculates a hash using SHA-512.
+ *
+ * @author Daan Wendelen <daan.wendelen@litus.cc>
+ */
 class SHA512 implements HashCalculator
 {
     public function hash($stringToHash)
