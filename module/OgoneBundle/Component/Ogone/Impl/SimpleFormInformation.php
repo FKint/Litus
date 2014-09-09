@@ -16,7 +16,7 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace OgoneBundle\Component\Ogone;
+namespace OgoneBundle\Component\Ogone\Impl;
 
 /**
  * A simple implementation.

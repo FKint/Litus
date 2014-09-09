@@ -1,6 +1,4 @@
 <?php
-use Zend\ServiceManager\ServiceLocatorInterface;
-use CommonBundle\Repository\General\Config;
 /**
  * Litus is a project by a group of students from the KU Leuven. The goal is to create
  * various applications to support the IT needs of student unions.

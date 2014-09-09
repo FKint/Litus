@@ -16,7 +16,7 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace BootstrapBundle;
+namespace OgoneBundle;
 
 class Module
 {
