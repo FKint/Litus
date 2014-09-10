@@ -1,4 +1,4 @@
-<!--
+<?php
 /**
  * Litus is a project by a group of students from the KU Leuven. The goal is to create
  * various applications to support the IT needs of student unions.
@@ -15,13 +15,9 @@
  *
  * @license http://litus.cc/LICENSE
  */
--->
 
-<phpunit bootstrap="phpunit-boot.php">
-    <testsuite name="BR Tests">
-        <directory>./module/BrBundle/Test</directory>
-    </testsuite>
-    <testsuite name="Ogone Tests">
-        <directory>./module/OgoneBundle/Test</directory>
-    </testsuite>
-</phpunit>
+chdir(__DIR__);
+
+putenv('APPLICATION_ENV=test');
+
+include 'init_autoloader.php';
