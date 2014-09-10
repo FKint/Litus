@@ -35,7 +35,7 @@ class FixedSignature extends FormSignatureCalculator
 
     public function __construct($signature)
     {
-        $this->$signature = $signature;
+        $this->signature = $signature;
     }
 
     public function calculate($parametersToHash)

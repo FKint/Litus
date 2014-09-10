@@ -22,6 +22,7 @@ use OgoneBundle\Component\Ogone\Impl\FormGenerator,
     OgoneBundle\Component\Ogone\Impl\SHA512,
     OgoneBundle\Component\Ogone\Impl\FormSignatureCalculator,
     OgoneBundle\Component\Ogone\Impl\FormParameters\Register;
+use OgoneBundle\Component\Ogone\Impl\FormInformationFactory;
 
 /**
  * The facade for the whole Ogone-support compontent. You should always
@@ -52,7 +53,7 @@ class Ogone
     public function generateFormInformation(Order $order)
     {
         $hashCalculator = new SHA512();
-        $passphrase = $configuration->getSHAInPassphrase();
+        $passphrase = $this->configuration->getSHAInPassphrase();
         $formSignatureCalculator =
             new FormSignatureCalculator($hashCalculator, $passphrase);
         $factory = new FormInformationFactory();

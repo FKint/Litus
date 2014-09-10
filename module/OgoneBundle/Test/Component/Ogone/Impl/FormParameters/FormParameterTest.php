@@ -1,9 +1,4 @@
 <?php
-use OgoneBundle\Component\Ogone\Impl\FormParameters\Amount;
-use OgoneBundle\Test\Component\Ogone\TestEnvironmentConfiguration;
-use OgoneBundle\Test\Component\Ogone\AmountOrder;
-use OgoneBundle\Test\Component\Ogone\AllNullOrder;
-use OgoneBundle\Component\Ogone\Impl\FormParameters\Name;
 /**
  * Litus is a project by a group of students from the KU Leuven. The goal is to create
  * various applications to support the IT needs of student unions.
@@ -21,6 +16,14 @@ use OgoneBundle\Component\Ogone\Impl\FormParameters\Name;
  * @license http://litus.cc/LICENSE
  */
 
+namespace OgoneBundle\Test\Compontent\Ogone\Impl\FormParameters;
+
+use OgoneBundle\Component\Ogone\Impl\FormParameters\Amount;
+use OgoneBundle\Test\Component\Ogone\TestEnvironmentConfiguration;
+use OgoneBundle\Test\Component\Ogone\AmountOrder;
+use OgoneBundle\Test\Component\Ogone\AllNullOrder;
+use OgoneBundle\Component\Ogone\Impl\FormParameters\Name;
+
 /**
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
@@ -36,7 +39,7 @@ class FormParameterTest extends \PHPUnit_Framework_TestCase
         $amount->addToArrayIfValid($array, $config, $order);
         
         $this->assertEquals(1, count($array));
-        $this->assertEquals(123456789012345, $array['AMOUNT']);
+        $this->assertEquals('123456789012345', $array['AMOUNT']);
     }
     
     public function testNullButOptional()

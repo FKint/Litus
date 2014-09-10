@@ -35,20 +35,20 @@ class Register
 
     public function __construct()
     {
-        $register = array();
-        $register[] = new Address();
-        $register[] = new Amount();
-        $register[] = new Country();
-        $register[] = new Currency();
-        $register[] = new Description();
-        $register[] = new Email();
-        $register[] = new Language();
-        $register[] = new Name();
-        $register[] = new OrderId();
-        $register[] = new Phonenumber();
-        $register[] = new PSPId();
-        $register[] = new Town();
-        $register[] = new ZIP();
+        $this->register = array();
+        $this->register[] = new Address();
+        $this->register[] = new Amount();
+        $this->register[] = new Country();
+        $this->register[] = new Currency();
+        $this->register[] = new Description();
+        $this->register[] = new Email();
+        $this->register[] = new Language();
+        $this->register[] = new Name();
+        $this->register[] = new OrderId();
+        $this->register[] = new PhoneNumber();
+        $this->register[] = new PSPId();
+        $this->register[] = new Town();
+        $this->register[] = new ZIP();
     }
 
     /**

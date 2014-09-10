@@ -110,8 +110,8 @@ class FormGeneratorTest extends \PHPUnit_Framework_TestCase
     
     protected function arrayTests($expected, $actual)
     {
-        $expected = ksort($expected);
-        $actual = ksort($actual);
+        ksort($expected);
+        ksort($actual);
 
         $this->assertEquals($expected, $actual);
     }

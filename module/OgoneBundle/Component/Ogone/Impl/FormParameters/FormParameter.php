@@ -64,9 +64,11 @@ abstract class FormParameter
      *
      * @param \OgoneBundle\Component\Ogone\Configuration $config
      * @param \OgoneBundle\Component\Ogone\Order $order
+     * 
+     * @return mixed
      */
     abstract protected function select(Configuration $config, Order $order);
-
+    
     /**
      * Selects and validates the value of the parameter. If it is valid,
      * it will be added to the array.
@@ -85,7 +87,7 @@ abstract class FormParameter
         {
             if(!$this->isOptional())
                 throw new \InvalidArgumentException($this->getKey() . ' is not optional');
-            echo 'gras';
+
             return;
         }
 
@@ -97,7 +99,7 @@ abstract class FormParameter
             throw new \InvalidArgumentException($this->getKey() . ' can only be ' .
                 $this->getMaxLength() . ' characters long, ' . $e . ' is ' . 
                 strlen($e) . ' characters long.');
-            
-        $array[$this->getKey()] = $e;
+
+        $array[$this->getKey()] = strval($e);
     }
 }
