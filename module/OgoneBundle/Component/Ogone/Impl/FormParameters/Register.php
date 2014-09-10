@@ -23,7 +23,7 @@ use OgoneBundle\Component\Ogone\Configuration;
 
 /**
  * This class collects all the FormParameters.
- * 
+ *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class Register
@@ -53,10 +53,10 @@ class Register
 
     /**
      * Executes addToArrayIfValid on all form parameters.
-     * 
+     *
      * @param \OgoneBundle\Component\Ogone\Order $order
      * @param \OgoneBundle\Component\Ogone\Configuration $configuration
-     * 
+     *
      * @return array
      */
     public function createFormParametersIfValid(
