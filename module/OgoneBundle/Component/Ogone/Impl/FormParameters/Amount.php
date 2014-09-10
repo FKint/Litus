@@ -32,10 +32,12 @@ class Amount extends MandatoryInteger
     {
         return 'AMOUNT';
     }
+
     protected function getMaxLength()
     {
         return 15;
     }
+
     protected function select(Configuration $config, Order $order)
     {
         return $order->get100TimesTheAmount();

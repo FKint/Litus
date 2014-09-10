@@ -59,8 +59,10 @@ class Register
      * 
      * @return array
      */
-    public function createFormParametersIfValid(Order $order,
-        Configuration $configuration)
+    public function createFormParametersIfValid(
+        Order $order,
+        Configuration $configuration
+    )
     {
         $array = [];
  

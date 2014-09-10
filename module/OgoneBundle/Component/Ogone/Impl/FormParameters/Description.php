@@ -32,10 +32,12 @@ class Description extends OptionalString
     {
         return 'COM';
     }
+
     protected function getMaxLength()
     {
         return 100;
     }
+
     protected function select(Configuration $config, Order $order)
     {
         return $order->getDescription();

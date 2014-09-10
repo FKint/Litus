@@ -32,10 +32,12 @@ class PSPId extends MandatoryString
     {
         return 'PSPID';
     }
+
     protected function getMaxLength()
     {
         return 30;
     }
+
     protected function select(Configuration $config, Order $order)
     {
         return $config->getPSPId();

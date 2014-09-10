@@ -57,10 +57,12 @@ class FormGenerator
      * @param \OgoneBundle\Component\Ogone\Impl\FormInformationFactory $factory
      * @param \OgoneBundle\Component\Ogone\Impl\FormParameters\Register $register
      */
-    public function __construct(Configuration $configuration,
+    public function __construct(
+        Configuration $configuration,
         FormSignatureCalculator $formSignatureCalculator,
         FormInformationFactory $factory,
-        Register $register)
+        Register $register
+    )
     {
         $this->configuration = $configuration;
         $this->formSignatureCalculator = $formSignatureCalculator;

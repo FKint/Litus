@@ -32,10 +32,12 @@ class ZIP extends OptionalString
     {
         return 'OWNERZIP';
     }
+
     protected function getMaxLength()
     {
         return 10;
     }
+
     protected function select(Configuration $config, Order $order)
     {
         return $order->getClientZIP();

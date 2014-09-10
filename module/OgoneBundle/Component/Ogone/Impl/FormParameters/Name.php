@@ -32,10 +32,12 @@ class Name extends OptionalString
     {
         return 'CN';
     }
+
     protected function getMaxLength()
     {
         return 35;
     }
+
     protected function select(Configuration $config, Order $order)
     {
         return $order->getClientName();

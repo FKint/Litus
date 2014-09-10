@@ -32,10 +32,12 @@ class PhoneNumber extends OptionalString
     {
         return 'OWNERTELNO';
     }
+
     protected function getMaxLength()
     {
         return 30;
     }
+
     protected function select(Configuration $config, Order $order)
     {
         return $order->getClientPhoneNumber();

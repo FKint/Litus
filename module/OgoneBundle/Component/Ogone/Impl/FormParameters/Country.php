@@ -32,10 +32,12 @@ class Country extends OptionalString
     {
         return 'OWNERCTY';
     }
+
     protected function getMaxLength()
     {
         return 2;
     }
+
     protected function select(Configuration $config, Order $order)
     {
         return $order->getClientCountryCode();

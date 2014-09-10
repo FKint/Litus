@@ -32,10 +32,12 @@ class Address extends OptionalString
     {
         return 'OWNERADDRESS';
     }
+
     protected function getMaxLength()
     {
         return 35;
     }
+
     protected function select(Configuration $config, Order $order)
     {
         return $order->getClientAddress();

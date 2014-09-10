@@ -32,10 +32,12 @@ class Email extends OptionalString
     {
         return 'EMAIL';
     }
+
     protected function getMaxLength()
     {
         return 50;
     }
+
     protected function select(Configuration $config, Order $order)
     {
         return $order->getClientEmail();

@@ -29,6 +29,7 @@ abstract class OptionalString extends FormParameter
     {
         return true;
     }
+
     abstract protected function validateType($val)
     {
         return is_string($val);

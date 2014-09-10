@@ -32,10 +32,12 @@ class Currency extends MandatoryString
     {
         return 'CURRENCY';
     }
+
     protected function getMaxLength()
     {
         return 3;
     }
+
     protected function select(Configuration $config, Order $order)
     {
         return $config->getCurrencyCode();

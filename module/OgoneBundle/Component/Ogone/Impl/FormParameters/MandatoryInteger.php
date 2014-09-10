@@ -29,6 +29,7 @@ abstract class MandatoryInteger extends FormParameter
     {
         return false;
     }
+
     abstract protected function validateType($val)
     {
         return is_integer($val);

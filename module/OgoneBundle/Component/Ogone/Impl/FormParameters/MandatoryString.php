@@ -29,6 +29,7 @@ abstract class MandatoryString extends FormParameter
     {
         return false;
     }
+
     abstract protected function validateType($val)
     {
         return is_string($val);

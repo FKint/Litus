@@ -32,10 +32,12 @@ class Language extends MandatoryString
     {
         return 'LANGUAGE';
     }
+
     protected function getMaxLength()
     {
         return 2;
     }
+
     protected function select(Configuration $config, Order $order)
     {
         return $order->getLanguageCode();

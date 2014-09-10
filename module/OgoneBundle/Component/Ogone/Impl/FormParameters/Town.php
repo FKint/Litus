@@ -32,10 +32,12 @@ class Town extends OptionalString
     {
         return 'OWNERTOWN';
     }
+
     protected function getMaxLength()
     {
         return 40;
     }
+
     protected function select(Configuration $config, Order $order)
     {
         return $order->getClientTown();
