@@ -16,33 +16,39 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace OgoneBundle\Component\Ogone\Impl;
+namespace OgoneBundle\Test\Component\Ogone;
 
-use OgoneBundle\Component\Ogone\FormInformation;
+use OgoneBundle\Component\Ogone\Configuration;
 
 /**
- * A simple implementation.
+ * All configs return null.
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class SimpleFormInformation implements FormInformation
+class ProductionEnvironmentConfiguration implements Configuration
 {
-    private $url;
-    private $params;
-
-    public function __construct($url, $params)
+    public function getPspId()
     {
-        $this->url = $url;
-        $this->params = $params;
+        return null;
+    }
+    
+    public function getShaInPassphrase()
+    {
+        return null;
     }
 
-    public function getActionUrl()
+    public function getShaOutPassphrase()
     {
-        return $this->url;
+        return null;
     }
 
-    public function getHiddenParameters()
+    public function getCurrencyCode()
     {
-        return $this->params;
+        return null;
+    }
+
+    public function isProductionEnvironment()
+    {
+        return true;
     }
 }

@@ -58,6 +58,9 @@ class Register
      * @param \OgoneBundle\Component\Ogone\Configuration $configuration
      *
      * @return array
+     * 
+     * @throws \InvalidArgumentException One of the values was of the wrong type,
+     * too long, or it was null while the parameter is mandatory.
      */
     public function createFormParametersIfValid(
         Order $order,

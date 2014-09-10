@@ -75,6 +75,9 @@ class FormGenerator
      * @param \OgoneBundle\Component\Ogone\Order $order
      *
      * @return \OgoneBundle\Component\Ogone\FormInformation
+     * 
+     * @throws \InvalidArgumentException One of the values was of the
+     * wrong type, too long, or it was null while the parameter is mandatory.
      */
     public function generate(Order $order)
     {

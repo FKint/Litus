@@ -16,9 +16,9 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace OgoneBundle\Component\Ogone\Impl;
+namespace OgoneBundle\Test\Component\Ogone\Impl;
 
-use OgoneBundle\Component\Ogone\HashCalculator;
+use OgoneBundle\Component\Ogone\Impl\FormSignatureCalculator;
 
 /**
  * The class calculates the signature for the parameters that are to be send
@@ -26,34 +26,20 @@ use OgoneBundle\Component\Ogone\HashCalculator;
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class FormSignatureCalculator
+class FixedSignature extends FormSignatureCalculator
 {
     /**
      * @var string
      */
-    private $passphrase;
+    private $signature;
 
-    /**
-     * @var \OgoneBundle\Component\Ogone\HashCalculator
-     */
-    private $hashCal;
-
-    public function __construct(HashCalculator $hashCalculator, $passphrase)
+    public function __construct($signature)
     {
-        $this->passphrase = $passphrase;
-        $this->hashCal = $hashCalculator;
+        $this->$signature = $signature;
     }
 
     public function calculate($parametersToHash)
     {
-        ksort($parametersToHash, SORT_STRING);
-
-        $string = '';
-
-        foreach ($parametersToHash as $key => $val) {
-            $string .= strtoupper($key).'='.$val.$this->passphrase;
-        }
-
-        return $this->hashCal->hash($string);
+        return $this->signature;
     }
 }

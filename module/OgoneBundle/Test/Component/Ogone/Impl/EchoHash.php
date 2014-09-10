@@ -16,33 +16,19 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace OgoneBundle\Component\Ogone\Impl;
+namespace OgoneBundle\Test\Component\Ogone\Impl;
 
-use OgoneBundle\Component\Ogone\FormInformation;
+use OgoneBundle\Component\Ogone\HashCalculator;
 
 /**
- * A simple implementation.
+ * The hash just return the string it has to hash.
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class SimpleFormInformation implements FormInformation
+class EchoHash implements HashCalculator
 {
-    private $url;
-    private $params;
-
-    public function __construct($url, $params)
+    public function hash($stringToHash)
     {
-        $this->url = $url;
-        $this->params = $params;
-    }
-
-    public function getActionUrl()
-    {
-        return $this->url;
-    }
-
-    public function getHiddenParameters()
-    {
-        return $this->params;
+        return $stringToHash;
     }
 }
