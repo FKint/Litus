@@ -16,22 +16,37 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace OgoneBundle\Component\Ogone\Impl\FormParameters;
+namespace OgoneBundle\Test\Component\Ogone\Impl\FormParameters;
+
+use OgoneBundle\Component\Ogone\Impl\FormParameters\Register;
+use OgoneBundle\Component\Ogone\Order;
+use OgoneBundle\Component\Ogone\Configuration;
 
 /**
- * A parameter that is not optional and requires a string.
+ * The class calculates the signature for the parameters that are to be send
+ * to Ogone. The pass phrase needs to be configured at Ogone.
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-abstract class MandatoryString extends FormParameter
+class FixedRegister extends Register
 {
-    protected function isOptional()
+    /**
+     * @var array
+     */
+    private $params;
+
+    /**
+     * @param array $params
+     */
+    public function __construct($params)
     {
-        return false;
+        $this->params = $params;
     }
 
-    protected function validateType($val)
-    {
-        return is_string($val);
+    public function createFormParametersIfValid(
+        Order $order,
+        Configuration $configuration
+    ) {
+        return $this->params;
     }
 }

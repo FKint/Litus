@@ -78,14 +78,14 @@ abstract class FormParameter
      * @throws \InvalidArgumentException The value was of the wrong type,
      * too long, or it was null while the parameter is mandatory.
      */
-    public function addToArrayIfValid($array, Configuration $config, Order $order)
+    public function addToArrayIfValid(& $array, Configuration $config, Order $order)
     {
         $e = $this->select($config, $order);
         if(null === $e)
         {
             if(!$this->isOptional())
                 throw new \InvalidArgumentException($this->getKey() . ' is not optional');
-
+            echo 'gras';
             return;
         }
 
@@ -97,7 +97,7 @@ abstract class FormParameter
             throw new \InvalidArgumentException($this->getKey() . ' can only be ' .
                 $this->getMaxLength() . ' characters long, ' . $e . ' is ' . 
                 strlen($e) . ' characters long.');
-
+            
         $array[$this->getKey()] = $e;
     }
 }

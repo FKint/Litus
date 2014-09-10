@@ -16,37 +16,25 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace OgoneBundle\Test\Component\Ogone\Impl;
+namespace OgoneBundle\Test\Component\Ogone;
 
-use OgoneBundle\Component\Ogone\Impl\FormParameters\Register;
-use OgoneBundle\Component\Ogone\Order;
-use OgoneBundle\Component\Ogone\Configuration;
 
 /**
- * The class calculates the signature for the parameters that are to be send
- * to Ogone. The pass phrase needs to be configured at Ogone.
+ * An order. With all field equals null.
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class FixedRegister extends Register
+class AmountOrder extends AllNullOrder
 {
-    /**
-     * @var array
-     */
-    private $params;
-
-    /**
-     * @param array $params
-     */
-    public function __construct($params)
+    private $amount;
+    
+    public function __construct($amount)
     {
-        $this->params = $params;
+        $this->amount = $amount;
     }
-
-    public function createFormParametersIfValid(
-        Order $order,
-        Configuration $configuration
-    ) {
-        return $this->params;
+    
+    public function get100TimesTheAmount()
+    {
+        return $this->amount;
     }
 }

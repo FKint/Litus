@@ -25,12 +25,12 @@ namespace OgoneBundle\Component\Ogone\Impl\FormParameters;
  */
 abstract class MandatoryInteger extends FormParameter
 {
-    abstract protected function isOptional()
+    protected function isOptional()
     {
         return false;
     }
 
-    abstract protected function validateType($val)
+    protected function validateType($val)
     {
         return is_integer($val);
     }

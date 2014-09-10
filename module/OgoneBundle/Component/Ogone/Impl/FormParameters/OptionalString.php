@@ -25,12 +25,12 @@ namespace OgoneBundle\Component\Ogone\Impl\FormParameters;
  */
 abstract class OptionalString extends FormParameter
 {
-    abstract protected function isOptional()
+    protected function isOptional()
     {
         return true;
     }
 
-    abstract protected function validateType($val)
+    protected function validateType($val)
     {
         return is_string($val);
     }

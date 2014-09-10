@@ -23,6 +23,8 @@ use OgoneBundle\Component\Ogone\Impl\FormInformationFactory;
 use OgoneBundle\Test\Component\Ogone\TestEnvironmentConfiguration;
 use OgoneBundle\Test\Component\Ogone\ProductionEnvironmentConfiguration;
 use OgoneBundle\Test\Component\Ogone\AllNullOrder;
+use OgoneBundle\Test\Component\Ogone\Impl\FormParameters\FixedRegister;
+use OgoneBundle\Test\Component\Ogone\Impl\FormParameters\AlwaysFailRegister;
 
 /**
  * The class calculates the signature for the parameters that are to be send
@@ -85,6 +87,27 @@ class FormGeneratorTest extends \PHPUnit_Framework_TestCase
             $formInfo->getActionUrl());
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testInvalidParameter()
+    {
+        $configuration = new ProductionEnvironmentConfiguration();
+        $fixedSignature = new FixedSignature('Signature');
+        $factory = new FormInformationFactory();
+        $register = new AlwaysFailRegister();
+        $order = new AllNullOrder();
+        
+        $formGenerator = new FormGenerator(
+            $configuration,
+            $fixedSignature,
+            $factory,
+            $register
+        );
+        
+        $formInfo = $formGenerator->generate($order);
+    }
+    
     protected function arrayTests($expected, $actual)
     {
         $expected = ksort($expected);
