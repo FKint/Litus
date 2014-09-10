@@ -33,22 +33,22 @@ class FormGenerator
      * @var \OgoneBundle\Component\Ogone\Configuration
      */
     private $configuration;
-    
+
     /**
      * @var \OgoneBundle\Component\Ogone\Impl\FormSignatureCalculator
      */
     private $formSignatureCalculator;
-    
+
     /**
      * @var \OgoneBundle\Component\Ogone\Impl\FormInformationFactory
      */
     private $factory;
-    
+
     /**
      * @var \OgoneBundle\Component\Ogone\Impl\FormParameters\Register
      */
     private $register;
-    
+
     /**
      * C'tor.
      * 
@@ -69,7 +69,7 @@ class FormGenerator
         $this->factory = $factory;
         $this->register = $register;
     }
-    
+
     /**
      * Generate the FormInformation.
      * 
@@ -83,13 +83,13 @@ class FormGenerator
             $url = 'https://secure.ogone.com/ncol/prod/orderstandard.asp';
         else
             $url = 'https://secure.ogone.com/ncol/test/orderstandard.asp';
-        
+
         $parameters = $this->register->createFormParametersIfValid(
             $order, $this->configuration);
-        
+
         $signature = $this->formSignatureCalculator->calculate($parameters);
         $parameters['SHASIGN'] = $signature;
-        
+
         return $this->factory->create($url, $parameters);
     }
 }

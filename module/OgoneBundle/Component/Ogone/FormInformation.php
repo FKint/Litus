@@ -39,5 +39,4 @@ interface FormInformation
      * @return array
      */
     public function getHiddenParameters();
-
 }

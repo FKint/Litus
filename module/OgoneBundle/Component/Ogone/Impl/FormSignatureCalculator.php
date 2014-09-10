@@ -47,14 +47,14 @@ class FormSignatureCalculator
     public function calculate($parametersToHash)
     {
         ksort($parametersToHash, SORT_STRING);
-        
+
         $string = '';
-        
+
         foreach($parametersToHash as $key => $val)
         {
             $string .= strtoupper($key) . $val . $this->passphrase;
         }
-        
+
         return $this->hashCal->hash($string);
     }
 }

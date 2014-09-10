@@ -34,21 +34,21 @@ abstract class FormParameter
      * @return string
      */
     abstract protected function getKey();
-    
+
     /**
      * The maximum number of characters than Ogone allows.
      * 
      * @return integer
      */
     abstract protected function getMaxLength();
-    
+
     /**
      * Is it an optional parameter?
      * 
      * @return boolean
      */
     abstract protected function isOptional();
-    
+
     /**
      * Validates a value. Returns true iff $val has the correct type.
      * 
@@ -57,7 +57,7 @@ abstract class FormParameter
      * @return boolean
      */
     abstract protected function validateType($val);
-    
+
     /**
      * Selects the value of the parameter either from $config
      * or from $order.
@@ -66,7 +66,7 @@ abstract class FormParameter
      * @param \OgoneBundle\Component\Ogone\Order $order
      */
     abstract protected function select(Configuration $config, Order $order);
-    
+
     /**
      * Selects and validates the value of the parameter. If it is valid,
      * it will be added to the array.

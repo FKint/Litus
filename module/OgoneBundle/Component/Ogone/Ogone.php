@@ -58,8 +58,12 @@ class Ogone
         $factory = new FormInformationFactory();
         $register = new Register();
 
-        $formGenerator = new FormGenerator($this->configuration,
-            $formSignatureCalculator, $factory, $register);
+        $formGenerator = new FormGenerator(
+            $this->configuration,
+            $formSignatureCalculator,
+            $factory,
+            $register
+        );
 
         return $formGenerator->generate($order);
     }

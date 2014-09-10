@@ -82,8 +82,8 @@ interface Order
      *
      * @return null|string
     */
-
     public function getClientZIP();
+
     /**
      * Optional, usefull for combating fraud. Max length: 40.
      *
