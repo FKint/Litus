@@ -31,7 +31,7 @@ class TestEnvironmentConfiguration implements Configuration
     {
         return null;
     }
-    
+
     public function getShaInPassphrase()
     {
         return null;

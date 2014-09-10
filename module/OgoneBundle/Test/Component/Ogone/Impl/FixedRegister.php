@@ -46,8 +46,7 @@ class FixedRegister extends Register
     public function createFormParametersIfValid(
         Order $order,
         Configuration $configuration
-    )
-    {
+    ) {
         return $this->params;
     }
 }

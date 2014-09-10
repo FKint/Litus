@@ -31,7 +31,7 @@ class ProductionEnvironmentConfiguration implements Configuration
     {
         return null;
     }
-    
+
     public function getShaInPassphrase()
     {
         return null;

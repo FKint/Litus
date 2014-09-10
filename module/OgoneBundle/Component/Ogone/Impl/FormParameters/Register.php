@@ -18,8 +18,8 @@
 
 namespace OgoneBundle\Component\Ogone\Impl\FormParameters;
 
-use OgoneBundle\Component\Ogone\Order;
-use OgoneBundle\Component\Ogone\Configuration;
+use OgoneBundle\Component\Ogone\Order,
+    OgoneBundle\Component\Ogone\Configuration;
 
 /**
  * This class collects all the FormParameters.
@@ -58,15 +58,14 @@ class Register
      * @param \OgoneBundle\Component\Ogone\Configuration $configuration
      *
      * @return array
-     * 
+     *
      * @throws \InvalidArgumentException One of the values was of the wrong type,
      * too long, or it was null while the parameter is mandatory.
      */
     public function createFormParametersIfValid(
         Order $order,
         Configuration $configuration
-    )
-    {
+    ) {
         $array = [];
  
         foreach($this->register as $r)

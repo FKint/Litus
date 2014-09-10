@@ -31,7 +31,7 @@ class AllNullOrder implements Order
     {
         return null;
     }
-    
+
     public function get100TimesTheAmount()
     {
         return null;
@@ -41,42 +41,42 @@ class AllNullOrder implements Order
     {
         return null;
     }
-    
+
     public function getDescription()
     {
         return null;
     }
-    
+
     public function getClientName()
     {
         return null;
     }
-    
+
     public function getClientEmail()
     {
         return null;
     }
-    
+
     public function getClientAddress()
     {
         return null;
     }
-    
+
     public function getClientZIP()
     {
         return null;
     }
-    
+
     public function getClientTown()
     {
         return null;
     }
-    
+
     public function getClientCountryCode()
     {
         return null;
     }
-    
+
     public function getClientPhoneNumber()
     {
         return null;

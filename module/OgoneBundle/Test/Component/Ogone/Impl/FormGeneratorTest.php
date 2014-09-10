@@ -39,29 +39,30 @@ class FormGeneratorTest extends \PHPUnit_Framework_TestCase
         $factory = new FormInformationFactory();
         $register = new FixedRegister(array('B' => 'R', 'C' => 'D'));
         $order = new AllNullOrder();
-        
+
         $formGenerator = new FormGenerator(
             $configuration,
             $fixedSignature,
             $factory,
             $register
         );
-        
+
         $formInfo = $formGenerator->generate($order);
-        
+
         $this->assertEquals(
             'https://secure.ogone.com/ncol/test/orderstandard.asp',
-            $formInfo->getActionUrl());
-        
+            $formInfo->getActionUrl()
+        );
+
         $exp = array(
             'B' => 'R',
             'C' => 'D',
             'SHASIGN' => 'Signature',
         );
-        
+
         $this->arrayTests($exp, $formInfo->getHiddenParameters());
     }
-    
+
     public function testProductionUrl()
     {
         $configuration = new ProductionEnvironmentConfiguration();
@@ -69,26 +70,26 @@ class FormGeneratorTest extends \PHPUnit_Framework_TestCase
         $factory = new FormInformationFactory();
         $register = new FixedRegister(array('B' => 'R', 'C' => 'D'));
         $order = new AllNullOrder();
-    
+
         $formGenerator = new FormGenerator(
             $configuration,
             $fixedSignature,
             $factory,
             $register
         );
-    
+
         $formInfo = $formGenerator->generate($order);
-    
+
         $this->assertEquals(
             'https://secure.ogone.com/ncol/prod/orderstandard.asp',
             $formInfo->getActionUrl());
     }
-    
+
     protected function arrayTests($expected, $actual)
     {
         $expected = ksort($expected);
         $actual = ksort($actual);
-        
+
         $this->assertEquals($expected, $actual);
     }
 }
