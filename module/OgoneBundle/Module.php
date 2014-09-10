@@ -22,6 +22,6 @@ class Module
 {
     public function getConfig()
     {
-        return include __DIR__ . '/Resources/config/module.config.php';
+        return include __DIR__.'/Resources/config/module.config.php';
     }
 }

@@ -50,9 +50,8 @@ class FormSignatureCalculator
 
         $string = '';
 
-        foreach($parametersToHash as $key => $val)
-        {
-            $string .= strtoupper($key) . $val . $this->passphrase;
+        foreach ($parametersToHash as $key => $val) {
+            $string .= strtoupper($key).$val.$this->passphrase;
         }
 
         return $this->hashCal->hash($string);

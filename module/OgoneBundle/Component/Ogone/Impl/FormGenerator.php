@@ -51,10 +51,10 @@ class FormGenerator
 
     /**
      * C'tor.
-     * 
-     * @param \OgoneBundle\Component\Ogone\Configuration $configuration
+     *
+     * @param \OgoneBundle\Component\Ogone\Configuration                $configuration
      * @param \OgoneBundle\Component\Ogone\Impl\FormSignatureCalculator $formSignatureCalculator
-     * @param \OgoneBundle\Component\Ogone\Impl\FormInformationFactory $factory
+     * @param \OgoneBundle\Component\Ogone\Impl\FormInformationFactory  $factory
      * @param \OgoneBundle\Component\Ogone\Impl\FormParameters\Register $register
      */
     public function __construct(
@@ -62,8 +62,7 @@ class FormGenerator
         FormSignatureCalculator $formSignatureCalculator,
         FormInformationFactory $factory,
         Register $register
-    )
-    {
+    ) {
         $this->configuration = $configuration;
         $this->formSignatureCalculator = $formSignatureCalculator;
         $this->factory = $factory;
@@ -72,9 +71,9 @@ class FormGenerator
 
     /**
      * Generate the FormInformation.
-     * 
+     *
      * @param \OgoneBundle\Component\Ogone\Order $order
-     * 
+     *
      * @return \OgoneBundle\Component\Ogone\FormInformation
      */
     public function generate(Order $order)
@@ -85,7 +84,9 @@ class FormGenerator
             $url = 'https://secure.ogone.com/ncol/test/orderstandard.asp';
 
         $parameters = $this->register->createFormParametersIfValid(
-            $order, $this->configuration);
+            $order,
+            $this->configuration
+        );
 
         $signature = $this->formSignatureCalculator->calculate($parameters);
         $parameters['SHASIGN'] = $signature;

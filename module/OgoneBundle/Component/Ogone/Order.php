@@ -29,14 +29,14 @@ interface Order
     /**
      * Mandatory and must be unique. This value will be used to prevent the
      * user from paying twice.  Max length: 30.
-     * 
+     *
      * @return string
      */
     public function getOrderId();
 
     /**
      * The amount multiplied by 100. Mandatory. Max length: 15.
-     * 
+     *
      * @return integer
      */
     public function get100TimesTheAmount();
@@ -51,14 +51,14 @@ interface Order
     /**
      * Optional, usefull for customer. This description can be showed on
      * bank statements. Max length: 100.
-     * 
+     *
      * @return null|string
      */
     public function getDescription();
 
     /**
      * Optional, usefull for combating fraud. Max length: 35.
-     * 
+     *
      * @return null|string
      */
     public function getClientName();

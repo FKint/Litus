@@ -30,7 +30,7 @@ class FormInformationFactory
     /**
      * @param string $url
      * @param string $params
-     * 
+     *
      * @return \OgoneBundle\Component\Ogone\FormInformation
      */
     public function create($url, $params)

@@ -38,15 +38,15 @@ class Ogone
     private $configuration;
 
     public function __construct(Configuration $configuration)
-    {   
+    {
         $this->configuration = $configuration;
     }
 
     /**
      * Generates the form information for the order.
-     * 
+     *
      * @param \OgoneBundle\Component\Ogone\Order $order
-     * 
+     *
      * @return \OgoneBundle\Component\Ogone\FormInformation
      */
     public function generateFormInformation(Order $order)

@@ -28,14 +28,14 @@ interface FormInformation
 {
     /**
      * <form action="#HERE#" ...
-     * 
+     *
      * @return string
      */
     public function getActionUrl();
 
     /**
      * <input type="hidden" name="#KEY" value="#VALUE#">
-     * 
+     *
      * @return array
      */
     public function getHiddenParameters();
