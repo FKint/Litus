@@ -1,0 +1,61 @@
+PAYMENT
+
+External actors:
+- Customer
+	The natural person who wants to pay for services/goods
+- Ogone
+	The system that handles the payments
+
+Subsystems:
+- OgoneSubSystem
+	The part of our system that handles (most of) the interaction with Ogone
+- OrderingSubSystem
+	The subsystem that creates the order on behave of the customer. eg. The cudi
+	subsystem
+
+Happy Path:
+	1.	The Customer indicates (s)he wants to checkout.
+ 	2.	The OrderingSubSystem creates and stores an objects that implements
+ 			OgoneBundle\Component\Ogone\Order
+ 	3.	The OrderingSubSystem contacts the OgoneSubSystem and supplies the Order.
+ 	4.	The OgoneSubSystem return a form
+ 	5.	The OrderingSubSystem creates a overview with a 'pay-button'. This 'pay-button'
+ 			is the form returned by the OgoneSubSystem.
+ 	6.	The customer clicks on the 'paybutton' and (s)he is redirected to Ogone.
+ 	7.	The customer successfully completes the payment.
+ 	8.	Ogone notifies the OgoneSubSystem.
+ 	9.	The OgoneSubSystem logs all the information in the notification.
+   10.	The OgoneSubSystem triggers the event supplied by the
+   			CallbackInformation in Order.
+   11.	The OrderingSubSystem handles the event. The OrderingSubSystem should now
+   			execute the logic to mark the payment as paid.
+   12.	The OgoneSubSystem replies to Ogone.
+   13.	Ogone redirects the customer to the page supplied by the
+   			CallbackInformation in Order. This should be a page in control of
+   			the OrderingSubSystem. The OrderingSubSystem is free to include
+   			parameters in the URL.
+   14.	The OrderingSubSystem continues execution
+
+Alternative paths:   
+	7a.	Ogone rejects the parameters, the payment was cancelled, or the payment
+				was declined by the customers bank / credit card company.
+		1.	Ogone notifies the OgoneSubSystem
+		2.	The OgoneSubSystem logs all the information in the notification
+		3.	CREATE ISSUE
+		4.	The OgoneSubSystem triggers an event, and indicates that something went
+				wrong
+		5.	See steps 11-12
+		6.	Ogone redirects the customer to the page in case of failure supplied by the
+   			CallbackInformation in Order.
+		7.	The OrderingSubSystem continues execution
+	7b. The payment was cancelled, or the payment was declined by the customers bank 
+			or the customers credit card company.
+		1. 	See steps 7-12
+		2. 	Ogone redirects the customer to the page supplied by the CallbackInformation
+				in Order for cancelled payments. This should be a page in control of
+   				the OrderingSubSystem. The OrderingSubSystem is free to include
+   				parameters in the URL.
+   		3.	The OrderingSubSystem continues execution
+CREATE ISSUE
+	1.	A new issue is created and stored
+	2.	An admin is notified about the creation of the issue
