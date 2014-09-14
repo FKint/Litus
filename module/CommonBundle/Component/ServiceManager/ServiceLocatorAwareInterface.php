@@ -50,7 +50,7 @@ interface ServiceLocatorAwareInterface extends \Zend\ServiceManager\ServiceLocat
      * @param  boolean                                   $organization
      * @return \CommonBundle\Entity\General\AcademicYear
      */
-    public function getCurrentAcademicYear($organization = null);
+    public function getCurrentAcademicYear($organization = false);
 
     /**
      * We want an easy method to retrieve the Mail Transport from

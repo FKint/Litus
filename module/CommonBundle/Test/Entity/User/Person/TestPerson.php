@@ -1,4 +1,4 @@
-<!--
+<?php
 /**
  * Litus is a project by a group of students from the KU Leuven. The goal is to create
  * various applications to support the IT needs of student unions.
@@ -15,16 +15,15 @@
  *
  * @license http://litus.cc/LICENSE
  */
--->
 
-<phpunit bootstrap="phpunit-boot.php">
-    <testsuite name="BR Tests">
-        <directory>./module/BrBundle/Test</directory>
-    </testsuite>
-    <testsuite name="Common Tests">
-        <directory>./module/CommonBundle/Test</directory>
-    </testsuite>
-    <testsuite name="Ogone Tests">
-        <directory>./module/OgoneBundle/Test</directory>
-    </testsuite>
-</phpunit>
+namespace CommonBundle\Test\Entity\User\Person;
+
+use CommonBundle\Entity\User\Person;
+
+class TestPerson extends Person
+{
+    public function __construct()
+    {
+        parent::__construct('TestPerson', array(), 'Test', 'Person');
+    }
+}

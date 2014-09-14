@@ -37,22 +37,23 @@
         function cityChange() {
             var city = $('.city option:selected').val();
 
-            $('.street, .number, .mailbox')
-                .closest('.row')
-                    .hide();
-            $('.other')
-                .hide();
+            if (city == 0)
+                return;
 
             if (city == 'other') {
-                $('.other')
+                $('.street').closest('.row')
+                    .hide();
+
+                $('.other').closest('.row')
                     .show();
-                $('.number, .mailbox')
-                    .closest('.row')
-                        .show();
-            } else if (city !== '') {
-                $('.mailbox, .number, .street-' + city)
-                    .closest('.row')
-                        .show();
+            } else {
+                $('.other').closest('.row')
+                    .hide();
+
+                $('.street').closest('.row')
+                    .hide();
+                $('.street-' + city).closest('.row')
+                    .show();
             }
         }
     </script>

@@ -1,4 +1,4 @@
-<!--
+<?php
 /**
  * Litus is a project by a group of students from the KU Leuven. The goal is to create
  * various applications to support the IT needs of student unions.
@@ -15,16 +15,16 @@
  *
  * @license http://litus.cc/LICENSE
  */
--->
+namespace CommonBundle\Test\Entity\General;
 
-<phpunit bootstrap="phpunit-boot.php">
-    <testsuite name="BR Tests">
-        <directory>./module/BrBundle/Test</directory>
-    </testsuite>
-    <testsuite name="Common Tests">
-        <directory>./module/CommonBundle/Test</directory>
-    </testsuite>
-    <testsuite name="Ogone Tests">
-        <directory>./module/OgoneBundle/Test</directory>
-    </testsuite>
-</phpunit>
+use CommonBundle\Entity\General\Language;
+
+class LanguageTest extends \PHPUnit_Framework_TestCase
+{
+    public function testLanguage()
+    {
+        $lang = new Language('sv_SE', 'svenska');
+        $this->assertEquals('sv_SE', $lang->getAbbrev());
+        $this->assertEquals('svenska', $lang->getName());
+    }
+}

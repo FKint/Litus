@@ -59,9 +59,6 @@ class Fieldset extends \Zend\Form\Fieldset implements FieldsetInterface, \Common
 
     public function showAs()
     {
-        if (null !== $this->getOption('showAs'))
-            return $this->getOption('showAs');
-
         return 'fieldset';
     }
 }

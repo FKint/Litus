@@ -18,127 +18,81 @@
 
 namespace CommonBundle\Form\Admin\Unit;
 
-use CommonBundle\Entity\General\Organization\Unit,
-    RuntimeException;
+use CommonBundle\Component\OldForm\Admin\Element\Checkbox,
+    CommonBundle\Component\OldForm\Admin\Element\Select,
+    CommonBundle\Component\OldForm\Admin\Element\Text,
+    Doctrine\ORM\EntityManager,
+    Zend\InputFilter\InputFilter,
+    Zend\InputFilter\Factory as InputFactory,
+    Zend\Form\Element\Submit;
 
 /**
  * Add Unit
  *
  * @author Pieter Maene <pieter.maene@litus.cc>
  */
-class Add extends \CommonBundle\Component\Form\Admin\Form
+class Add extends \CommonBundle\Component\OldForm\Admin\Form
 {
-    protected $hydrator = 'CommonBundle\Hydrator\General\Organization\Unit';
+    /**
+     * @var EntityManager The EntityManager instance
+     */
+    protected $_entityManager = null;
 
     /**
-     * @var Unit|null
+     * @param EntityManager   $entityManager The EntityManager instance
+     * @param null|string|int $name          Optional name for the element
      */
-    protected $unit = null;
-
-    public function init()
+    public function __construct(EntityManager $entityManager, $name = null)
     {
-        parent::init();
+        parent::__construct($name);
 
-        $this->add(array(
-            'type'     => 'text',
-            'name'     => 'name',
-            'label'    => 'Name',
-            'required' => true,
-            'options'  => array(
-                'input' => array(
-                    'filters'  => array(
-                        array('name' => 'StringTrim'),
-                    ),
-                ),
-            ),
-        ));
+        $this->_entityManager = $entityManager;
 
-        $this->add(array(
-            'type'     => 'text',
-            'name'     => 'mail',
-            'label'    => 'Mail',
-            'required' => true,
-            'options'  => array(
-                'input' => array(
-                    'filters'  => array(
-                        array('name' => 'StringTrim'),
-                    ),
-                    'validators' => array(
-                        array('name' => 'emailaddress'),
-                    ),
-                ),
-            ),
-        ));
+        $field = new Text('name');
+        $field->setLabel('Name')
+            ->setRequired();
+        $this->add($field);
 
-        $organizations = $this->createOrganizationsArray();
+        $field = new Text('mail');
+        $field->setLabel('Mail')
+            ->setRequired();
+        $this->add($field);
 
-        if (count($organizations) > 1) {
-            $this->add(array(
-                'type'       => 'select',
-                'name'       => 'organization',
-                'label'      => 'Organization',
-                'attributes' => array(
-                    'options' => $organizations,
-                ),
-            ));
+        if (count($this->_createOrganizationsArray()) > 1) {
+            $field = new Select('organization');
+            $field->setLabel('Organization')
+                ->setAttribute('options', $this->_createOrganizationsArray());
+            $this->add($field);
         }
 
-        $this->add(array(
-            'type'       => 'select',
-            'name'       => 'parent',
-            'label'      => 'Parent',
-            'attributes' => array(
-                'options' => $this->createUnitsArray(),
-            ),
-        ));
+        $field = new Select('parent');
+        $field->setLabel('Parent')
+            ->setAttribute('options', $this->createUnitsArray());
+        $this->add($field);
 
-        $this->add(array(
-            'type'       => 'select',
-            'name'       => 'roles',
-            'label'      => 'Roles',
-            'attributes' => array(
-                'data-help' => 'The roles for the members of this unit.',
-                'multiple'  => true,
-                'options'   => $this->createRolesArray(),
-            ),
-        ));
+        $field = new Select('roles');
+        $field->setLabel('Roles')
+            ->setAttribute('multiple', true)
+            ->setAttribute('options', $this->_createRolesArray())
+            ->setAttribute('data-help', 'The roles for the members of this unit.');
+        $this->add($field);
 
-        $this->add(array(
-            'type'       => 'select',
-            'name'       => 'coordinator_roles',
-            'label'      => 'Coordinator Roles',
-            'attributes' => array(
-                'data-help' => 'The roles for the coordinator of this unit.',
-                'multiple'  => true,
-                'options'   => $this->createRolesArray(),
-            ),
-        ));
+        $field = new Select('coordinatorRoles');
+        $field->setLabel('Coordinator Roles')
+            ->setAttribute('multiple', true)
+            ->setAttribute('options', $this->_createRolesArray())
+            ->setAttribute('data-help', 'The roles for the coordinator of this unit.');
+        $this->add($field);
 
-        $this->add(array(
-            'type'       => 'checkbox',
-            'name'       => 'displayed',
-            'label'      => 'Displayed',
-            'attributes' => array(
-                'data-help' => 'Flag whether this unit will be displayed on the website.',
-            ),
-        ));
+        $field = new Checkbox('displayed');
+        $field->setLabel('Displayed')
+            ->setAttribute('data-help', 'Flag whether this unit will be displayed on the website.');
+        $this->add($field);
 
-        $this->addSubmit('Add', 'unit_add');
-
-        if (null !== $this->unit) {
-            $this->bind($this->unit);
-        }
-    }
-
-    /**
-     * @param Unit $unit
-     * @return self
-     */
-    public function setUnit(Unit $unit)
-    {
-        $this->unit = $unit;
-
-        return $this;
+        $field = new Submit('submit');
+        $field->setValue('Add')
+            ->setAttribute('class', 'unit_add');
+        $this->add($field);
     }
 
     /**
@@ -146,14 +100,14 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
      *
      * @return array
      */
-    private function createOrganizationsArray()
+    private function _createOrganizationsArray()
     {
-        $organizations = $this->getEntityManager()
+        $organizations = $this->_entityManager
             ->getRepository('CommonBundle\Entity\General\Organization')
             ->findBy(array(), array('name' => 'ASC'));
 
         if (empty($organizations))
-            throw new RuntimeException('There needs to be at least one organization before you can add a unit');
+            throw new \RuntimeException('There needs to be at least one organization before you can add a unit');
 
         $organizationsArray = array();
         foreach ($organizations as $organization)
@@ -167,13 +121,11 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
      *
      * @return array
      */
-    protected function createUnitsArray()
+    protected function createUnitsArray($exclude = 0)
     {
-        $units = $this->getEntityManager()
+        $units = $this->_entityManager
             ->getRepository('CommonBundle\Entity\General\Organization\Unit')
             ->findAllActive();
-
-        $exclude = null === $this->unit ? 0 : $this->unit->getId();
 
         $unitsArray = array(
             '' => ''
@@ -192,9 +144,9 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
      *
      * @return array
      */
-    private function createRolesArray()
+    private function _createRolesArray()
     {
-        $roles = $this->getEntityManager()
+        $roles = $this->_entityManager
             ->getRepository('CommonBundle\Entity\Acl\Role')
             ->findBy(array(), array('name' => 'ASC'));
 
@@ -207,8 +159,43 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
         }
 
         if (empty($rolesArray))
-            throw new RuntimeException('There needs to be at least one role before you can add a unit');
+            throw new \RuntimeException('There needs to be at least one role before you can add a unit');
 
         return $rolesArray;
+    }
+
+    public function getInputFilter()
+    {
+        $inputFilter = new InputFilter();
+        $factory = new InputFactory();
+
+        $inputFilter->add(
+            $factory->createInput(
+                array(
+                    'name'     => 'name',
+                    'required' => true,
+                    'filters'  => array(
+                        array('name' => 'StringTrim'),
+                    ),
+                )
+            )
+        );
+
+        $inputFilter->add(
+            $factory->createInput(
+                array(
+                    'name'     => 'mail',
+                    'required' => true,
+                    'filters'  => array(
+                        array('name' => 'StringTrim'),
+                    ),
+                    'validators' => array(
+                        array('name' => 'emailaddress'),
+                    )
+                )
+            )
+        );
+
+        return $inputFilter;
     }
 }

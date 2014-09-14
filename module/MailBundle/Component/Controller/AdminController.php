@@ -18,13 +18,20 @@
 
 namespace MailBundle\Component\Controller;
 
+use CommonBundle\Component\Util\AcademicYear;
+
 /**
  * @author Kristof Mariën <kristof.marien@litus.cc>
  */
 class AdminController extends \CommonBundle\Component\Controller\ActionController\AdminController
 {
-    protected function findCurrentAcademicYear()
+    /**
+     * Get the current academic year.
+     *
+     * @return \CommonBundle\Entity\General\AcademicYear
+     */
+    public function getCurrentAcademicYear($organization = false)
     {
-        return $this->getCurrentAcademicYear(false);
+        return AcademicYear::getUniversityYear($this->getEntityManager());
     }
 }
