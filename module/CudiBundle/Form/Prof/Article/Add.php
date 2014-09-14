@@ -23,11 +23,11 @@ use CommonBundle\Component\Validator\Uri as UriValidator,
     CudiBundle\Entity\Article,
     CudiBundle\Entity\Article\Internal as InternalArticle,
     Doctrine\ORM\EntityManager,
-    CommonBundle\Component\Form\Bootstrap\Element\Checkbox,
-    CommonBundle\Component\Form\Bootstrap\Element\Collection,
-    CommonBundle\Component\Form\Bootstrap\Element\Text,
-    CommonBundle\Component\Form\Bootstrap\Element\Select,
-    CommonBundle\Component\Form\Bootstrap\Element\Submit,
+    CommonBundle\Component\OldForm\Bootstrap\Element\Checkbox,
+    CommonBundle\Component\OldForm\Bootstrap\Element\Collection,
+    CommonBundle\Component\OldForm\Bootstrap\Element\Text,
+    CommonBundle\Component\OldForm\Bootstrap\Element\Select,
+    CommonBundle\Component\OldForm\Bootstrap\Element\Submit,
     Zend\Form\Element\Hidden,
     Zend\InputFilter\InputFilter,
     Zend\InputFilter\Factory as InputFactory;
@@ -37,7 +37,7 @@ use CommonBundle\Component\Validator\Uri as UriValidator,
  *
  * @author Kristof Mariën <kristof.marien@litus.cc>
  */
-class Add extends \CommonBundle\Component\Form\Bootstrap\Form
+class Add extends \CommonBundle\Component\OldForm\Bootstrap\Form
 {
     /**
      * @var EntityManager The EntityManager instance

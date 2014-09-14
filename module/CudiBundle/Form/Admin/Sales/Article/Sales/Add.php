@@ -30,7 +30,7 @@ use CommonBundle\Component\Form\Admin\Element\Select,
  *
  * @author Kristof Mariën <kristof.marien@litus.cc>
  */
-class Add extends \CommonBundle\Component\Form\Admin\Form
+class Add extends \CommonBundle\Component\OldForm\Admin\Form
 {
     /**
      * @param null|string|int $name Optional name for the element

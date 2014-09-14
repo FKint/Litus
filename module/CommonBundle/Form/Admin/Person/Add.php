@@ -31,7 +31,7 @@ use CommonBundle\Component\Form\Admin\Element\Select,
  *
  * @author Pieter Maene <pieter.maene@litus.cc>
  */
-abstract class Add extends \CommonBundle\Component\Form\Admin\Form
+abstract class Add extends \CommonBundle\Component\OldForm\Admin\Form
 {
     /**
      * @var EntityManager The EntityManager instance

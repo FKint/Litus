@@ -21,13 +21,8 @@ namespace PublicationBundle\Controller\Admin\Edition;
 use DateTime,
     PublicationBundle\Entity\Publication,
     PublicationBundle\Entity\Edition\Html as HtmlEdition,
-    PublicationBundle\Form\Admin\Edition\Html\Add as AddForm,
-    Zend\File\Transfer\Adapter\Http as FileUpload,
-    Zend\InputFilter\InputInterface,
-    Zend\Validator\File\Size as SizeValidator,
-    Zend\Validator\File\Extension as ExtensionValidator,
     Zend\View\Model\ViewModel,
-    \ZipArchive;
+    ZipArchive;
 
 /**
  * HtmlController
@@ -62,7 +57,8 @@ class HtmlController extends \CommonBundle\Component\Controller\ActionController
         if (!($publication = $this->_getPublication()))
             return new ViewModel();
 
-        $form = new AddForm($this->getEntityManager(), $publication, $this->getCurrentAcademicYear());
+        $form = $this->getForm('publication_edition_html_add', array('publication' => $publication));
+
         $form->setAttribute(
             'action',
             $this->url()->fromRoute(
@@ -87,19 +83,18 @@ class HtmlController extends \CommonBundle\Component\Controller\ActionController
         if (!($publication = $this->_getPublication()))
             return new ViewModel();
 
-        $form = new AddForm($this->getEntityManager(), $publication, $this->getCurrentAcademicYear());
+        $form = $this->getForm('publication_edition_html_add', array('publication' => $publication));
         $formData = $this->getRequest()->getPost();
-        $form->setData($formData);
 
-        $upload = new FileUpload();
-        $inputFilter = $form->getInputFilter()->get('file');
-        if ($inputFilter instanceof InputInterface)
-            $upload->setValidators($inputFilter->getValidatorChain()->getValidators());
+        $form->setData(array_merge_recursive(
+            $formData->toArray(),
+            $this->getRequest()->getFiles()->toArray()
+        ));
 
         $date = self::_loadDate($formData['date']);
 
-        if ($form->isValid() && $upload->isValid() && $date) {
-            $formData = $form->getFormData($formData);
+        if ($form->isValid() && $date) {
+            $formData = $form->getData();
 
             $publicFilePath = $this->getEntityManager()
                 ->getRepository('CommonBundle\Entity\General\Config')
@@ -143,8 +138,7 @@ class HtmlController extends \CommonBundle\Component\Controller\ActionController
             if (!file_exists($filePath . $fileName))
                 mkdir($filePath . $fileName, 0775, true);
 
-            $zipFileName = $upload->getFileName('file');
-            $upload->receive();
+            $zipFileName = $formData['file']['tmp_name'];
 
             $zip = new ZipArchive;
 
@@ -202,9 +196,6 @@ class HtmlController extends \CommonBundle\Component\Controller\ActionController
                     $formErrors[$element->getAttribute('id')][] = $error;
                 }
             }
-
-            if (sizeof($upload->getMessages()) > 0)
-                $formErrors['file'] = $upload->getMessages();
 
             return new ViewModel(
                 array(

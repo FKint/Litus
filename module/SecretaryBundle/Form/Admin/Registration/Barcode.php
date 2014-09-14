@@ -18,13 +18,9 @@
 
 namespace SecretaryBundle\Form\Admin\Registration;
 
-use CommonBundle\Component\Form\Admin\Element\Text,
-    CommonBundle\Component\Validator\Person\Barcode as BarcodeValidator,
-    CommonBundle\Entity\User\Person,
-    Doctrine\ORM\EntityManager,
-    Zend\InputFilter\InputFilter,
-    Zend\InputFilter\Factory as InputFactory,
-    Zend\Form\Element\Submit;
+use CommonBundle\Component\Validator\Person\Barcode as BarcodeValidator;
+use CommonBundle\Entity\User\Person;
+use LogicException;
 
 /**
  * Academic Barcode form
@@ -34,51 +30,30 @@ use CommonBundle\Component\Form\Admin\Element\Text,
 class Barcode extends \CommonBundle\Component\Form\Admin\Form
 {
     /**
-     * @var EntityManager The EntityManager instance
+     * @var Person
      */
-    protected $_entityManager = null;
+    private $person;
 
-    /**
-     * @var Person The person we're going to assign a barcode
-     */
-    protected $_person = null;
-
-    /**
-     * @param EntityManager   $entityManager The EntityManager instance
-     * @param Person          $person        The person we're going to assign a barcode
-     * @param null|string|int $name          Optional name for the element
-     */
-    public function __construct(EntityManager $entityManager, Person $person, $name = null)
+    public function init()
     {
-        parent::__construct($name);
+        if (null === $this->person) {
+            throw new LogicException('Cannot add a barcode to a null person.');
+        }
 
-        $this->_entityManager = $entityManager;
-        $this->_person = $person;
+        parent::init();
 
-        $field = new Text('barcode');
-        $field->setLabel('Barcode')
-            ->setAttribute('class', 'disableEnter')
-            ->setAttribute('autofocus', true)
-            ->setRequired()
-            ->setValue($person->getBarcode() ? $person->getBarcode()->getBarcode() : '');
-        $this->add($field);
-
-        $field = new Submit('submit');
-        $field->setValue('Add')
-            ->setAttribute('class', 'secretary');
-        $this->add($field);
-    }
-
-    public function getInputFilter()
-    {
-        $inputFilter = new InputFilter();
-        $factory = new InputFactory();
-
-        $inputFilter->add(
-            $factory->createInput(
-                array(
-                    'name'     => 'barcode',
-                    'required' => true,
+        $this->add(array(
+            'type'       => 'text',
+            'name'       => 'barcode',
+            'label'      => 'Barcode',
+            'required'   => true,
+            'attributes'  => array(
+                'class'     => 'disableEnter',
+                'autofocus' => true,
+            ),
+            'value'      => $this->getPerson()->getBarcode() ? $this->getPerson()->getBarcode()->getBarcode() : '',
+            'options'    => array(
+                'input' => array(
                     'filters'  => array(
                         array('name' => 'StringTrim'),
                     ),
@@ -90,12 +65,31 @@ class Barcode extends \CommonBundle\Component\Form\Admin\Form
                                 'useChecksum' => false,
                             ),
                         ),
-                        new BarcodeValidator($this->_entityManager, $this->_person),
+                        new BarcodeValidator($this->getEntityManager(), $this->getPerson()),
                     ),
-                )
-            )
-        );
+                ),
+            ),
+        ));
 
-        return $inputFilter;
+        $this->addSubmit('Add', 'secretary');
+    }
+
+    /**
+     * @param Person
+     * @return self
+     */
+    public function setPerson(Person $person)
+    {
+        $this->person = $person;
+
+        return $this;
+    }
+
+    /**
+     * @return Person
+     */
+    public function getPerson()
+    {
+        return $this->person;
     }
 }

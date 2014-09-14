@@ -30,7 +30,7 @@ use CommonBundle\Component\Form\Admin\Element\Collection,
  *
  * @author Pieter Maene <pieter.maene@litus.cc>
  */
-class Add extends \CommonBundle\Component\Form\Admin\Form
+class Add extends \CommonBundle\Component\OldForm\Admin\Form
 {
 
     /**

@@ -18,8 +18,7 @@
 
 namespace MailBundle\Controller\Admin;
 
-use MailBundle\Form\Admin\Promotion\Mail as MailForm,
-    Zend\Mail\Message,
+use Zend\Mail\Message,
     Zend\View\Model\ViewModel;
 
 /**
@@ -31,33 +30,20 @@ class PromotionController extends \MailBundle\Component\Controller\AdminControll
 {
     public function sendAction()
     {
-        $from = $this->getEntityManager()
-            ->getRepository('CommonBundle\Entity\General\Config')
-            ->getConfigValue('secretary.mail');
-
-        $form = new MailForm($this->getEntityManager());
+        $form = $this->getForm('mail_promotion_mail');
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
+                $formData = $form->getData();
 
-                $people = array();
+                $people = $this->_getPeople($formData['to']);
 
-                foreach ($formData['to'] as $to) {
-                    $academicYear = $this->getEntityManager()
-                        ->getRepository('CommonBundle\Entity\General\AcademicYear')
-                        ->findOneById($to);
-
-                    $people = array_merge(
-                        $people,
-                        $this->getEntityManager()
-                            ->getRepository('SecretaryBundle\Entity\Promotion')
-                            ->findAllByAcademicYear($academicYear)
-                    );
-                }
+                $from = $this->getEntityManager()
+                    ->getRepository('CommonBundle\Entity\General\Config')
+                    ->getConfigValue('secretary.mail');
 
                 $mailName = $this->getEntityManager()
                     ->getRepository('CommonBundle\Entity\General\Config')
@@ -94,9 +80,9 @@ class PromotionController extends \MailBundle\Component\Controller\AdminControll
                 );
 
                 $this->redirect()->toRoute(
-                    'secretary_admin_promotion',
+                    'mail_admin_promotion',
                     array(
-                        'action' => 'manage'
+                        'action' => 'send'
                     )
                 );
 
@@ -109,5 +95,24 @@ class PromotionController extends \MailBundle\Component\Controller\AdminControll
                 'form' => $form,
             )
         );
+    }
+
+    private function _getPeople($listTo)
+    {
+        $people = array();
+        foreach ($listTo as $to) {
+            $academicYear = $this->getEntityManager()
+                ->getRepository('CommonBundle\Entity\General\AcademicYear')
+                ->findOneById($to);
+
+            $people = array_merge(
+                $people,
+                $this->getEntityManager()
+                    ->getRepository('SecretaryBundle\Entity\Promotion')
+                    ->findAllByAcademicYear($academicYear)
+            );
+        }
+
+        return $people;
     }
 }

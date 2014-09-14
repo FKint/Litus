@@ -18,10 +18,10 @@
 
 namespace CudiBundle\Form\Admin\Sales\Article\Restrictions;
 
-use CommonBundle\Component\Form\Admin\Element\Checkbox,
-    CommonBundle\Component\Form\Admin\Element\Select,
-    CommonBundle\Component\Form\Admin\Element\Hidden,
-    CommonBundle\Component\Form\Admin\Element\Text,
+use CommonBundle\Component\OldForm\Admin\Element\Checkbox,
+    CommonBundle\Component\OldForm\Admin\Element\Select,
+    CommonBundle\Component\OldForm\Admin\Element\Hidden,
+    CommonBundle\Component\OldForm\Admin\Element\Text,
     CommonBundle\Component\Util\AcademicYear,
     CudiBundle\Component\Validator\Sales\Article\Restrictions\Exists as RestrictionValidator,
     CudiBundle\Entity\Sale\Article,
@@ -36,7 +36,7 @@ use CommonBundle\Component\Form\Admin\Element\Checkbox,
  *
  * @author Kristof Mariën <kristof.marien@litus.cc>
  */
-class Add extends \CommonBundle\Component\Form\Admin\Form
+class Add extends \CommonBundle\Component\OldForm\Admin\Form
 {
     /**
      * @var EntityManager

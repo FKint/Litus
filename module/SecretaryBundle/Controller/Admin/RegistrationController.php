@@ -18,17 +18,14 @@
 
 namespace SecretaryBundle\Controller\Admin;
 
-use CommonBundle\Component\Util\AcademicYear,
-    CommonBundle\Entity\User\Barcode,
-    CommonBundle\Entity\User\Person\Organization\AcademicYearMap,
-    CommonBundle\Entity\User\Status\Organization as OrganizationStatus,
-    SecretaryBundle\Component\Registration\Articles as RegistrationArticles,
-    SecretaryBundle\Entity\Organization\MetaData,
-    SecretaryBundle\Entity\Registration,
-    SecretaryBundle\Form\Admin\Registration\Add as AddForm,
-    SecretaryBundle\Form\Admin\Registration\Barcode as BarcodeForm,
-    SecretaryBundle\Form\Admin\Registration\Edit as EditForm,
-    Zend\View\Model\ViewModel;
+use CommonBundle\Component\Util\AcademicYear;
+use CommonBundle\Entity\User\Barcode;
+use CommonBundle\Entity\User\Person\Organization\AcademicYearMap;
+use CommonBundle\Entity\User\Status\Organization as OrganizationStatus;
+use SecretaryBundle\Component\Registration\Articles as RegistrationArticles;
+use SecretaryBundle\Entity\Organization\MetaData;
+use SecretaryBundle\Entity\Registration;
+use Zend\View\Model\ViewModel;
 
 /**
  * RegistrationController
@@ -56,7 +53,7 @@ class RegistrationController extends \CommonBundle\Component\Controller\ActionCo
                 'academicYear' => $academicYear,
             ),
             array(
-                'timestamp' => 'ASC'
+                'timestamp' => 'ASC',
             )
         );
 
@@ -85,17 +82,13 @@ class RegistrationController extends \CommonBundle\Component\Controller\ActionCo
             ->getRepository('CommonBundle\Entity\General\Organization')
             ->findAll();
 
-        $form = new BarcodeForm(
-            $this->getEntityManager(), $registration->getAcademic()
-        );
+        $form = $this->getForm('secretary_registration_barcode', array('person' => $registration->getAcademic()));
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
-
                 if (null !== $registration->getAcademic()->getBarcode()) {
                     if ($registration->getAcademic()->getBarcode()->getBarcode() != $formData['barcode']) {
                         $this->getEntityManager()->remove($registration->getAcademic()->getBarcode());
@@ -147,14 +140,14 @@ class RegistrationController extends \CommonBundle\Component\Controller\ActionCo
             ->getRepository('CommonBundle\Entity\General\Organization')
             ->findAll();
 
-        $form = new AddForm($this->getEntityManager());
+        $form = $this->getForm('secretary_registration_add');
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
+                $formData = $form->getData();
 
                 $academic = $this->getEntityManager()
                     ->getRepository('CommonBundle\Entity\User\Person\Academic')
@@ -269,7 +262,7 @@ class RegistrationController extends \CommonBundle\Component\Controller\ActionCo
             ->getRepository('SecretaryBundle\Entity\Organization\MetaData')
             ->findOneByAcademicAndAcademicYear($registration->getAcademic(), $registration->getAcademicYear());
 
-        $form = new EditForm($this->getEntityManager(), $registration, $metaData);
+        $form = $this->getForm('secretary_registration_edit', array('registration' => $registration, 'metaData' => $metaData));
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
@@ -481,7 +474,7 @@ class RegistrationController extends \CommonBundle\Component\Controller\ActionCo
             $this->redirect()->toRoute(
                 'secretary_admin_registration',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -502,7 +495,7 @@ class RegistrationController extends \CommonBundle\Component\Controller\ActionCo
             $this->redirect()->toRoute(
                 'secretary_admin_registration',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -522,7 +515,7 @@ class RegistrationController extends \CommonBundle\Component\Controller\ActionCo
             $this->redirect()->toRoute(
                 'secretary_admin_registration',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
