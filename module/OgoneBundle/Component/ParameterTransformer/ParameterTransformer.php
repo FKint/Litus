@@ -81,12 +81,12 @@ class ParameterTransformer
      * @param array $parameters MUST contain ALL and ONLY the get-parameters
      * supplied by Ogone.
      * 
-     * @return \OgoneBundle\Component\Ogone\PostPaymentInformation
+     * @return \OgoneBundle\Component\ParameterTransformer\PostPaymentInformation
      * 
      * @throws \InvalidArgumentException One of the parameters were missing
      * or invalid.
      */
-    public function handlePostPayment($parameters)
+    public function handleParametersPostPayment($parameters)
     {
         
     }
