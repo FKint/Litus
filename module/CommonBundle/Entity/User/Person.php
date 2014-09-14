@@ -18,20 +18,18 @@
 
 namespace CommonBundle\Entity\User;
 
-use CommonBundle\Component\Acl\RoleAware,
-    CommonBundle\Entity\Acl\Role,
-    CommonBundle\Entity\General\Address,
-    CommonBundle\Entity\General\AcademicYear as AcademicYearEntity,
-    CommonBundle\Entity\General\Language,
-    CommonBundle\Entity\User\Code,
-    CommonBundle\Entity\User\Credential,
-    CommonBundle\Entity\User\Status\Organization as OrganizationStatus,
-    Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Mapping as ORM,
-    Zend\Mail\Message,
-    Zend\Mail\Transport\TransportInterface,
-    InvalidArgumentException;
+use CommonBundle\Component\Acl\RoleAware;
+use CommonBundle\Entity\Acl\Role;
+use CommonBundle\Entity\General\Address;
+use CommonBundle\Entity\General\AcademicYear as AcademicYearEntity;
+use CommonBundle\Entity\General\Language;
+use CommonBundle\Entity\User\Status\Organization as OrganizationStatus;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping as ORM;
+use Zend\Mail\Message;
+use Zend\Mail\Transport\TransportInterface;
+use InvalidArgumentException;
 
 /**
  * This is the entity for a person.
@@ -138,12 +136,12 @@ abstract class Person implements RoleAware
     private $canLogin;
 
     /**
-     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\User\Status\Organization", mappedBy="person", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\User\Status\Organization", mappedBy="person", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     private $organizationStatuses;
 
     /**
-     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\User\Barcode", mappedBy="person")
+     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\User\Barcode", mappedBy="person", orphanRemoval=true, cascade={"persist", "remove"})
      * @ORM\OrderBy({"time" = "ASC"})
      */
     private $barcodes;
@@ -171,27 +169,11 @@ abstract class Person implements RoleAware
      */
     private $language;
 
-    /**
-     * @param string $username    The user's username
-     * @param array  $roles       The user's roles
-     * @param string $firstName   The user's first name
-     * @param string $lastName    The user's last name
-     * @param string $email       The user's e-mail address
-     * @param string $phoneNumber The user's phone number
-     * @param string $sex         string The users sex ('m' or 'f')
-     */
-    public function __construct($username, array $roles, $firstName, $lastName, $email = null, $phoneNumber = null, $sex = null)
+    public function __construct()
     {
-        $this->setUsername($username);
-        $this->setFirstName($firstName);
-        $this->setLastName($lastName);
-        $this->setEmail($email);
-        $this->setPhoneNumber($phoneNumber);
-        $this->setSex($sex);
-
         $this->canLogin = true;
 
-        $this->roles = new ArrayCollection($roles);
+        $this->roles = new ArrayCollection();
         $this->organizationStatuses = new ArrayCollection();
     }
 
@@ -302,6 +284,13 @@ abstract class Person implements RoleAware
         );
     }
 
+    public function getSystemRoles()
+    {
+        return array_filter($this->getFlattenedRoles(), function (Role $role) {
+            return $role->getSystem();
+        });
+    }
+
     /**
      * Removes the given role.
      *
@@ -360,7 +349,7 @@ abstract class Person implements RoleAware
      */
     public function getFullName()
     {
-        return $this->firstName . ' ' . $this->lastName;
+        return $this->firstName.' '.$this->lastName;
     }
 
     /**
@@ -469,6 +458,22 @@ abstract class Person implements RoleAware
     public function getBarcode()
     {
         return isset($this->barcodes[0]) ? $this->barcodes[0] : null;
+    }
+
+    /**
+     * @param  Barcode $code
+     * @return self
+     */
+    public function addBarcode(Barcode $code)
+    {
+        foreach ($this->barcodes as $barcode) {
+            if ($code->getBarcode() === $barcode->getBarcode())
+                return $this;
+        }
+
+        $this->barcodes->add($code);
+
+        return $this;
     }
 
     /**
@@ -602,6 +607,7 @@ abstract class Person implements RoleAware
         if (null !== $this->getOrganizationStatus($academicYear)) {
             if ($this->getOrganizationStatus($academicYear) == 'non_member')
                 return false;
+
             return true;
         }
 
