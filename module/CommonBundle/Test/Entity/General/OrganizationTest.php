@@ -20,7 +20,7 @@ namespace CommonBundle\Test\Entity\General\Organization;
 use CommonBundle\Entity\General\Organization\Unit,
     CommonBundle\Entity\General\Organization;
 
-class UnitTest extends \PHPUnit_Framework_TestCase
+class OrganizationTest extends \PHPUnit_Framework_TestCase
 {
     public function testOrganisation()
     {
@@ -31,28 +31,48 @@ class UnitTest extends \PHPUnit_Framework_TestCase
     public function testUnit()
     {
         $organisation = new Organization('Org');
-        $unit1 = new Unit('unit1', 'unit1@Org', $organisation, array(
+        $unit1 = new Unit();
+        $unit1->setName('unit1');
+        $unit1->setMail('unit1@Org');
+        $unit1->setOrganization($organisation);
+        $unit1->setRoles(array(
             1,
             2,
-        ), array(
+        ));
+        $unit1->setCoordinatorRoles(array(
             100,
             101,
-        ), true);
+        ));
+        $unit1->setDisplayed(true);
 
-        $unit2 = new Unit('unit2', 'unit1@Org', $organisation, array(
+        $unit2 = new Unit();
+        $unit2->setName('unit2');
+        $unit2->setMail('unit1@Org');
+        $unit2->setOrganization($organisation);
+        $unit2->setRoles(array(
             11,
             12,
-        ), array(
+        ));
+        $unit2->setCoordinatorRoles(array(
             110,
             111,
-        ), false);
-        $unit21 = new Unit('unit21', 'unit21@Org', $organisation, array(
+        ));
+        $unit2->setDisplayed(false);
+        
+        $unit21 = new Unit();
+        $unit21->setName('unit21');
+        $unit21->setMail('unit21@Org');
+        $unit21->setOrganization($organisation);
+        $unit21->setRoles(array(
             1000,
             1102,
-        ), array(
+        ));
+        $unit21->setCoordinatorRoles(array(
             1100,
             1001,
-        ), true, $unit2);
+        ));
+        $unit21->setDisplayed(true);
+        $unit21->setParent($unit2);
 
         $this->assertEquals('unit1', $unit1->getName());
         $this->assertEquals('unit1@Org', $unit1->getMail());

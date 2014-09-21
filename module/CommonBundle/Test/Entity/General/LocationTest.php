@@ -25,7 +25,13 @@ class LocationTest extends \PHPUnit_Framework_TestCase
     public function testLocation()
     {
         $address = new Address('Studentenwijk Arenberg', '6', '0', '3001', 'Heverlee', 'BE');
-        $loc = new Location('Block 6', $address, '50.868550', '4.687454');
+        $loc = new Location();
+        
+        $loc->setName('Block 6');
+        $loc->setAddress($address);
+        $loc->setLatitude('50.868550');
+        $loc->setLongitude('4.687454');
+        
         $this->assertEquals('Block 6', $loc->getName());
         $this->assertEquals($address, $loc->getAddress());
         $this->assertEquals('50.868550', $loc->getLatitude());
