@@ -16,42 +16,46 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace BrBundle\Component\ContractParser;
+namespace BrBundle\Component\ContractParser\States;
+
+use BrBundle\Component\ContractParser\Entries;
 
 /**
  *
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class LastEntriesState extends EntryState
+class LastTextState extends EntryState
 {
-    private $lastEntries;
+    /**
+     * @var Text
+     */
+    private $lastText;
 
-    public function __construct($entries, $entry)
+    /**
+     *
+     * @param Text  $lastText
+     * @param Entry $entry
+     */
+    public function __construct($lastText, $entry)
     {
         parent::__construct($entry);
-        $this->lastEntries = $entries;
+        $this->lastText = $lastText;
     }
 
     public function addEntry($text)
     {
-        $entry = new Entry($text);
-        $this->lastEntries->addEntry($entry);
+        $entries = new Entries($text);
 
-        return $this;
+        $this->getEntry()->addNodeToList($entries);
+
+        return new LastEntriesState($entries, $this->getEntry());
     }
 
     public function addText($text)
     {
-        $t = new Text($text);
+        $this->lastText->append("\n" . $text);
 
-        $this->getEntry()->addNodeToList($t);
-
-        return new LastTextState($t, $this->getEntry());
-    }
-
-    public function passOn($indent, $text)
-    {
-        $this->lastEntries->passOn($indent, $text);
+        return $this;
     }
 }

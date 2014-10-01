@@ -23,7 +23,7 @@ namespace BrBundle\Component\ContractParser;
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class Entries extends EntryItem
+class Entries implements Node
 {
     private $lastEntry;
     private $entries;
@@ -56,7 +56,7 @@ class Entries extends EntryItem
         return $this->entries;
     }
 
-    public function visitNode($nodeVisitor)
+    public function visitNode(NodeVisitor $nodeVisitor)
     {
         $nodeVisitor->visitEntries($this);
     }

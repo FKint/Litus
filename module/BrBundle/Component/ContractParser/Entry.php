@@ -18,6 +18,8 @@
 
 namespace BrBundle\Component\ContractParser;
 
+use BrBundle\Component\ContractParser\States\NewState;
+
 /**
  *
  *
@@ -98,7 +100,7 @@ class Entry implements Node
         return $i;
     }
 
-    public function visitNode($nodeVisitor)
+    public function visitNode(NodeVisitor $nodeVisitor)
     {
         $nodeVisitor->visitEntry($this);
     }

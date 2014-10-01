@@ -16,13 +16,33 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace BrBundle\Component\ContractParser;
+namespace BrBundle\Component\ContractParser\States;
+
+use BrBundle\Component\ContractParser\Entries,
+    BrBundle\Component\ContractParser\Text;
 
 /**
  *
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-abstract class EntryItem implements Node
+class NewState extends EntryState
 {
+    public function addEntry($text)
+    {
+        $entries = new Entries($text);
+
+        $this->getEntry()->addNodeToList($entries);
+
+        return new LastEntriesState($entries, $this->getEntry());
+    }
+
+    public function addText($text)
+    {
+        $t = new Text($text);
+
+        $this->getEntry()->addNodeToList($t);
+
+        return new LastTextState($t, $this->getEntry());
+    }
 }

@@ -16,7 +16,9 @@
  * @license http://litus.cc/LICENSE
  */
 
-namespace BrBundle\Component\ContractParser;
+namespace BrBundle\Component\ContractParser\States;
+
+use BrBundle\Component\ContractParser\IllegalFormatException;
 
 /**
  *

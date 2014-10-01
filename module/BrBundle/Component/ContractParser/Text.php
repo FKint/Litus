@@ -23,7 +23,7 @@ namespace BrBundle\Component\ContractParser;
  *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class Text extends EntryItem
+class Text implements Node
 {
     private $text;
 
@@ -42,7 +42,7 @@ class Text extends EntryItem
         return $this->text;
     }
 
-    public function visitNode($nodeVisitor)
+    public function visitNode(NodeVisitor $nodeVisitor)
     {
         $nodeVisitor->visitText($this);
     }
