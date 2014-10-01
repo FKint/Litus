@@ -15,7 +15,7 @@
  *
  * @license http://litus.cc/LICENSE
  */
-namespace CommonBundle\Test\Entity\General\Organization;
+namespace CommonBundle\Test\Entity\User;
 
 use CommonBundle\Entity\User\Credential;
 
@@ -29,28 +29,28 @@ class CredentialTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($credential->validateCredential($good));
         $this->assertFalse($credential->validateCredential($bad));
     }
-    
+
     public function testShouldUpdateAllNew()
     {
         $good = 'Bear';
         $credential = new Credential($good);
         $this->assertFalse($credential->shouldUpdate());
     }
-    
+
     public function testShouldUpdateOldAlgo()
     {
         $good = 'Bear';
         $credential = new Credential($good, 'md5');
         $this->assertTrue($credential->shouldUpdate());
     }
-    
+
     public function testShouldUpdateOldNbIterations()
     {
         $good = 'Bear';
         $credential = new Credential($good, 'sha512', 1);
         $this->assertTrue($credential->shouldUpdate());
     }
-    
+
     /**
      * @expectedException \InvalidArgumentException
      */
@@ -58,21 +58,21 @@ class CredentialTest extends \PHPUnit_Framework_TestCase
     {
         new Credential('pass', 'Non-Existing-Algo');
     }
-    
+
     public function testInvalidNumberOfIterations()
     {
         $credential = new Credential('pass', 'sha512', 'a');
         $this->assertTrue($credential->validateCredential('pass'));
         $this->assertFalse($credential->validateCredential('fake'));
     }
-    
+
     public function testZeroNumberOfIterations()
     {
         $credential = new Credential('pass', 'sha512', 0);
         $this->assertTrue($credential->validateCredential('pass'));
         $this->assertFalse($credential->validateCredential('fake'));
     }
-    
+
     public function testNegativeNumberOfIterations()
     {
         $credential = new Credential('pass', 'sha512', -1);

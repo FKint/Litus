@@ -15,11 +15,11 @@
  *
  * @license http://litus.cc/LICENSE
  */
-namespace CommonBundle\Test\Entity\General\Organization;
+namespace CommonBundle\Test\Entity\User;
 
 use CommonBundle\Entity\User\Barcode,
-    CommonBundle\Test\Entity\User\Person\TestPerson;
-use CommonBundle\Entity\User\Barcode\Ean12;
+    CommonBundle\Test\Entity\User\Person\TestPerson,
+    CommonBundle\Entity\User\Barcode\Ean12;
 
 class BarcodeTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,7 +27,7 @@ class BarcodeTest extends \PHPUnit_Framework_TestCase
     {
         $person = new TestPerson();
         $bc = new Ean12($person, 112358132134);
-        
+
         $this->assertEquals(112358132134, $bc->getBarcode());
         $this->assertEquals($person, $bc->getPerson());
     }

@@ -15,7 +15,7 @@
  *
  * @license http://litus.cc/LICENSE
  */
-namespace CommonBundle\Test\Entity\General\Organization;
+namespace CommonBundle\Test\Entity\General;
 
 use CommonBundle\Entity\General\Organization\Unit,
     CommonBundle\Entity\General\Organization;
@@ -58,7 +58,7 @@ class OrganizationTest extends \PHPUnit_Framework_TestCase
             111,
         ));
         $unit2->setDisplayed(false);
-        
+
         $unit21 = new Unit();
         $unit21->setName('unit21');
         $unit21->setMail('unit21@Org');

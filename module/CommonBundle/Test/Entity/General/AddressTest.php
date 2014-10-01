@@ -26,7 +26,7 @@ class AddressTest extends \PHPUnit_Framework_TestCase
     public function testCity()
     {
         $city = new City(666, 'The city of the beast');
-        
+
         $street1 = new Street($city, 1, 'Ett');
         $street2 = new Street($city, 2, 'Två');
         $street3 = new Street($city, 3, 'Tre');
@@ -54,7 +54,7 @@ class AddressTest extends \PHPUnit_Framework_TestCase
         $address->setPostal('115 21');
         $address->setCity('Stockholm');
         $address->setCountry('SE');
-        
+
         $this->assertEquals('Galärvarvsvägen', $address->getStreet());
         $this->assertEquals('14', $address->getNumber());
         $this->assertEquals('', $address->getMailbox());
@@ -73,7 +73,7 @@ class AddressTest extends \PHPUnit_Framework_TestCase
         $address->setPostal('115 21');
         $address->setCity('Stockholm');
         $address->setCountry('Sweden');
-        
+
         $this->assertEquals('Galärvarvsvägen', $address->getStreet());
         $this->assertEquals('14', $address->getNumber());
         $this->assertEquals('', $address->getMailbox());

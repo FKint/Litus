@@ -43,8 +43,9 @@ class AclTest extends \PHPUnit_Framework_TestCase
 
         $females->addAction($readFlair);
         $superman->addAction($watchFlair);
-        
+
         $this->markTestSkipped();
+
         return;
         $acl = new Acl($entityManager);
 
@@ -91,6 +92,7 @@ class AclTest extends \PHPUnit_Framework_TestCase
 
         $granddad->addAction($killForIt);
         $this->markTestSkipped();
+
         return;
         $acl = new Acl($entityManager);
 

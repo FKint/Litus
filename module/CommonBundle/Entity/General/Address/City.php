@@ -18,8 +18,8 @@
 
 namespace CommonBundle\Entity\General\Address;
 
-use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM,
+    Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * This class represents a address entry that is saved in the database
@@ -102,7 +102,7 @@ class City
     {
         return $this->streets;
     }
-    
+
     public function addStreet(Street $street)
     {
         $this->streets[] = $street;

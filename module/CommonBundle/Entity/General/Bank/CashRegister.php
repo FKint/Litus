@@ -22,8 +22,8 @@ use CommonBundle\Entity\General\Bank\BankDevice,
     CommonBundle\Entity\General\Bank\MoneyUnit,
     Doctrine\ORM\Mapping as ORM,
     CommonBundle\Entity\General\Bank\BankDevice\Amount as DeviceAmount,
-    CommonBundle\Entity\General\Bank\MoneyUnit\Amount as MoneyAmount;
-use Doctrine\Common\Collections\ArrayCollection;
+    CommonBundle\Entity\General\Bank\MoneyUnit\Amount as MoneyAmount,
+    Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * A class that is used to store the contents of a counted register
@@ -65,7 +65,7 @@ class CashRegister
         $this->moneyUnitAmounts = new ArrayCollection();
         $this->bankDeviceAmounts = new ArrayCollection();
     }
-    
+
     /**
      * @return string
      */
@@ -82,7 +82,7 @@ class CashRegister
         return $this->moneyUnitAmounts->toArray();
     }
 
-      /**
+    /**
      * @return array
      */
     public function getBankDeviceAmounts()
@@ -129,7 +129,7 @@ class CashRegister
     {
         $this->moneyUnitAmounts[] = $amount;
     }
-    
+
     /**
      * Get amount object for a bank device.
      *
@@ -144,7 +144,7 @@ class CashRegister
             }
         }
     }
-    
+
     public function addDeviceAmount(DeviceAmount $amount)
     {
         $this->bankDeviceAmounts[] = $amount;

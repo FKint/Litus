@@ -58,7 +58,7 @@ class BankTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(350, $ba1_2->getAmount());
         $this->assertEquals(500, $ba2_1->getAmount());
         $this->assertEquals(300, $ba2_2->getAmount());
-        
+
         $this->assertEquals(0, $ca1_1->getValue());
         $this->assertEquals(40, $ca1_2->getValue());
         $this->assertEquals(3000, $ca2_1->getValue());
