@@ -19,40 +19,41 @@ namespace CommonBundle\Test\Entity\General\Organization;
 
 use CommonBundle\Entity\User\Barcode,
     CommonBundle\Test\Entity\User\Person\TestPerson;
+use CommonBundle\Entity\User\Barcode\Ean12;
 
 class BarcodeTest extends \PHPUnit_Framework_TestCase
 {
-    public function testConstructor()
+    public function testEan12Constructor()
     {
         $person = new TestPerson();
-        $bc = new Barcode($person, 112358132134);
+        $bc = new Ean12($person, 112358132134);
         
         $this->assertEquals(112358132134, $bc->getBarcode());
         $this->assertEquals($person, $bc->getPerson());
     }
 
-    public function test13DigitBarcode()
+    public function testEan12With13DigitBarcode()
     {
         $person = new TestPerson();
-        $bc = new Barcode($person, 1234567890123);
+        $bc = new Ean12($person, 1234567890123);
         $this->assertEquals(123456789012, $bc->getBarcode());
     }
 
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testTooBigBarcode()
+    public function testTooBigEan12Barcode()
     {
         $person = new TestPerson();
-        $bc = new Barcode($person, 12345678901234);
+        $bc = new Ean12($person, 12345678901234);
     }
 
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testTooShortBarcode()
+    public function testTooShortEan12Barcode()
     {
         $person = new TestPerson();
-        $bc = new Barcode($person, 12345678901);
+        $bc = new Ean12($person, 12345678901);
     }
 }
