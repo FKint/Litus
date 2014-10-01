@@ -18,13 +18,11 @@
 
 namespace LogisticsBundle\Controller;
 
-use LogisticsBundle\Component\Controller\LogisticsController,
+use DateTime,
+    LogisticsBundle\Component\Controller\LogisticsController,
     LogisticsBundle\Entity\Lease\Item,
     LogisticsBundle\Entity\Lease\Lease,
-    LogisticsBundle\Form\Lease\AddLease as AddLeaseForm,
-    LogisticsBundle\Form\Lease\AddReturn as AddReturnForm,
-    Zend\View\Model\ViewModel,
-    DateTime;
+    Zend\View\Model\ViewModel;
 
 /**
  * LeaseController
@@ -47,8 +45,8 @@ class LeaseController extends LogisticsController
 
         return new ViewModel(
             array(
-                'leases'=> $paginator,
-                'paginationControl'=>  $this->paginator()->createControl(),
+                'leases' => $paginator,
+                'paginationControl' =>  $this->paginator()->createControl(),
                 'leaseForm' => $leaseForm,
                 'returnForm' => $returnForm,
             )
@@ -57,22 +55,22 @@ class LeaseController extends LogisticsController
 
     public function showAction()
     {
-        if(!($lease = $this->_getLease()))
-
+        if (!($lease = $this->_getLease())) {
             return new ViewModel();
+        }
 
         return new ViewModel(
             array(
-                'lease'=>$lease,
+                'lease' => $lease,
             )
         );
     }
 
     public function historyAction()
     {
-        if(!($item = $this->_getItem($this->getRequest()->getQuery('barcode'))))
-
+        if (!($item = $this->_getItem($this->getRequest()->getQuery('barcode')))) {
             return new ViewModel();
+        }
 
         $paginator = $this->paginator()->createFromQuery(
             $this->getEntityManager()
@@ -83,9 +81,9 @@ class LeaseController extends LogisticsController
 
         return new ViewModel(
             array(
-                'item'=>$item,
-                'leases'=>$paginator,
-                'paginationControl'=>$this->paginator()->createControl()
+                'item' => $item,
+                'leases' => $paginator,
+                'paginationControl' => $this->paginator()->createControl(),
             )
         );
     }
@@ -103,10 +101,12 @@ class LeaseController extends LogisticsController
                 ->getRepository('LogisticsBundle\Entity\Lease\Lease');
 
             foreach ($items as $item) {
-                if($purpose === 'lease' && count($leaseRepo->findUnreturnedByItem($item)) > 0)
+                if ($purpose === 'lease' && count($leaseRepo->findUnreturnedByItem($item)) > 0) {
                     continue;
-                if($purpose === 'return' && count($leaseRepo->findUnreturnedByItem($item)) <= 0)
+                }
+                if ($purpose === 'return' && count($leaseRepo->findUnreturnedByItem($item)) <= 0) {
                     continue;
+                }
 
                 $results[] = array(
                     'id' => $item->getBarcode(),
@@ -118,7 +118,7 @@ class LeaseController extends LogisticsController
 
         return new ViewModel(
             array(
-                'result'=>$results,
+                'result' => $results,
             )
         );
     }
@@ -148,14 +148,14 @@ class LeaseController extends LogisticsController
                 'result' => array(
                     'status' => $status,
                     'additional_info' => $item->getAdditionalInfo(),
-                )
+                ),
             )
         );
     }
 
     private function _handleLeaseForm()
     {
-        $form = new AddLeaseForm($this->getEntityManager(), 'lease');
+        $form = $this->getForm('logistics_lease_add-lease');
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
@@ -163,7 +163,7 @@ class LeaseController extends LogisticsController
                 $form->setData($formData);
 
                 if ($form->isValid()) {
-                    $formData = $form->getFormData($formData);
+                    $formData = $form->getData();
 
                     $item = $this->getEntityManager()
                         ->getRepository('LogisticsBundle\Entity\Lease\Item')
@@ -172,7 +172,7 @@ class LeaseController extends LogisticsController
                     $lease = new Lease(
                         $item,
                         $formData['leased_amount'],
-                        new DateTime,
+                        new DateTime(),
                         $this->getAuthentication()->getPersonObject(),
                         $formData['leased_to'],
                         $formData['leased_pawn'],
@@ -189,11 +189,10 @@ class LeaseController extends LogisticsController
                     $this->redirect()->toRoute(
                         'logistics_lease',
                         array(
-                            'action'=> 'show',
-                            'id'=>$lease->getId(),
+                            'action' => 'show',
+                            'id' => $lease->getId(),
                         )
                     );
-
                 }
             }
         }
@@ -203,7 +202,7 @@ class LeaseController extends LogisticsController
 
     private function _handleReturnForm()
     {
-        $form = new AddReturnForm($this->getEntityManager(), 'return');
+        $form = $this->getForm('logistics_lease_add-return');
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
@@ -211,7 +210,7 @@ class LeaseController extends LogisticsController
                 $form->setData($formData);
 
                 if ($form->isValid()) {
-                    $data = $form->getFormData($formData);
+                    $data = $form->getData();
 
                     $item = $this->getEntityManager()
                         ->getRepository('LogisticsBundle\Entity\Lease\Item')
@@ -224,7 +223,7 @@ class LeaseController extends LogisticsController
                     $lease->setReturned(true)
                         ->setReturnedAmount($data['returned_amount'])
                         ->setReturnedTo($this->getAuthentication()->getPersonObject())
-                        ->setReturnedDate(new DateTime)
+                        ->setReturnedDate(new DateTime())
                         ->setReturnedPawn($data['returned_pawn'])
                         ->setReturnedBy($data['returned_by'])
                         ->setReturnedComment($data['comment']);
@@ -239,8 +238,8 @@ class LeaseController extends LogisticsController
                     $this->redirect()->toRoute(
                         'logistics_lease',
                         array(
-                            'action'=> 'show',
-                            'id'=>$lease->getId(),
+                            'action' => 'show',
+                            'id' => $lease->getId(),
                         )
                     );
                 }

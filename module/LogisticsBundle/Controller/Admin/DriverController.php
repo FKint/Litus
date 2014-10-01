@@ -19,8 +19,6 @@
 namespace LogisticsBundle\Controller\Admin;
 
 use LogisticsBundle\Entity\Driver,
-    LogisticsBundle\Form\Admin\Driver\Add,
-    LogisticsBundle\Form\Admin\Driver\Edit,
     Zend\View\Model\ViewModel;
 
 /**
@@ -49,46 +47,15 @@ class DriverController extends \CommonBundle\Component\Controller\ActionControll
 
     public function addAction()
     {
-        $form = new Add($this->getEntityManager());
+        $form = $this->getForm('logistics_driver_add');
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
-
-                $repository = $this->getEntityManager()
-                    ->getRepository('CommonBundle\Entity\User\Person\Academic');
-                if ($formData['person_id'] == '') {
-                    // No autocompletion used, we assume the username was entered
-                    $person = $repository->findOneByUsername($formData['person_name']);
-                } else {
-                    $person = $repository->findOneById($formData['person_id']);
-                }
-
-                $yearIds = $formData['years'];
-                $years = array();
-                $repository = $this->getEntityManager()
-                    ->getRepository('CommonBundle\Entity\General\AcademicYear');
-                foreach ($yearIds as $yearId) {
-                    $years[] = $repository->findOneById($yearId);
-                }
-
-                $color = $formData['color'];
-
-                $driver = $this->getEntityManager()
-                    ->getRepository('LogisticsBundle\Entity\Driver')
-                    ->findOneByPerson($person);
-
-                if (!$driver) {
-                    $driver = new Driver($person, $color);
-                    $this->getEntityManager()->persist($driver);
-                } else {
-                    $driver->setRemoved(false);
-                }
-
-                $driver->setYears($years);
+                $this->getEntityManager()->persist(
+                    $form->hydrateObject()
+                );
                 $this->getEntityManager()->flush();
 
                 $this->flashMessenger()->success(
@@ -116,29 +83,16 @@ class DriverController extends \CommonBundle\Component\Controller\ActionControll
 
     public function editAction()
     {
-        if (!($driver = $this->_getDriver()))
+        if (!($driver = $this->_getDriver())) {
             return new ViewModel();
+        }
 
-        $form = new Edit($this->getEntityManager(), $driver);
+        $form = $this->getForm('logistics_driver_edit', $driver);
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
-
-                $yearIds = $formData['years'];
-                $years = array();
-                $repository = $this->getEntityManager()
-                    ->getRepository('CommonBundle\Entity\General\AcademicYear');
-                foreach ($yearIds as $yearId) {
-                    $years[] = $repository->findOneById($yearId);
-                }
-
-                $driver->setColor($formData['color']);
-                $driver->setYears($years);
-
                 $this->getEntityManager()->flush();
 
                 $this->flashMessenger()->success(
@@ -149,7 +103,7 @@ class DriverController extends \CommonBundle\Component\Controller\ActionControll
                 $this->redirect()->toRoute(
                     'logistics_admin_driver',
                     array(
-                        'action' => 'manage'
+                        'action' => 'manage',
                     )
                 );
 
@@ -168,8 +122,9 @@ class DriverController extends \CommonBundle\Component\Controller\ActionControll
     {
         $this->initAjax();
 
-        if (!($driver = $this->_getDriver()))
+        if (!($driver = $this->_getDriver())) {
             return new ViewModel();
+        }
 
         $driver->setRemoved(true);
         $this->getEntityManager()->flush();
@@ -195,7 +150,7 @@ class DriverController extends \CommonBundle\Component\Controller\ActionControll
             $this->redirect()->toRoute(
                 'logistics_admin_driver',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -215,7 +170,7 @@ class DriverController extends \CommonBundle\Component\Controller\ActionControll
             $this->redirect()->toRoute(
                 'logistics_admin_driver',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

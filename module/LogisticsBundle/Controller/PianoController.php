@@ -22,7 +22,6 @@ use DateInterval,
     DateTime,
     IntlDateFormatter,
     LogisticsBundle\Entity\Reservation\PianoReservation,
-    LogisticsBundle\Form\PianoReservation\Add as AddForm,
     Zend\Mail\Message,
     Zend\View\Model\ViewModel;
 
@@ -33,10 +32,11 @@ class PianoController extends \CommonBundle\Component\Controller\ActionControlle
 {
     public function indexAction()
     {
-        if (!$this->getAuthentication()->isAuthenticated())
+        if (!$this->getAuthentication()->isAuthenticated()) {
             return new ViewModel();
+        }
 
-        $form = new AddForm($this->getEntityManager(), $this->getLanguage());
+        $form = $this->getForm('logistics_piano-reservation_add');
 
         $reservations = array();
         if ($this->getAuthentication()->isAuthenticated()) {
@@ -71,13 +71,13 @@ class PianoController extends \CommonBundle\Component\Controller\ActionControlle
                     ->findOneByName(PianoReservation::PIANO_RESOURCE_NAME);
 
                 $reservation = new PianoReservation(
-                    $startDate,
-                    $endDate,
                     $piano,
-                    '',
-                    $this->getAuthentication()->getPersonObject(),
                     $this->getAuthentication()->getPersonObject()
                 );
+
+                $reservation->setStartDate($startDate)
+                    ->setEndDate($endDate)
+                    ->setPlayer($this->getAuthentication()->getPersonObject());
 
                 $startWeek = new DateTime();
                 $startWeek->setISODate($reservation->getStartDate()->format('Y'), $weekIndex, 1)
@@ -162,8 +162,9 @@ class PianoController extends \CommonBundle\Component\Controller\ActionControlle
                     )
                     ->setSubject($subject);
 
-                if ('development' != getenv('APPLICATION_ENV'))
+                if ('development' != getenv('APPLICATION_ENV')) {
                     $this->getMailTransport()->send($mail);
+                }
 
                 $this->getEntityManager()->persist($reservation);
                 $this->getEntityManager()->flush();
