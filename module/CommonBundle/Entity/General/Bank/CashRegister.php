@@ -19,11 +19,11 @@
 namespace CommonBundle\Entity\General\Bank;
 
 use CommonBundle\Entity\General\Bank\BankDevice,
-    CommonBundle\Entity\General\Bank\MoneyUnit,
-    Doctrine\ORM\Mapping as ORM,
     CommonBundle\Entity\General\Bank\BankDevice\Amount as DeviceAmount,
+    CommonBundle\Entity\General\Bank\MoneyUnit,
     CommonBundle\Entity\General\Bank\MoneyUnit\Amount as MoneyAmount,
-    Doctrine\Common\Collections\ArrayCollection;
+    Doctrine\Common\Collections\ArrayCollection,
+    Doctrine\ORM\Mapping as ORM;
 
 /**
  * A class that is used to store the contents of a counted register
