@@ -20,8 +20,8 @@ namespace CommonBundle\Test\Entity\General;
 use CommonBundle\Entity\General\Bank\BankDevice,
     CommonBundle\Entity\General\Bank\BankDevice\Amount as BAmount,
     CommonBundle\Entity\General\Bank\CashRegister,
-    CommonBundle\Entity\General\Bank\MoneyUnit\Amount as MAmount,
-    CommonBundle\Entity\General\Bank\MoneyUnit;
+    CommonBundle\Entity\General\Bank\MoneyUnit,
+    CommonBundle\Entity\General\Bank\MoneyUnit\Amount as MAmount;
 
 class BankTest extends \PHPUnit_Framework_TestCase
 {

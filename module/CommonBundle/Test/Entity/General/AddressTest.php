@@ -20,7 +20,6 @@ namespace CommonBundle\Test\Entity\General;
 use CommonBundle\Entity\General\Address,
     CommonBundle\Entity\General\Address\City,
     CommonBundle\Entity\General\Address\Street;
-    
 
 class AddressTest extends \PHPUnit_Framework_TestCase
 {
