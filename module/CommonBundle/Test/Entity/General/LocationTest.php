@@ -17,8 +17,8 @@
  */
 namespace CommonBundle\Test\Entity\General;
 
-use CommonBundle\Entity\General\Location,
-    CommonBundle\Entity\General\Address;
+use CommonBundle\Entity\General\Address,
+    CommonBundle\Entity\General\Location;
 
 class LocationTest extends \PHPUnit_Framework_TestCase
 {

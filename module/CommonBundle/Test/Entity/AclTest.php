@@ -17,10 +17,10 @@
  */
 namespace CommonBundle\Test\Entity;
 
-use CommonBundle\Entity\Acl\Role,
+use CommonBundle\Component\Acl\Acl,
     CommonBundle\Entity\Acl\Action,
     CommonBundle\Entity\Acl\Resource,
-    CommonBundle\Component\Acl\Acl;
+    CommonBundle\Entity\Acl\Role;
 
 class AclTest extends \PHPUnit_Framework_TestCase
 {

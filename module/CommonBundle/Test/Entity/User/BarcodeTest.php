@@ -18,8 +18,8 @@
 namespace CommonBundle\Test\Entity\User;
 
 use CommonBundle\Entity\User\Barcode,
-    CommonBundle\Test\Entity\User\Person\TestPerson,
-    CommonBundle\Entity\User\Barcode\Ean12;
+    CommonBundle\Entity\User\Barcode\Ean12,
+    CommonBundle\Test\Entity\User\Person\TestPerson;
 
 class BarcodeTest extends \PHPUnit_Framework_TestCase
 {

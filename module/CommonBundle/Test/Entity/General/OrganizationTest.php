@@ -17,8 +17,8 @@
  */
 namespace CommonBundle\Test\Entity\General;
 
-use CommonBundle\Entity\General\Organization\Unit,
-    CommonBundle\Entity\General\Organization;
+use CommonBundle\Entity\General\Organization,
+    CommonBundle\Entity\General\Organization\Unit;
 
 class OrganizationTest extends \PHPUnit_Framework_TestCase
 {

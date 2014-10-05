@@ -47,5 +47,4 @@ abstract class EntryState
     abstract public function addEntry($text);
 
     abstract public function addText($text);
-
 }

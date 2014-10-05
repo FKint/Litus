@@ -18,8 +18,8 @@
 
 namespace CommonBundle\Entity\General\Address;
 
-use Doctrine\ORM\Mapping as ORM,
-    Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\ArrayCollection,
+    Doctrine\ORM\Mapping as ORM;
 
 /**
  * This class represents a address entry that is saved in the database
