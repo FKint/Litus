@@ -20,9 +20,10 @@ namespace FormBundle\Entity\Node;
 
 use CommonBundle\Entity\General\Language,
     CommonBundle\Entity\User\Person,
+    DateTime,
     Doctrine\ORM\EntityManager,
     Doctrine\ORM\Mapping as ORM,
-    DateTime;
+    Locale;
 
 /**
  * This entity stores the form group item
@@ -72,8 +73,9 @@ class Group extends \CommonBundle\Entity\Node
      */
     public function getStartDate()
     {
-        if (sizeof($this->forms) > 0)
+        if (sizeof($this->forms) > 0) {
             return $this->forms[0]->getForm()->getStartDate();
+        }
     }
 
     /**
@@ -96,8 +98,9 @@ class Group extends \CommonBundle\Entity\Node
      */
     public function getEndDate()
     {
-        if (sizeof($this->forms) > 0)
+        if (sizeof($this->forms) > 0) {
             return $this->forms[0]->getForm()->getEndDate();
+        }
     }
 
     /**
@@ -120,8 +123,9 @@ class Group extends \CommonBundle\Entity\Node
      */
     public function isActive()
     {
-        if (sizeof($this->forms) > 0)
+        if (sizeof($this->forms) > 0) {
             return $this->forms[0]->getForm()->isActive();
+        }
     }
 
     /**
@@ -144,8 +148,9 @@ class Group extends \CommonBundle\Entity\Node
      */
     public function getMax()
     {
-        if (sizeof($this->forms) > 0)
+        if (sizeof($this->forms) > 0) {
             return $this->forms[0]->getForm()->getMax();
+        }
     }
 
     /**
@@ -168,8 +173,9 @@ class Group extends \CommonBundle\Entity\Node
      */
     public function isEditableByUser()
     {
-        if (sizeof($this->forms) > 0)
+        if (sizeof($this->forms) > 0) {
             return $this->forms[0]->getForm()->isEditableByUser();
+        }
     }
 
     /**
@@ -192,8 +198,9 @@ class Group extends \CommonBundle\Entity\Node
      */
     public function isNonMember()
     {
-        if (sizeof($this->forms) > 0)
+        if (sizeof($this->forms) > 0) {
             return $this->forms[0]->getForm()->isNonMember();
+        }
     }
 
     /**
@@ -205,8 +212,9 @@ class Group extends \CommonBundle\Entity\Node
     {
         $translation = $this->getTranslation($language, $allowFallback);
 
-        if (null !== $translation)
+        if (null !== $translation) {
             return $translation->getTitle();
+        }
 
         return '';
     }
@@ -220,8 +228,9 @@ class Group extends \CommonBundle\Entity\Node
     {
         $translation = $this->getTranslation($language, $allowFallback);
 
-        if (null !== $translation)
+        if (null !== $translation) {
             return $translation->getIntroduction();
+        }
 
         return '';
     }
@@ -234,15 +243,18 @@ class Group extends \CommonBundle\Entity\Node
     public function getTranslation(Language $language = null, $allowFallback = true)
     {
         foreach ($this->translations as $translation) {
-            if (null !== $language && $translation->getLanguage() == $language)
+            if (null !== $language && $translation->getLanguage() == $language) {
                 return $translation;
+            }
 
-            if ($translation->getLanguage()->getAbbrev() == \Locale::getDefault())
+            if ($translation->getLanguage()->getAbbrev() == Locale::getDefault()) {
                 $fallbackTranslation = $translation;
+            }
         }
 
-        if ($allowFallback && isset($fallbackTranslation))
+        if ($allowFallback && isset($fallbackTranslation)) {
             return $fallbackTranslation;
+        }
 
         return null;
     }
@@ -262,12 +274,14 @@ class Group extends \CommonBundle\Entity\Node
     public function getFormNumber(Form $form)
     {
         $i = 1;
-        if (sizeof($this->forms) == 0)
+        if (sizeof($this->forms) == 0) {
             return 0;
+        }
 
         foreach ($this->forms as $search) {
-            if ($search->getForm()->getId() == $form->getId())
+            if ($search->getForm()->getId() == $form->getId()) {
                 return $i;
+            }
             $i++;
         }
 
@@ -293,15 +307,18 @@ class Group extends \CommonBundle\Entity\Node
      */
     public function canBeEditedBy(Person $person = null)
     {
-        if (null === $person)
+        if (null === $person) {
             return false;
+        }
 
-        if ($this->getCreationPerson()->getId() === $person->getId())
+        if ($this->getCreationPerson()->getId() === $person->getId()) {
             return true;
+        }
 
         foreach ($person->getFlattenedRoles() as $role) {
-            if ($role->getName() == 'editor')
+            if ($role->getName() == 'editor') {
                 return true;
+            }
         }
 
         return false;
@@ -315,8 +332,9 @@ class Group extends \CommonBundle\Entity\Node
      */
     public function canBeViewedBy(Person $person = null)
     {
-        if (sizeof($this->forms) == 0)
+        if (sizeof($this->forms) == 0) {
             return false;
+        }
 
         $this->forms[0]->getForm()->setEntityManager($this->_entityManager);
 

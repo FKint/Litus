@@ -21,7 +21,8 @@ namespace CudiBundle\Entity\Sale;
 use CudiBundle\Entity\Sale\Article\Discount\Discount,
     DateTime,
     Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Mapping as ORM;
+    Doctrine\ORM\Mapping as ORM,
+    InvalidArgumentException;
 
 /**
  * @ORM\Entity(repositoryClass="CudiBundle\Repository\Sale\SaleItem")
@@ -115,8 +116,9 @@ class SaleItem
     public function __construct(Article $article, $number, $price, QueueItem $queueItem = null, $discountType = null, EntityManager $entityManager = null)
     {
         if (null == $queueItem) {
-            if (null == $entityManager)
-                throw new \InvalidArgumentException('EntityManager must be set');
+            if (null == $entityManager) {
+                throw new InvalidArgumentException('EntityManager must be set');
+            }
             $this->session = $entityManager->getRepository('CudiBundle\Entity\Sale\Session')
                 ->getLast();
         } else {
@@ -246,8 +248,9 @@ class SaleItem
      */
     public function getDiscountType()
     {
-        if (isset(Discount::$POSSIBLE_TYPES[$this->discountType]))
+        if (isset(Discount::$POSSIBLE_TYPES[$this->discountType])) {
             return Discount::$POSSIBLE_TYPES[$this->discountType];
+        }
     }
 
     /**

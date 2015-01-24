@@ -18,10 +18,7 @@
 
 namespace BrBundle\Controller\Admin;
 
-use BrBundle\Entity\Collaborator,
-    BrBundle\Form\Admin\Collaborator\Add as AddForm,
-    BrBundle\Form\Admin\Collaborator\Edit as EditForm,
-    Zend\View\Model\ViewModel;
+use Zend\View\Model\ViewModel;
 
 /**
  * CollaboratorController
@@ -47,20 +44,16 @@ class CollaboratorController extends \CommonBundle\Component\Controller\ActionCo
 
     public function addAction()
     {
-        $form = new AddForm($this->getEntityManager());
+        $form = $this->getForm('br_collaborator_add');
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $person = $this->getEntityManager()
-                    ->getRepository('CommonBundle\Entity\User\Person')
-                    ->findOneById($formData['person_id']);
-
-                $collaborator = new Collaborator($person,$formData['number']);
-
-                $this->getEntityManager()->persist($collaborator);
+                $this->getEntityManager()->persist(
+                    $form->hydrateObject()
+                );
 
                 $this->getEntityManager()->flush();
 
@@ -89,23 +82,22 @@ class CollaboratorController extends \CommonBundle\Component\Controller\ActionCo
 
     public function editAction()
     {
-        if (!($collaborator = $this->_getCollaborator()))
+        if (!($collaborator = $this->_getCollaborator())) {
             return new ViewModel();
+        }
 
-        $form = new EditForm($this->getEntityManager(), $collaborator);
+        $form = $this->getForm('br_collaborator_edit', $collaborator);
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $collaborator->setNumber($formData['number']);
-
                 $this->getEntityManager()->flush();
 
                 $this->flashMessenger()->success(
                     'Success',
-                    'The collaborator was succesfully created!'
+                    'The collaborator was succesfully updated!'
                 );
 
                 $this->redirect()->toRoute(
@@ -122,14 +114,16 @@ class CollaboratorController extends \CommonBundle\Component\Controller\ActionCo
         return new ViewModel(
             array(
                 'form' => $form,
+                'collaborator' => $collaborator,
             )
         );
     }
 
     public function retireAction()
     {
-        if (!($collaborator = $this->_getCollaborator()))
+        if (!($collaborator = $this->_getCollaborator())) {
             return new ViewModel();
+        }
 
         $collaborator->retire();
 
@@ -152,8 +146,9 @@ class CollaboratorController extends \CommonBundle\Component\Controller\ActionCo
 
     public function rehireAction()
     {
-        if (!($collaborator = $this->_getCollaborator()))
+        if (!($collaborator = $this->_getCollaborator())) {
             return new ViewModel();
+        }
 
         $collaborator->rehire();
 
@@ -185,7 +180,7 @@ class CollaboratorController extends \CommonBundle\Component\Controller\ActionCo
             $this->redirect()->toRoute(
                 'br_admin_collaborator',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -205,7 +200,7 @@ class CollaboratorController extends \CommonBundle\Component\Controller\ActionCo
             $this->redirect()->toRoute(
                 'br_admin_collaborator',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

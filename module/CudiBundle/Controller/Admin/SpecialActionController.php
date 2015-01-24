@@ -20,7 +20,6 @@ namespace CudiBundle\Controller\Admin;
 
 use CudiBundle\Component\Mail\Booking as BookingMail,
     CudiBundle\Entity\Sale\Booking,
-    CudiBundle\Form\Admin\SpecialActions\Irreeel\Assign as IrreeelForm,
     Zend\View\Model\ViewModel;
 
 /**
@@ -37,24 +36,26 @@ class SpecialActionController extends \CudiBundle\Component\Controller\ActionCon
 
     public function irreeelAction()
     {
-        $form = new IrreeelForm();
+        $form = $this->getForm('cudi_special-action_irreeel_assign');
 
         $academicYear = $this->getCurrentAcademicYear();
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
+                $formData = $form->getData();
+
                 $number = 0;
                 $article = $this->getEntityManager()
                     ->getRepository('CudiBundle\Entity\Sale\Article')
-                    ->findOneById($formData['article_id']);
+                    ->findOneById($formData['article']['id']);
 
                 $criteria = array('academicYear' => $academicYear->getId());
 
-                if ($formData['only_cudi'])
+                if ($formData['only_cudi']) {
                     $criteria['irreeelAtCudi'] = true;
+                }
 
                 $people = $this->getEntityManager()
                     ->getRepository('SecretaryBundle\Entity\Organization\MetaData')
@@ -64,8 +65,9 @@ class SpecialActionController extends \CudiBundle\Component\Controller\ActionCon
                     $registration = $this->getEntityManager()
                         ->getRepository('SecretaryBundle\Entity\Registration')
                         ->findOneByAcademic($person->getAcademic());
-                    if (null === $registration)
+                    if (null === $registration) {
                         continue;
+                    }
 
                     if ($person->getAcademic()->isMember($academicYear) && $registration->hasPayed()) {
                         $booking = $this->getEntityManager()
@@ -81,8 +83,9 @@ class SpecialActionController extends \CudiBundle\Component\Controller\ActionCon
                             $booking = new Booking($this->getEntityManager(), $person->getAcademic(), $article, 'assigned', 1, true);
                             $this->getEntityManager()->persist($booking);
 
-                            if (!$formData['test'] && $formData['send_mail'])
+                            if (!$formData['test'] && $formData['send_mail']) {
                                 BookingMail::sendAssignMail($this->getEntityManager(), $this->getMailTransport(), array($booking), $booking->getPerson());
+                            }
                         } elseif ($booking->getStatus() == 'booked') {
                             $number++;
                             $booking->setStatus('assigned', $this->getEntityManager());
@@ -115,7 +118,7 @@ class SpecialActionController extends \CudiBundle\Component\Controller\ActionCon
 
                     $this->flashMessenger()->success(
                         'SUCCESS',
-                        'There are <b>' . $number . '</b> ' . $article->getMainArticle()->getTitle() . ' would be assigned!'
+                        'There are <b>' . $number . '</b> ' . $article->getMainArticle()->getTitle() . ' that would be assigned!'
                     );
 
                     $this->redirect()->toRoute(

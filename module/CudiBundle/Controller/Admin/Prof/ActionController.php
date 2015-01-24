@@ -20,8 +20,6 @@ namespace CudiBundle\Controller\Admin\Prof;
 
 use CudiBundle\Entity\Article\History,
     CudiBundle\Entity\Log\Article\SubjectMap\Added as SubjectMapAddedLog,
-    CudiBundle\Form\Admin\Prof\Article\Confirm as ArticleForm,
-    CudiBundle\Form\Admin\Prof\File\Confirm as FileForm,
     Zend\View\Model\ViewModel;
 
 /**
@@ -84,8 +82,9 @@ class ActionController extends \CudiBundle\Component\Controller\ActionController
 
     public function viewAction()
     {
-        if (!($action = $this->_getAction()))
+        if (!($action = $this->_getAction())) {
             return new ViewModel();
+        }
 
         $action->setEntityManager($this->getEntityManager());
 
@@ -98,8 +97,9 @@ class ActionController extends \CudiBundle\Component\Controller\ActionController
 
     public function refuseAction()
     {
-        if (!($action = $this->_getAction()))
+        if (!($action = $this->_getAction())) {
             return new ViewModel();
+        }
 
         $action->setRefused($this->getAuthentication()->getPersonObject());
 
@@ -113,7 +113,7 @@ class ActionController extends \CudiBundle\Component\Controller\ActionController
         $this->redirect()->toRoute(
             'cudi_admin_prof_action',
             array(
-                'action' => 'refused'
+                'action' => 'refused',
             )
         );
 
@@ -122,8 +122,9 @@ class ActionController extends \CudiBundle\Component\Controller\ActionController
 
     public function confirmAction()
     {
-        if (!($action = $this->_getAction()))
+        if (!($action = $this->_getAction())) {
             return new ViewModel();
+        }
 
         $action->setEntityManager($this->getEntityManager());
 
@@ -143,7 +144,7 @@ class ActionController extends \CudiBundle\Component\Controller\ActionController
             } else {
                 $edited = $action->getEntity();
                 $current = $action->getPreviousEntity();
-                $duplicate = $current->duplicate();
+                $duplicate = clone $current;
 
                 $current->setTitle($edited->getTitle())
                     ->setAuthors($edited->getAuthors())
@@ -215,7 +216,7 @@ class ActionController extends \CudiBundle\Component\Controller\ActionController
         $this->redirect()->toRoute(
             'cudi_admin_prof_action',
             array(
-                'action' => 'completed'
+                'action' => 'completed',
             )
         );
 
@@ -224,8 +225,9 @@ class ActionController extends \CudiBundle\Component\Controller\ActionController
 
     public function confirmArticleAction()
     {
-        if (!($action = $this->_getAction()))
+        if (!($action = $this->_getAction())) {
             return new ViewModel();
+        }
 
         $action->setEntityManager($this->getEntityManager());
 
@@ -238,55 +240,25 @@ class ActionController extends \CudiBundle\Component\Controller\ActionController
             $this->redirect()->toRoute(
                 'cudi_admin_prof_action',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
             return new ViewModel();
         }
 
-        $form = new ArticleForm($this->getEntityManager(), $action->getEntity());
+        $article = $action->getEntity();
+
+        $form = $this->getForm('cudi_prof_article_confirm', array('article' => $article));
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
-
-                $action->getEntity()->setTitle($formData['title'])
-                    ->setAuthors($formData['author'])
-                    ->setPublishers($formData['publisher'])
-                    ->setYearPublished($formData['year_published'])
-                    ->setISBN($formData['isbn'] != ''? $formData['isbn'] : null)
-                    ->setURL($formData['url'])
-                    ->setIsDownloadable($formData['downloadable'])
-                    ->setType($formData['type']);
-
-                if ($formData['internal']) {
-                    $binding = $this->getEntityManager()
-                        ->getRepository('CudiBundle\Entity\Article\Option\Binding')
-                        ->findOneById($formData['binding']);
-
-                    $frontPageColor = $this->getEntityManager()
-                        ->getRepository('CudiBundle\Entity\Article\Option\Color')
-                        ->findOneById($formData['front_color']);
-
-                    $action->getEntity()->setNbBlackAndWhite($formData['nb_black_and_white'])
-                        ->setNbColored($formData['nb_colored'])
-                        ->setBinding($binding)
-                        ->setIsOfficial($formData['official'])
-                        ->setIsRectoVerso($formData['rectoverso'])
-                        ->setFrontColor($frontPageColor)
-                        ->setIsPerforated($formData['perforated'])
-                        ->setIsColored($formData['colored']);
-                }
-
-                $action->getEntity()->setIsProf(false);
+                $article->setIsProf(false);
 
                 $action->setCompleted($this->getAuthentication()->getPersonObject());
 
-                $article = $action->getEntity();
                 if ($article->isInternal()) {
                     $cachePath = $this->getEntityManager()
                         ->getRepository('CommonBundle\Entity\General\Config')
@@ -302,7 +274,7 @@ class ActionController extends \CudiBundle\Component\Controller\ActionController
                 $this->redirect()->toRoute(
                     'cudi_admin_prof_action',
                     array(
-                        'action' => 'completed'
+                        'action' => 'completed',
                     )
                 );
 
@@ -319,25 +291,25 @@ class ActionController extends \CudiBundle\Component\Controller\ActionController
 
     public function confirmFileAction()
     {
-        if (!($action = $this->_getAction()))
+        if (!($action = $this->_getAction())) {
             return new ViewModel();
+        }
 
         $action->setEntityManager($this->getEntityManager());
 
-        $form = new FileForm($action->getEntity());
+        $mapping = $action->getEntity();
+
+        $form = $this->getForm('cudi_prof_file_confirm', array('mapping' => $mapping));
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
+                $formData = $form->getData();
 
-                $action->getEntity()
+                $mapping->setIsProf(false)
                     ->setPrintable($formData['printable'])
                     ->getFile()->setDescription($formData['description']);
-
-                $action->getEntity()->setIsProf(false);
 
                 $action->setCompleted($this->getAuthentication()->getPersonObject());
 
@@ -346,7 +318,7 @@ class ActionController extends \CudiBundle\Component\Controller\ActionController
                 $this->redirect()->toRoute(
                     'cudi_admin_prof_action',
                     array(
-                        'action' => 'completed'
+                        'action' => 'completed',
                     )
                 );
 
@@ -372,7 +344,7 @@ class ActionController extends \CudiBundle\Component\Controller\ActionController
             $this->redirect()->toRoute(
                 'cudi_admin_prof_action',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -392,7 +364,7 @@ class ActionController extends \CudiBundle\Component\Controller\ActionController
             $this->redirect()->toRoute(
                 'cudi_admin_prof_action',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

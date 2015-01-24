@@ -18,6 +18,8 @@
 
 namespace CommonBundle\Component\Form;
 
+use Zend\Form\FormInterface;
+
 /**
  * @author Bram Gotink <bram.gotink@litus.cc>
  */
@@ -41,10 +43,11 @@ trait ElementTrait
         $this->setAttribute('required', $flag);
 
         $labelAttributes = $this->getLabelAttributes() ?: array();
-        if (isset($labelAttributes['class']))
+        if (isset($labelAttributes['class'])) {
             $labelAttributes['class'] .= ' ' . ($flag ? 'required' : 'optional');
-        else
+        } else {
             $labelAttributes['class'] = ($flag ? 'required' : 'optional');
+        }
         $this->setLabelAttributes($labelAttributes);
 
         $this->_required = $flag;
@@ -66,10 +69,11 @@ trait ElementTrait
      */
     public function addClass($class)
     {
-        if ($this->hasAttribute('class'))
+        if ($this->hasAttribute('class')) {
             $this->setAttribute('class', $this->getAttribute('class') . ' ' . $class);
-        else
+        } else {
             $this->setAttribute('class', $class);
+        }
 
         return $this;
     }
@@ -111,12 +115,26 @@ trait ElementTrait
 
         $config = $this->getOption('input');
 
-        if (!array_key_exists('required', $config))
+        if (!array_key_exists('required', $config)) {
             $config['required'] = $this->isRequired();
+        }
 
         $config['name'] = $this->getName();
 
         return $config;
+    }
+
+    /**
+     * Prepare the form element (mostly used for rendering purposes)
+     *
+     * @param  FormInterface $form
+     * @return mixed
+     */
+    public function prepareElement(FormInterface $form)
+    {
+        if (!$this->hasAttribute('id')) {
+            $this->setAttribute('id', md5($this->getName() . rand() . rand()));
+        }
     }
 
     // The following methods are required by the trait
@@ -128,13 +146,13 @@ trait ElementTrait
     abstract public function setAttribute($name, $value);
 
     /**
-     * @param $name
+     * @param  string     $name
      * @return mixed|null
      */
     abstract public function getAttribute($name);
 
     /**
-     * @param          $name
+     * @param  string  $name
      * @return boolean
      */
     abstract public function hasAttribute($name);

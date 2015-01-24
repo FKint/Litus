@@ -18,8 +18,8 @@
 
 namespace SecretaryBundle\Hydrator\Organization;
 
-use CommonBundle\Entity\User\Status\University as UniversityStatus;
-use SecretaryBundle\Entity\Organization\MetaData as MetaDataEntity;
+use CommonBundle\Entity\User\Status\University as UniversityStatus,
+    SecretaryBundle\Entity\Organization\MetaData as MetaDataEntity;
 
 class MetaData extends \CommonBundle\Component\Hydrator\Hydrator
 {
@@ -39,7 +39,7 @@ class MetaData extends \CommonBundle\Component\Hydrator\Hydrator
             'organization_info' => $this->stdExtract($object, self::$std_keys),
         );
 
-        $data['organization_info']['receive_irreeel_at_cud'] = $object->receiveIrreeelAtCudi();
+        $data['organization_info']['receive_irreeel_at_cudi'] = $object->receiveIrreeelAtCudi();
         $data['organization_info']['become_member'] = $object->becomeMember();
         $data['organization_info']['bakske_by_mail'] = $object->bakskeByMail();
 
@@ -66,7 +66,7 @@ class MetaData extends \CommonBundle\Component\Hydrator\Hydrator
 
             $academicEntity = $this->getEntityManager()
                 ->getRepository('CommonBundle\Entity\User\Person\Academic')
-                ->findOneByUniversityIdentification($academic['university_identification']);
+                ->findOneByUniversityIdentification($academic['university']['identification']);
 
             $academic = $this->getHydrator('CommonBundle\Hydrator\User\Person\Academic')
                 ->hydrate($academic, $academicEntity);

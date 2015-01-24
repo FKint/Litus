@@ -18,19 +18,12 @@
 
 namespace FormBundle\Controller\Admin;
 
-use CommonBundle\Component\Controller\Exception\RuntimeException,
-    DateTime,
-    FormBundle\Component\Exception\UnsupportedTypeException,
+use FormBundle\Component\Exception\UnsupportedTypeException,
     FormBundle\Entity\Field\Checkbox as CheckboxField,
-    FormBundle\Entity\Field\String as StringField,
     FormBundle\Entity\Field\Dropdown as DropdownField,
     FormBundle\Entity\Field\File as FileField,
+    FormBundle\Entity\Field\String as StringField,
     FormBundle\Entity\Field\TimeSlot as TimeSlotField,
-    FormBundle\Entity\Field\Translation\Option as OptionTranslationField,
-    FormBundle\Entity\Field\Translation\TimeSlot as TimeSlotTranslationField,
-    FormBundle\Entity\Translation,
-    FormBundle\Form\Admin\Field\Add as AddForm,
-    FormBundle\Form\Admin\Field\Edit as EditForm,
     Zend\View\Model\ViewModel;
 
 /**
@@ -42,8 +35,9 @@ class FieldController extends \CommonBundle\Component\Controller\ActionControlle
 {
     public function manageAction()
     {
-        if (!($formSpecification = $this->_getForm()))
+        if (!($formSpecification = $this->_getForm())) {
             return new ViewModel();
+        }
 
         if (!$formSpecification->canBeEditedBy($this->getAuthentication()->getPersonObject())) {
             $this->flashMessenger()->error(
@@ -73,8 +67,9 @@ class FieldController extends \CommonBundle\Component\Controller\ActionControlle
 
     public function addAction()
     {
-        if (!($formSpecification = $this->_getForm()))
+        if (!($formSpecification = $this->_getForm())) {
             return new ViewModel();
+        }
 
         if (!$formSpecification->canBeEditedBy($this->getAuthentication()->getPersonObject())) {
             $this->flashMessenger()->error(
@@ -96,125 +91,46 @@ class FieldController extends \CommonBundle\Component\Controller\ActionControlle
             ->getRepository('FormBundle\Entity\Field')
             ->findLatestField($formSpecification);
 
-        $form = new AddForm($formSpecification, $this->getEntityManager(), $this->getParam('repeat') ? $latestField : null);
+        $form = $this->getForm(
+            'form_field_add',
+            array(
+                'form' => $formSpecification,
+                'field' => $this->getParam('repeat') ? $latestField : null,
+                'repeat' => $this->getParam('repeat') == '1',
+            )
+        );
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
-
-                $languages = $this->getEntityManager()
-                    ->getRepository('CommonBundle\Entity\General\Language')
-                    ->findAll();
-
-                $visibilityDecissionField = $this->getEntityManager()
-                    ->getRepository('FormBundle\Entity\Field')
-                    ->findOneById($formData['visible_if']);
+                $formData = $form->getData();
 
                 switch ($formData['type']) {
                     case 'string':
-                        $field = new StringField(
-                            $formSpecification,
-                            $formData['order'],
-                            $formData['required'],
-                            $visibilityDecissionField,
-                            isset($visibilityDecissionField) ? $formData['visible_value'] : null,
-                            $formData['charsperline'] === '' ? 0 : $formData['charsperline'],
-                            $formData['lines'] === '' ? 0 : $formData['lines'],
-                            $formData['multiline']
-                        );
+                        $field = new StringField($formSpecification);
                         break;
                     case 'dropdown':
-                        $field = new DropdownField(
-                            $formSpecification,
-                            $formData['order'],
-                            $formData['required'],
-                            $visibilityDecissionField,
-                            isset($visibilityDecissionField) ? $formData['visible_value'] : null
-                        );
-
-                        foreach ($languages as $language) {
-                            if ('' != $formData['options_' . $language->getAbbrev()]) {
-                                $translation = new OptionTranslationField(
-                                    $field,
-                                    $language,
-                                    $formData['options_' . $language->getAbbrev()]
-                                );
-
-                                $this->getEntityManager()->persist($translation);
-                            }
-                        }
-
+                        $field = new DropdownField($formSpecification);
                         break;
                     case 'checkbox':
-                        $field = new CheckboxField(
-                            $formSpecification,
-                            $formData['order'],
-                            $formData['required'],
-                            $visibilityDecissionField,
-                            isset($visibilityDecissionField) ? $formData['visible_value'] : null
-                        );
+                        $field = new CheckboxField($formSpecification);
                         break;
-                     case 'file':
-                        $field = new FileField(
-                            $formSpecification,
-                            $formData['order'],
-                            $formData['required'],
-                            $visibilityDecissionField,
-                            isset($visibilityDecissionField) ? $formData['visible_value'] : null,
-                            $formData['max_size'] === '' ? 4 : $formData['max_size']
-                        );
+                    case 'file':
+                        $field = new FileField($formSpecification);
                         break;
                     case 'timeslot':
-                        $startDate = self::_loadDate($formData['timeslot_start_date']);
-                        $endDate = self::_loadDate($formData['timeslot_end_date']);
-                        if (!$startDate && !$endDate)
-                            throw new RuntimeException('Invalid date given');
-
-                        $field = new TimeSlotField(
-                            $formSpecification,
-                            0,
-                            $formData['required'],
-                            $visibilityDecissionField,
-                            isset($visibilityDecissionField) ? $formData['visible_value'] : null,
-                            $startDate,
-                            $endDate
-                        );
-
-                        foreach ($languages as $language) {
-                            if ('' == $formData['timeslot_location_' . $language->getAbbrev()] && '' == $formData['timeslot_extra_info_' . $language->getAbbrev()])
-                                continue;
-                            $translation = new TimeSlotTranslationField(
-                                $field,
-                                $language,
-                                $formData['timeslot_location_' . $language->getAbbrev()],
-                                $formData['timeslot_extra_info_' . $language->getAbbrev()]
-                            );
-
-                            $this->getEntityManager()->persist($translation);
-                        }
+                        $field = new TimeSlotField($formSpecification);
                         break;
                     default:
                         throw new UnsupportedTypeException('This field type is unknown!');
                 }
 
+                $field = $form->hydrateObject($field);
+
                 $formSpecification->addField($field);
-
                 $this->getEntityManager()->persist($field);
-
-                foreach ($languages as $language) {
-                    if ('' != $formData['label_' . $language->getAbbrev()]) {
-                        $translation = new Translation(
-                            $field,
-                            $language,
-                            $formData['label_' . $language->getAbbrev()]
-                        );
-
-                        $this->getEntityManager()->persist($translation);
-                    }
-                }
 
                 $this->getEntityManager()->flush();
 
@@ -223,7 +139,7 @@ class FieldController extends \CommonBundle\Component\Controller\ActionControlle
                     'The field was successfully created!'
                 );
 
-                if (isset($formData['submit_repeat'])) {
+                if (null !== $this->getRequest()->getPost()->get('submit_repeat')) {
                     $this->redirect()->toRoute(
                         'form_admin_form_field',
                         array(
@@ -256,8 +172,9 @@ class FieldController extends \CommonBundle\Component\Controller\ActionControlle
 
     public function editAction()
     {
-        if (!($field = $this->_getField()))
+        if (!($field = $this->_getField())) {
             return new ViewModel();
+        }
 
         if (!$field->getForm()->canBeEditedBy($this->getAuthentication()->getPersonObject())) {
             $this->flashMessenger()->error(
@@ -275,104 +192,20 @@ class FieldController extends \CommonBundle\Component\Controller\ActionControlle
             return new ViewModel();
         }
 
-        $form = new EditForm($field, $this->getEntityManager());
+        $form = $this->getForm(
+            'form_field_add',
+            array(
+                'form' => $field->getForm(),
+                'field' => $field,
+                'repeat' => false,
+            )
+        );
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
-
-                $languages = $this->getEntityManager()
-                    ->getRepository('CommonBundle\Entity\General\Language')
-                    ->findAll();
-
-                $visibilityDecissionField = $this->getEntityManager()
-                    ->getRepository('FormBundle\Entity\Field')
-                    ->findOneById($formData['visible_if']);
-
-                $field->setOrder($formData['order'])
-                    ->setRequired($formData['required'])
-                    ->setVisibilityDecissionField($visibilityDecissionField)
-                    ->setVisibilityValue(isset($visibilityDecissionField) ? $formData['visible_value'] : null);
-
-                if ($field instanceof StringField) {
-                    $field->setLineLength($formData['charsperline'] === '' ? 0 : $formData['charsperline'])
-                        ->setLines($formData['lines'] === '' ? 0 : $formData['lines'])
-                        ->setMultiLine($formData['multiline']);
-                } elseif ($field instanceof DropdownField) {
-                    foreach ($languages as $language) {
-                        if ('' != $formData['options_' . $language->getAbbrev()]) {
-                            $translation = $field->getOptionTranslation($language, false);
-
-                            if (null !== $translation) {
-                                $translation->setOptions($formData['options_' . $language->getAbbrev()]);
-                            } else {
-                                $translation = new OptionTranslationField(
-                                    $field,
-                                    $language,
-                                    $formData['options_' . $language->getAbbrev()]
-                                );
-
-                                $this->getEntityManager()->persist($translation);
-                            }
-                        }
-                    }
-                } elseif ($field instanceof FileField) {
-                    $field->setMaxSize($formData['max_size'] === '' ? 4 : $formData['max_size']);
-                } elseif ($field instanceof TimeSlotField) {
-                    $startDate = self::_loadDate($formData['timeslot_start_date']);
-                    $endDate = self::_loadDate($formData['timeslot_end_date']);
-
-                    if ($startDate && $endDate) {
-                        $field->setStartDate($startDate)
-                            ->setEndDate($endDate);
-                    }
-
-                    foreach ($languages as $language) {
-                        $translation = $field->getTimeSlotTranslation($language, false);
-
-                        if ('' == $formData['timeslot_location_' . $language->getAbbrev()] && '' == $formData['timeslot_extra_info_' . $language->getAbbrev()]) {
-                            if (null !== $translation)
-                                $this->getEntityManager()->remove($translation);
-                            continue;
-                        }
-
-                        if (null !== $translation) {
-                            $translation->setLocation($formData['timeslot_location_' . $language->getAbbrev()])
-                                ->setExtraInformation($formData['timeslot_extra_info_' . $language->getAbbrev()]);
-                        } else {
-                            $translation = new TimeSlotTranslationField(
-                                $field,
-                                $language,
-                                $formData['timeslot_location_' . $language->getAbbrev()],
-                                $formData['timeslot_extra_info_' . $language->getAbbrev()]
-                            );
-
-                            $this->getEntityManager()->persist($translation);
-                        }
-                    }
-                }
-
-                foreach ($languages as $language) {
-                    if ('' != $formData['label_' . $language->getAbbrev()]) {
-                        $translation = $field->getTranslation($language, false);
-
-                        if (null !== $translation) {
-                            $translation->setLabel($formData['label_' . $language->getAbbrev()]);
-                        } else {
-                            $translation = new Translation(
-                                $field,
-                                $language,
-                                $formData['label_' . $language->getAbbrev()]
-                            );
-
-                            $this->getEntityManager()->persist($translation);
-                        }
-                    }
-                }
-
                 $this->getEntityManager()->flush();
 
                 $this->flashMessenger()->success(
@@ -404,11 +237,11 @@ class FieldController extends \CommonBundle\Component\Controller\ActionControlle
     {
         $this->initAjax();
 
-        if (!($field = $this->_getField()))
+        if (!($field = $this->_getField())) {
             return new ViewModel();
+        }
 
         if (!$field->getForm()->canBeEditedBy($this->getAuthentication()->getPersonObject())) {
-
             $this->flashMessenger()->error(
                 'Error',
                 'You are not authorized to edit this form!'
@@ -428,8 +261,9 @@ class FieldController extends \CommonBundle\Component\Controller\ActionControlle
             ->getRepository('FormBundle\Entity\Entry')
             ->findAllByField($field);
 
-        foreach ($entries as $entry)
+        foreach ($entries as $entry) {
             $this->getEntityManager()->remove($entry);
+        }
 
         $this->getEntityManager()->remove($field);
         $this->getEntityManager()->flush();
@@ -445,19 +279,19 @@ class FieldController extends \CommonBundle\Component\Controller\ActionControlle
     {
         $this->initAjax();
 
-        if(!($formSpecification = $this->_getForm()))
-
+        if (!($formSpecification = $this->_getForm())) {
             return new ViewModel();
+        }
 
-        if(!$this->getRequest()->isPost())
-
+        if (!$this->getRequest()->isPost()) {
             return new ViewModel();
+        }
 
         $data = $this->getRequest()->getPost();
 
-        if(!$data['items'])
-
+        if (!$data['items']) {
             return new ViewModel();
+        }
 
         foreach ($data['items'] as $order => $id) {
             $field = $this->getEntityManager()
@@ -472,11 +306,14 @@ class FieldController extends \CommonBundle\Component\Controller\ActionControlle
             array(
                 'result' => array(
                     'status' => 'success',
-                )
+                ),
             )
         );
     }
 
+    /**
+     * @return \FormBundle\Entity\Node\Form|null
+     */
     private function _getForm()
     {
         if (null === $this->getParam('id')) {
@@ -488,7 +325,7 @@ class FieldController extends \CommonBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'form_admin_form',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -508,7 +345,7 @@ class FieldController extends \CommonBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'form_admin_form',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -518,6 +355,9 @@ class FieldController extends \CommonBundle\Component\Controller\ActionControlle
         return $formSpecification;
     }
 
+    /**
+     * @return \FormBundle\Entity\Field|null
+     */
     private function _getField()
     {
         if (null === $this->getParam('id')) {
@@ -557,14 +397,5 @@ class FieldController extends \CommonBundle\Component\Controller\ActionControlle
         }
 
         return $field;
-    }
-
-    /**
-     * @param  string        $date
-     * @return DateTime|null
-     */
-    private static function _loadDate($date)
-    {
-        return DateTime::createFromFormat('d#m#Y H#i', $date) ?: null;
     }
 }

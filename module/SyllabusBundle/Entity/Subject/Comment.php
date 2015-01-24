@@ -19,11 +19,11 @@
 namespace SyllabusBundle\Entity\Subject;
 
 use CommonBundle\Entity\User\Person,
-    SyllabusBundle\Entity\Subject,
     DateTime,
-    InvalidArgumentException,
+    Doctrine\Common\Collections\ArrayCollection,
     Doctrine\ORM\Mapping as ORM,
-    Doctrine\Common\Collections\ArrayCollection;
+    InvalidArgumentException,
+    SyllabusBundle\Entity\Subject;
 
 /**
  * @ORM\Entity(repositoryClass="SyllabusBundle\Repository\Subject\Comment")
@@ -97,7 +97,7 @@ class Comment
      * @var array The possible types of a comment
      */
     private static $POSSIBLE_TYPES = array(
-        'external', 'internal'
+        'external', 'internal',
     );
 
     /**
@@ -107,15 +107,16 @@ class Comment
      * @param  string                   $text    The content of the comment
      * @param  string                   $type    The type of the comment
      */
-    public function __construct(Person $person, Subject $subject, $text, $type)
+    public function __construct(Person $person, Subject $subject, $text = '', $type = 'internal')
     {
         $this->person = $person;
         $this->text = $text;
         $this->date = new DateTime();
         $this->subject = $subject;
 
-        if (!self::isValidCommentType($type))
+        if (!self::isValidCommentType($type)) {
             throw new InvalidArgumentException('The comment type is not valid.');
+        }
         $this->type = $type;
 
         $this->replies = new ArrayCollection();
@@ -155,6 +156,17 @@ class Comment
     }
 
     /**
+     * @param  string  $text
+     * @return Comment
+     */
+    public function setText($text)
+    {
+        $this->text = $text;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getSummary($length = 50)
@@ -184,6 +196,17 @@ class Comment
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * @param  string  $type
+     * @return Comment
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
     }
 
     /**

@@ -18,47 +18,41 @@
 
 namespace BrBundle\Component\Validator;
 
-use CommonBundle\Component\Util\Url,
-    Doctrine\ORM\EntityManager,
-    BrBundle\Entity\Product;
-
 /**
  * Matches the given product name against the database to check whether it is
  * unique or not.
  *
  * @author Niels Avonds <niels.avonds@litus.cc>
  */
-class ProductName extends \Zend\Validator\AbstractValidator
+class ProductName extends \CommonBundle\Component\Validator\AbstractValidator
 {
     const NOT_VALID = 'notValid';
-
-    /**
-     * @var \Doctrine\ORM\EntityManager The EntityManager instance
-     */
-    private $_entityManager = null;
-
-    /**
-     * @var \BrBundle\Entity\Product The product exluded from this check
-     */
-    private $_product;
 
     /**
      * @var array The error messages
      */
     protected $messageTemplates = array(
-        self::NOT_VALID => 'The product name already exists'
+        self::NOT_VALID => 'The product name already exists',
+    );
+
+    protected $options = array(
+        'product' => null,
     );
 
     /**
-     * @param \Doctrine\ORM\EntityManager $entityManager The EntityManager instance
-     * @param mixed                       $opts          The validator's options
+     * Sets validator options
+     *
+     * @param int|array|\Traversable $options
      */
-    public function __construct(EntityManager $entityManager, Product $product = null, $opts = null)
+    public function __construct($options = array())
     {
-        parent::__construct($opts);
+        if (!is_array($options)) {
+            $args = func_get_args();
+            $options = array();
+            $options['product'] = array_shift($args);
+        }
 
-        $this->_entityManager = $entityManager;
-        $this->_product = $product;
+        parent::__construct($options);
     }
 
     /**
@@ -72,12 +66,13 @@ class ProductName extends \Zend\Validator\AbstractValidator
     {
         $this->setValue($value);
 
-        $product = $this->_entityManager
+        $product = $this->getEntityManager()
             ->getRepository('BrBundle\Entity\Product')
             ->findOneByName($value);
 
-        if (null === $product || ($this->_product && ($product == $this->_product)))
+        if (null === $product || ($this->options['product'] && ($product == $this->options['product']))) {
             return true;
+        }
 
         $this->error(self::NOT_VALID);
 

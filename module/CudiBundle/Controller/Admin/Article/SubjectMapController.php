@@ -22,7 +22,6 @@ use CudiBundle\Entity\Article\Internal as InternalArticle,
     CudiBundle\Entity\Article\SubjectMap,
     CudiBundle\Entity\Log\Article\SubjectMap\Added as AddedLog,
     CudiBundle\Entity\Log\Article\SubjectMap\Removed as RemovedLog,
-    CudiBundle\Form\Admin\Article\Mapping\Add as AddForm,
     Zend\View\Model\ViewModel;
 
 /**
@@ -34,30 +33,25 @@ class SubjectMapController extends \CudiBundle\Component\Controller\ActionContro
 {
     public function manageAction()
     {
-        if (!($article = $this->_getArticle()))
+        if (!($article = $this->_getArticle())) {
             return new ViewModel();
+        }
 
-        if (!($academicYear = $this->getAcademicYear()))
+        if (!($academicYear = $this->getAcademicYear())) {
             return new ViewModel();
+        }
 
-        $form = new AddForm($this->getEntityManager());
+        $form = $this->getForm('cudi_article_mapping_add');
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
+                $formData = $form->getData();
 
-                if ($formData['subject_id'] == '') {
-                    $subject = $this->getEntityManager()
-                        ->getRepository('SyllabusBundle\Entity\Subject')
-                        ->findOneByCode($formData['subject']);
-                } else {
-                    $subject = $this->getEntityManager()
-                        ->getRepository('SyllabusBundle\Entity\Subject')
-                        ->findOneById($formData['subject_id']);
-                }
+                $subject = $this->getEntityManager()
+                    ->getRepository('SyllabusBundle\Entity\Subject')
+                    ->findOneById($formData['subject']['id']);
 
                 $mapping = $this->getEntityManager()
                     ->getRepository('CudiBundle\Entity\Article\SubjectMap')
@@ -124,8 +118,9 @@ class SubjectMapController extends \CudiBundle\Component\Controller\ActionContro
     {
         $this->initAjax();
 
-        if (!($mapping = $this->_getMapping()))
+        if (!($mapping = $this->_getMapping())) {
             return new ViewModel();
+        }
 
         $mapping->setRemoved();
         $this->getEntityManager()->persist(new RemovedLog($this->getAuthentication()->getPersonObject(), $mapping));
@@ -136,8 +131,9 @@ class SubjectMapController extends \CudiBundle\Component\Controller\ActionContro
             $cachePath = $this->getEntityManager()
                 ->getRepository('CommonBundle\Entity\General\Config')
                 ->getConfigValue('cudi.front_page_cache_dir');
-            if (null !== $article->getFrontPage() && file_exists($cachePath . '/' . $article->getFrontPage()))
+            if (null !== $article->getFrontPage() && file_exists($cachePath . '/' . $article->getFrontPage())) {
                 unlink($cachePath . '/' . $article->getFrontPage());
+            }
             $article->setFrontPage();
         }
 
@@ -164,7 +160,7 @@ class SubjectMapController extends \CudiBundle\Component\Controller\ActionContro
             $this->redirect()->toRoute(
                 'cudi_admin_article_subject',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -184,7 +180,7 @@ class SubjectMapController extends \CudiBundle\Component\Controller\ActionContro
             $this->redirect()->toRoute(
                 'cudi_admin_article_subject',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -205,7 +201,7 @@ class SubjectMapController extends \CudiBundle\Component\Controller\ActionContro
             $this->redirect()->toRoute(
                 'cudi_admin_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -225,7 +221,7 @@ class SubjectMapController extends \CudiBundle\Component\Controller\ActionContro
             $this->redirect()->toRoute(
                 'cudi_admin_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

@@ -18,9 +18,9 @@
 
 namespace BrBundle\Entity\Company\Request;
 
-use BrBundle\Entity\Company\Request,
-    BrBundle\Entity\Company\Job,
-    DateTime,
+use BrBundle\Entity\Company\Job,
+    BrBundle\Entity\Company\Request,
+    BrBundle\Entity\User\Person\Corporate,
     Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -32,15 +32,6 @@ use BrBundle\Entity\Company\Request,
 class RequestVacancy extends \BrBundle\Entity\Company\Request
 {
     /**
-     * @var request's ID
-     *
-     * @ORM\Id
-     * @ORM\Column(type="bigint")
-     * @ORM\GeneratedValue
-     */
-    private $id;
-
-    /**
      * @var string The type of the request
      *
      * @ORM\Column(type="text")
@@ -48,7 +39,7 @@ class RequestVacancy extends \BrBundle\Entity\Company\Request
     private $requestType;
 
     /**
-     * @var \BrBundle\Entity\Company\Job
+     * @var Job
      *
      * @ORM\ManyToOne(targetEntity="BrBundle\Entity\Company\Job")
      * @ORM\JoinColumn(name="job", referencedColumnName="id")
@@ -56,7 +47,7 @@ class RequestVacancy extends \BrBundle\Entity\Company\Request
     private $job;
 
     /**
-     * @var \BrBundle\Entity\Company\Job
+     * @var Job
      *
      * @ORM\ManyToOne(targetEntity="BrBundle\Entity\Company\Job")
      * @ORM\JoinColumn(name="edit_job", referencedColumnName="id", nullable=true)
@@ -73,34 +64,52 @@ class RequestVacancy extends \BrBundle\Entity\Company\Request
         'delete' => 'delete',
     );
 
-    public function __construct(Job $job, $requestType, $contact, Job $editJob = null)
+    /**
+     * @param Job       $job
+     * @param string    $requestType
+     * @param Corporate $contact
+     * @param Job|null  $editJob
+     */
+    public function __construct(Job $job, $requestType, Corporate $contact, Job $editJob = null)
     {
         parent::__construct($contact);
+
         $this->job = $job;
         $this->_setRequestType($requestType);
-
-        if (null !== $editJob)
-            $this->editJob = $editJob;
+        $this->editJob = $editJob;
     }
 
+    /**
+     * @param string $type
+     */
     private function _setRequestType($type)
     {
-        if (!in_array($type, self::$possibleRequests))
+        if (!in_array($type, self::$possibleRequests)) {
             throw new Exception("The requested type does not exist for the vacancy requests");
+        }
 
         $this->requestType = $type;
     }
 
+    /**
+     * @return Job
+     */
     public function getJob()
     {
         return $this->job;
     }
 
+    /**
+     * @return Job
+     */
     public function getEditJob()
     {
         return $this->editJob;
     }
 
+    /**
+     * @return string
+     */
     public function getRequestType()
     {
         return $this->requestType;

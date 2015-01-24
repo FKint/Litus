@@ -35,6 +35,7 @@ class Export extends \CommonBundle\Component\Form\Admin\Form
             'label'      => 'Event',
             'required'   => true,
             'attributes' => array(
+                'id'      => 'event',
                 'options' => $this->createEventsArray(),
             ),
         ));
@@ -49,8 +50,9 @@ class Export extends \CommonBundle\Component\Form\Admin\Form
             ->findAllActive();
 
         $eventsArray = array();
-        foreach ($events as $event)
+        foreach ($events as $event) {
             $eventsArray[$event->getId()] = $event->getTitle();
+        }
 
         return $eventsArray;
     }

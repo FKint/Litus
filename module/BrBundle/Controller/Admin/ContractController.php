@@ -18,14 +18,11 @@
 
 namespace BrBundle\Controller\Admin;
 
-use BrBundle\Entity\Contract,
-    BrBundle\Entity\Contract\ContractEntry,
+use BrBundle\Component\Document\Generator\Pdf\Contract as ContractGenerator,
+    BrBundle\Entity\Contract,
     BrBundle\Entity\Contract\ContractHistory,
     BrBundle\Entity\Invoice,
     BrBundle\Entity\Invoice\InvoiceEntry,
-    BrBundle\Entity\Invoice\InvoiceHistory,
-    BrBundle\Form\Admin\Contract\Edit as EditForm,
-    BrBundle\Component\Document\Generator\Pdf\Contract as ContractGenerator,
     CommonBundle\Component\Util\File as FileUtil,
     Zend\Http\Headers,
     Zend\View\Model\ViewModel;
@@ -57,8 +54,9 @@ class ContractController extends \CommonBundle\Component\Controller\ActionContro
 
     public function viewAction()
     {
-        if (!($contract = $this->_getContract()))
+        if (!($contract = $this->_getContract())) {
             return new ViewModel();
+        }
 
         return new ViewModel(
             array(
@@ -69,8 +67,9 @@ class ContractController extends \CommonBundle\Component\Controller\ActionContro
 
     public function historyAction()
     {
-        if (!($contract = $this->_getContract()))
+        if (!($contract = $this->_getContract())) {
             return new ViewModel();
+        }
 
         $paginator = $this->paginator()->createFromQuery(
             $this->getEntityManager()
@@ -89,35 +88,17 @@ class ContractController extends \CommonBundle\Component\Controller\ActionContro
 
     public function editAction()
     {
-        if (!($contract = $this->_getContract(false)))
+        if (!($contract = $this->_getContract(false))) {
             return new ViewModel();
+        }
 
-        $form = new EditForm($this->getEntityManager(), $contract);
+        $form = $this->getForm('br_contract_edit', array('contract' => $contract));
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
-
-                $contract->setTitle($formData['title']);
-
-                $newVersionNb = 0;
-
-                foreach ($contract->getEntries() as $entry) {
-                    if ($entry->getVersion() == $contract->getVersion()) {
-                        $newVersionNb = $entry->getVersion() + 1;
-                        $newContractEntry = new ContractEntry($contract, $entry->getOrderEntry(), $entry->getPosition(), $newVersionNb);
-
-                        $this->getEntityManager()->persist($newContractEntry);
-
-                        $newContractEntry->setContractText($formData['entry_' . $entry->getId()]);
-                    }
-                }
-
-                $contract->setVersion($newVersionNb);
-
                 $history = new ContractHistory($contract);
                 $this->getEntityManager()->persist($history);
 
@@ -152,8 +133,9 @@ class ContractController extends \CommonBundle\Component\Controller\ActionContro
     {
         $this->initAjax();
 
-        if (!($contract = $this->_getContract()))
+        if (!($contract = $this->_getContract())) {
             return new ViewModel();
+        }
 
         if ('true' == $this->getParam('signed')) {
             $invoice = new Invoice($contract->getOrder());
@@ -179,7 +161,7 @@ class ContractController extends \CommonBundle\Component\Controller\ActionContro
         return new ViewModel(
             array(
                 'result' => array(
-                    'status' => 'success'
+                    'status' => 'success',
                 ),
             )
         );
@@ -187,8 +169,9 @@ class ContractController extends \CommonBundle\Component\Controller\ActionContro
 
     public function signAction()
     {
-        if (!($contract = $this->_getContract(false)))
+        if (!($contract = $this->_getContract(false))) {
             return new ViewModel();
+        }
 
         $invoice = new Invoice($contract->getOrder());
 
@@ -227,8 +210,9 @@ class ContractController extends \CommonBundle\Component\Controller\ActionContro
 
     public function downloadAction()
     {
-        if (!($contract = $this->_getContract()))
+        if (!($contract = $this->_getContract())) {
             return new ViewModel();
+        }
 
         $generator = new ContractGenerator($this->getEntityManager(), $contract, $this->getTranslator()->getTranslator());
         $generator->generate();
@@ -268,10 +252,10 @@ class ContractController extends \CommonBundle\Component\Controller\ActionContro
                 ->getRepository('BrBundle\Entity\Contract')
                 ->findOneById($postData['contractId']);
 
-            if ($contract->isSigned())
+            if ($contract->isSigned()) {
                 return new ViewModel();
+            }
 
-            $contractComposition = array();
             foreach ($sections['contractComposition'] as $position => $id) {
                 $contractEntry = $this->getEntityManager()
                     ->getRepository('BrBundle\Entity\Contract\ContractEntry')
@@ -300,6 +284,10 @@ class ContractController extends \CommonBundle\Component\Controller\ActionContro
         }
     }
 
+    /**
+     * @param  boolean       $allowSigned
+     * @return Contract|null
+     */
     private function _getContract($allowSigned = true)
     {
         if (null === $this->getParam('id')) {
@@ -311,7 +299,7 @@ class ContractController extends \CommonBundle\Component\Controller\ActionContro
             $this->redirect()->toRoute(
                 'br_admin_order',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -331,7 +319,7 @@ class ContractController extends \CommonBundle\Component\Controller\ActionContro
             $this->redirect()->toRoute(
                 'br_admin_order',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -347,7 +335,7 @@ class ContractController extends \CommonBundle\Component\Controller\ActionContro
             $this->redirect()->toRoute(
                 'br_admin_order',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

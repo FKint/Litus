@@ -36,7 +36,26 @@ class Item extends EntityRepository
             ->where(
                 $query->expr()->like($query->expr()->lower('i.name'), ':name')
             )
-            ->setParameter('name', '%'.strtolower($name).'%')
+            ->setParameter('name', '%' . strtolower($name) . '%')
+            ->setMaxResults(20)
+            ->getQuery();
+
+        return $resultSet;
+    }
+
+    public function findAllByNameOrBarcodeQuery($string)
+    {
+        $query = $this->_em->createQueryBuilder();
+        $resultSet = $query->select('i')
+            ->from('LogisticsBundle\Entity\Lease\Item', 'i')
+            ->where(
+                $query->expr()->orX(
+                    $query->expr()->like($query->expr()->lower('i.name'), ':name'),
+                    $query->expr()->like($query->expr()->concat('i.barcode', '\'\''), ':barcode')
+                )
+            )
+            ->setParameter('name', '%' . strtolower($string) . '%')
+            ->setParameter('barcode', strtolower($string) . '%')
             ->setMaxResults(20)
             ->getQuery();
 

@@ -18,8 +18,8 @@
 
 namespace CudiBundle\Controller\Sale;
 
-use CommonBundle\Component\Authentication\Authentication,
-    CommonBundle\Component\Authentication\Adapter\Doctrine\Shibboleth as ShibbolethAdapter,
+use CommonBundle\Component\Authentication\Adapter\Doctrine\Shibboleth as ShibbolethAdapter,
+    CommonBundle\Component\Authentication\Authentication,
     Zend\View\Model\ViewModel;
 
 /**
@@ -38,7 +38,7 @@ class AuthController extends \CommonBundle\Component\Controller\ActionController
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
+                $formData = $form->getData();
 
                 $this->getAuthentication()->forget();
 
@@ -72,7 +72,7 @@ class AuthController extends \CommonBundle\Component\Controller\ActionController
 
         return new ViewModel(
             array(
-                'form' => $form
+                'form' => $form,
             )
         );
     }

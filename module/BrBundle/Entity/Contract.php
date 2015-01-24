@@ -18,17 +18,14 @@
 
 namespace BrBundle\Entity;
 
-use BrBundle\Entity\Company,
-    BrBundle\Entity\Collaborator,
-    BrBundle\Entity\Contract\Composition,
-    BrBundle\Entity\Contract\Section,
+use BrBundle\Entity\Collaborator,
+    BrBundle\Entity\Company,
     BrBundle\Entity\Contract\ContractEntry,
-    CommonBundle\Entity\User\Person,
     BrBundle\Entity\Product\Order,
     DateTime,
     Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Mapping as ORM;
+    Doctrine\ORM\Mapping as ORM,
+    InvalidArgumentException;
 
 /**
  * This is the entity for a contract.
@@ -48,7 +45,7 @@ class Contract
     private $id;
 
     /**
-     * @var \BrBundle\Entity\Product\Order The contract accompanying this order
+     * @var Order The contract accompanying this order
      *
      * @ORM\OneToOne(targetEntity="BrBundle\Entity\Product\Order")
      * @ORM\JoinColumn(name="product_order", referencedColumnName="id")
@@ -56,14 +53,14 @@ class Contract
     private $order;
 
     /**
-     * @var \DateTime The date and time when this contract was written
+     * @var DateTime The date and time when this contract was written
      *
      * @ORM\Column(type="datetime")
      */
     private $date;
 
     /**
-     * @var \CommonBundle\Entity\User\Person The author of this contract
+     * @var Collaborator The author of this contract
      *
      * @ORM\ManyToOne(targetEntity="BrBundle\Entity\Collaborator")
      * @ORM\JoinColumn(name="author", referencedColumnName="id")
@@ -71,7 +68,7 @@ class Contract
     private $author;
 
     /**
-     * @var \BrBundle\Entity\Company The company for which this contract is meant
+     * @var Company The company for which this contract is meant
      *
      * @ORM\ManyToOne(targetEntity="BrBundle\Entity\Company")
      * @ORM\JoinColumn(name="company", referencedColumnName="id")
@@ -143,10 +140,11 @@ class Contract
     private $version;
 
     /**
-     * @param \CommonBundle\Entity\User\Person $author   The author of this contract
-     * @param Company                          $company  The company for which this contract is meant
-     * @param int                              $discount The discount associated with this contract
-     * @param string                           $title    The title of the contract
+     * @param Order        $order    The order of this contract
+     * @param Collaborator $author   The author of this contract
+     * @param Company      $company  The company for which this contract is meant
+     * @param int          $discount The discount associated with this contract
+     * @param string       $title    The title of the contract
      */
     public function __construct(Order $order, Collaborator $author, Company $company, $discount, $title)
     {
@@ -203,7 +201,7 @@ class Contract
     }
 
     /**
-     * @return int
+     * @return Order
      */
     public function getOrder()
     {
@@ -211,11 +209,14 @@ class Contract
     }
 
     /**
-     * @return \DateTime
+     * @param  Order $order
+     * @return self
      */
     public function setOrder(Order $order)
     {
-        return $this->order = $order;
+        $this->order = $order;
+
+        return $this;
     }
 
     /**
@@ -227,7 +228,7 @@ class Contract
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDate()
     {
@@ -235,7 +236,7 @@ class Contract
     }
 
     /**
-     * @return Contract
+     * @return self
      */
     public function setDate()
     {
@@ -245,7 +246,7 @@ class Contract
     }
 
     /**
-     * @return \CommonBundle\Entity\User\Person
+     * @return Collaborator
      */
     public function getAuthor()
     {
@@ -253,14 +254,15 @@ class Contract
     }
 
     /**
-     * @throws \InvalidArgumentException
-     * @param  \CommonBundle\Entity\User\Person $author
-     * @return Contract
+     * @throws InvalidArgumentException
+     * @param  Collaborator             $author
+     * @return self
      */
     public function setAuthor(Collaborator $author)
     {
-        if (null === $author)
-            throw new \InvalidArgumentException('Author cannot be null');
+        if (null === $author) {
+            throw new InvalidArgumentException('Author cannot be null');
+        }
 
         $this->author = $author;
 
@@ -276,24 +278,30 @@ class Contract
     }
 
     /**
-     * @throws \InvalidArgumentException
-     * @param  \BrBundle\Entity\Company  $company
-     * @return Contract
+     * @throws InvalidArgumentException
+     * @param  Company                  $company
+     * @return self
      */
     public function setCompany(Company $company)
     {
-        if (null === $company)
-            throw new \InvalidArgumentException('Company cannot be null');
+        if (null === $company) {
+            throw new InvalidArgumentException('Company cannot be null');
+        }
 
         $this->company = $company;
 
         return $this;
     }
 
+    /**
+     * @param  int  $discount
+     * @return self
+     */
     public function setDiscount($discount)
     {
-        if ($discount < 0)
-            throw new \InvalidArgumentException('Invalid discount');
+        if ($discount < 0) {
+            throw new InvalidArgumentException('Invalid discount');
+        }
 
         $this->discount = $discount;
 
@@ -317,14 +325,15 @@ class Contract
     }
 
     /**
-     * @throws \InvalidArgumentException
-     * @param  string                    $title The title of the contract
-     * @return Contract
+     * @throws InvalidArgumentException
+     * @param  string                   $title The title of the contract
+     * @return self
      */
     public function setTitle($title)
     {
-        if (null === $title || !is_string($title))
-            throw new \InvalidArgumentException('Invalid title');
+        if (null === $title || !is_string($title)) {
+            throw new InvalidArgumentException('Invalid title');
+        }
 
         $this->title = $title;
 
@@ -340,8 +349,8 @@ class Contract
     }
 
     /**
-     * @param  bool     $dirty
-     * @return Contract
+     * @param  bool $dirty
+     * @return self
      */
     public function setDirty($dirty = true)
     {
@@ -359,11 +368,12 @@ class Contract
     }
 
     /**
-     *
+     * @param  bool $signed
+     * @return self
      */
-    public function setSigned($bool = true)
+    public function setSigned($signed = true)
     {
-        $this->signed = $bool;
+        $this->signed = $signed;
 
         return $this;
     }
@@ -377,14 +387,15 @@ class Contract
     }
 
     /**
-     * @throws \InvalidArgumentException
-     * @param  int                       $invoiceNb
-     * @return Contract
+     * @throws InvalidArgumentException
+     * @param  int                      $invoiceNb
+     * @return self
      */
     public function setInvoiceNb($invoiceNb = -1)
     {
-        if (null === $invoiceNb || !is_numeric($invoiceNb))
-            throw new \InvalidArgumentException('Invalid invoice number: ' . $invoiceNb);
+        if (null === $invoiceNb || !is_numeric($invoiceNb)) {
+            throw new InvalidArgumentException('Invalid invoice number: ' . $invoiceNb);
+        }
 
         $this->invoiceNb = $invoiceNb;
 
@@ -392,7 +403,7 @@ class Contract
     }
 
     /**
-     * @return int
+     * @return string
      *
      * @note    The contractnumber gets constructed by the following format "AAxYYY"
      *          With AA the $contractStartNb, x the personal number of the collaborator who created the contract and
@@ -404,13 +415,14 @@ class Contract
     }
 
     /**
-     * @param  int      $contractNb
-     * @return Contract
+     * @param  int  $contractNb
+     * @return self
      */
     public function setContractNb($contractNb)
     {
-        if(null === $contractNb || !is_numeric($contractNb))
-            throw new \InvalidArgumentException('Invalid contract number: ' . $contractNb);
+        if (null === $contractNb || !is_numeric($contractNb)) {
+            throw new InvalidArgumentException('Invalid contract number: ' . $contractNb);
+        }
 
         $this->contractNb = $contractNb;
 
@@ -427,7 +439,7 @@ class Contract
 
     /**
      * @return array
-     * @note    The array that is returned only contains the most recent entries.
+     * @note   The array that is returned only contains the most recent entries.
      */
     public function getEntries()
     {
@@ -436,16 +448,17 @@ class Contract
         $entries = $this->getAllEntries();
 
         foreach ($entries as $entry) {
-            if($entry->getVersion() == $this->version)
+            if ($entry->getVersion() == $this->version) {
                 array_push($array, $entry);
+            }
         }
 
         return $array;
     }
 
     /**
-     * @param  ContractEntry             $entry
-     * @return \BrBundle\Entity\Contract
+     * @param  ContractEntry $entry
+     * @return self
      */
     public function setEntry(ContractEntry $entry)
     {

@@ -30,7 +30,7 @@ use CommonBundle\Entity\User\Person,
 class Collaborator
 {
     /**
-     * @var string The company's ID
+     * @var integer The company's ID
      *
      * @ORM\Id
      * @ORM\Column(type="bigint")
@@ -39,7 +39,7 @@ class Collaborator
     private $id;
 
     /**
-     * @var \BrBundle\Entity\Collaborator The contract accompanying this order
+     * @var \CommonBundle\Entity\User\Person The contract accompanying this order
      *
      * @ORM\OneToOne(targetEntity="\CommonBundle\Entity\User\Person")
      * @ORM\JoinColumn(name="person", referencedColumnName="id")
@@ -61,13 +61,11 @@ class Collaborator
     private $active;
 
     /**
-     * @param \CommonBundle\Entity\User\Person $person
-     * @param int                              $number
+     * @param Person $person
      */
-    public function __construct(Person $person, $number)
+    public function __construct(Person $person)
     {
-        $this->_setPerson($person);
-        $this->setNumber($number);
+        $this->person = $person;
         $this->activate();
     }
 
@@ -79,44 +77,68 @@ class Collaborator
         return $this->id;
     }
 
-    private function _setPerson(Person $person)
-    {
-        $this->person = $person;
-    }
-
-    public function setNumber($number)
-    {
-        $this->number = $number;
-    }
-
-    public function activate()
-    {
-        $this->active = true;
-    }
-
-    public function retire()
-    {
-        $this->active = false;
-    }
-
-    public function rehire()
-    {
-        $this->active = true;
-    }
-
+    /**
+     * @return Person
+     */
     public function getPerson()
     {
         return $this->person;
     }
 
+    /**
+     * @param  int  $number
+     * @return self
+     */
+    public function setNumber($number)
+    {
+        $this->number = $number;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
     public function getNumber()
     {
         return $this->number;
     }
 
+    /**
+     * @return self
+     */
+    public function activate()
+    {
+        $this->active = true;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
     public function isActive()
     {
         return $this->active;
     }
 
+    /**
+     * @return self
+     */
+    public function retire()
+    {
+        $this->active = false;
+
+        return $this;
+    }
+
+    /**
+     * @return self
+     */
+    public function rehire()
+    {
+        $this->active = true;
+
+        return $this;
+    }
 }

@@ -19,8 +19,11 @@
 namespace FormBundle\Entity\Field;
 
 use CommonBundle\Entity\General\Language,
+    Doctrine\Common\Collections\ArrayCollection,
     Doctrine\ORM\Mapping as ORM,
-    FormBundle\Entity\Field;
+    FormBundle\Entity\Field,
+    FormBundle\Entity\Node\Form,
+    Locale;
 
 /**
  * An abstract class that stores a number of options.
@@ -31,11 +34,21 @@ use CommonBundle\Entity\General\Language,
 abstract class OptionSelector extends Field
 {
     /**
-     * @var array The translations of this field
+     * @var ArrayCollection The translations of this field
      *
      * @ORM\OneToMany(targetEntity="FormBundle\Entity\Field\Translation\Option", mappedBy="field", cascade={"remove"})
      */
     private $optionTranslations;
+
+    /**
+    * @param Form $form
+    */
+    public function __construct(Form $form)
+    {
+        parent::__construct($form);
+
+        $this->optionTranslations = new ArrayCollection();
+    }
 
     /**
      * @param  Language|null $language
@@ -46,8 +59,9 @@ abstract class OptionSelector extends Field
     {
         $translation = $this->getOptionTranslation($language, $allowFallback);
 
-        if (null !== $translation)
+        if (null !== $translation) {
             return $translation->getOptions();
+        }
 
         return '';
     }
@@ -61,8 +75,9 @@ abstract class OptionSelector extends Field
     {
         $translation = $this->getOptionTranslation($language, $allowFallback);
 
-        if (null !== $translation)
+        if (null !== $translation) {
             return $translation->getOptionsArray();
+        }
 
         return array();
     }
@@ -75,15 +90,18 @@ abstract class OptionSelector extends Field
     public function getOptionTranslation(Language $language = null, $allowFallback = true)
     {
         foreach ($this->optionTranslations as $translation) {
-            if (null !== $language && $translation->getLanguage() == $language)
+            if (null !== $language && $translation->getLanguage() == $language) {
                 return $translation;
+            }
 
-            if ($translation->getLanguage()->getAbbrev() == \Locale::getDefault())
+            if ($translation->getLanguage()->getAbbrev() == Locale::getDefault()) {
                 $fallbackTranslation = $translation;
+            }
         }
 
-        if ($allowFallback && isset($fallbackTranslation))
+        if ($allowFallback && isset($fallbackTranslation)) {
             return $fallbackTranslation;
+        }
 
         return null;
     }
@@ -95,8 +113,9 @@ abstract class OptionSelector extends Field
      */
     public function getValueString(Language $language, $value)
     {
-        if (isset($this->getOptionsArray($language)[$value]))
+        if (isset($this->getOptionsArray($language)[$value])) {
             return $this->getOptionsArray($language)[$value];
+        }
 
         return '';
     }

@@ -18,27 +18,20 @@
 
 namespace TicketBundle\Component\Validator;
 
-use DateTime,
-    Doctrine\ORM\EntityManager;
+use DateTime;
 
 /**
  * Check the booking close date is not after the event's date
  *
  * @author Kristof Mariën <kristof.marien@litus.cc>
  */
-class Date extends \Zend\Validator\AbstractValidator
+class Date extends \CommonBundle\Component\Validator\AbstractValidator
 {
     const NOT_VALID = 'notValid';
 
-    /**
-     * @var EntityManager
-     */
-    private $_entityManager;
-
-    /**
-     * @var string
-     */
-    private $_format;
+    protected $options = array(
+        'format' => '',
+    );
 
     /**
      * Error messages
@@ -46,22 +39,23 @@ class Date extends \Zend\Validator\AbstractValidator
      * @var array
      */
     protected $messageTemplates = array(
-        self::NOT_VALID => 'The booking close date cannot be after the event'
+        self::NOT_VALID => 'The booking close date cannot be after the event',
     );
 
     /**
-     * Create a new Article Barcode validator.
+     * Sets validator options
      *
-     * @param EntityManager $entityManager
-     * @param mixed         $opts          The validator's options
-     * @param string        $format
+     * @param int|array|\Traversable $options
      */
-    public function __construct(EntityManager $entityManager, $format, $opts = null)
+    public function __construct($options = array())
     {
-        parent::__construct($opts);
+        if (!is_array($options)) {
+            $args = func_get_args();
+            $options = array();
+            $options['format'] = array_shift($args);
+        }
 
-        $this->_entityManager = $entityManager;
-        $this->_format = $format;
+        parent::__construct($options);
     }
 
     /**
@@ -75,15 +69,17 @@ class Date extends \Zend\Validator\AbstractValidator
     {
         $this->setValue($value);
 
-        if (!is_numeric($context['event']))
+        if (!is_numeric($context['event'])) {
             return false;
+        }
 
-        $activity = $this->_entityManager
+        $activity = $this->getEntityManager()
             ->getRepository('CalendarBundle\Entity\Node\Event')
             ->findOneById($context['event']);
 
-        if (null === $activity || $activity->getStartDate() >= DateTime::createFromFormat($this->_format, $value))
+        if (null === $activity || $activity->getStartDate() >= DateTime::createFromFormat($this->options['format'], $value)) {
             return true;
+        }
 
         $this->error(self::NOT_VALID);
 

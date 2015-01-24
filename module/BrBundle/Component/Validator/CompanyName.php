@@ -18,9 +18,7 @@
 
 namespace BrBundle\Component\Validator;
 
-use CommonBundle\Component\Util\Url,
-    Doctrine\ORM\EntityManager,
-    BrBundle\Entity\Company;
+use CommonBundle\Component\Util\Url;
 
 /**
  * Matches the given company name against the database to check whether it is
@@ -28,38 +26,35 @@ use CommonBundle\Component\Util\Url,
  *
  * @author Kristof Mariën <kristof.marien@litus.cc>
  */
-class CompanyName extends \Zend\Validator\AbstractValidator
+class CompanyName extends \CommonBundle\Component\Validator\AbstractValidator
 {
     const NOT_VALID = 'notValid';
-
-    /**
-     * @var \Doctrine\ORM\EntityManager The EntityManager instance
-     */
-    private $_entityManager = null;
-
-    /**
-     * @var \BrBundle\Entity\Company The company exluded from this check
-     */
-    private $_company;
 
     /**
      * @var array The error messages
      */
     protected $messageTemplates = array(
-        self::NOT_VALID => 'The company name already exists'
+        self::NOT_VALID => 'The company name already exists',
+    );
+
+    protected $options = array(
+        'company' => null,
     );
 
     /**
-     * @param \Doctrine\ORM\EntityManager $entityManager The EntityManager instance
-     * @param \BrBundle\Entity\Company The company exluded from this check
-     * @param mixed                       $opts          The validator's options
+     * Sets validator options
+     *
+     * @param int|array|\Traversable $options
      */
-    public function __construct(EntityManager $entityManager, Company $company = null, $opts = null)
+    public function __construct($options = array())
     {
-        parent::__construct($opts);
+        if (!is_array($options)) {
+            $args = func_get_args();
+            $options = array();
+            $options['company'] = array_shift($args);
+        }
 
-        $this->_entityManager = $entityManager;
-        $this->_company = $company;
+        parent::__construct($options);
     }
 
     /**
@@ -73,12 +68,13 @@ class CompanyName extends \Zend\Validator\AbstractValidator
     {
         $this->setValue($value);
 
-        $company = $this->_entityManager
+        $company = $this->getEntityManager()
             ->getRepository('BrBundle\Entity\Company')
             ->findOneBySlug(Url::createSlug($value));
 
-        if (null === $company || ($this->_company && ($company == $this->_company || !$company->isActive())))
+        if (null === $company || ($this->options['company'] && ($company == $this->options['company'] || !$company->isActive()))) {
             return true;
+        }
 
         $this->error(self::NOT_VALID);
 

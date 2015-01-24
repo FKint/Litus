@@ -21,7 +21,8 @@ namespace FormBundle\Entity;
 use CommonBundle\Entity\General\Language,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\ORM\Mapping as ORM,
-    FormBundle\Entity\Node\Form;
+    FormBundle\Entity\Node\Form,
+    Locale;
 
 /**
  * This entity stores the node item.
@@ -105,20 +106,12 @@ abstract class Field
     );
 
     /**
-     * @param Form        $form
-     * @param integer     $order
-     * @param boolean     $required
-     * @param Field|null  $visibityDecisionField
-     * @param string|null $visibilityValue
+     * @param Form $form
      */
-    public function __construct(Form $form, $order, $required, Field $visibityDecisionField = null, $visibilityValue = null)
+    public function __construct(Form $form)
     {
         $this->form = $form;
-        $this->order = $order;
-        $this->required = $required;
         $this->translations = new ArrayCollection();
-        $this->visibityDecisionField = $visibityDecisionField;
-        $this->visibilityValue = $visibilityValue;
     }
 
     /**
@@ -227,8 +220,9 @@ abstract class Field
     {
         $translation = $this->getTranslation($language, $allowFallback);
 
-        if (null !== $translation)
+        if (null !== $translation) {
             return $translation->getLabel();
+        }
 
         return '';
     }
@@ -242,15 +236,18 @@ abstract class Field
     public function getTranslation(Language $language = null, $allowFallback = true)
     {
         foreach ($this->translations as $translation) {
-            if (null !== $language && $translation->getLanguage() == $language)
+            if (null !== $language && $translation->getLanguage() == $language) {
                 return $translation;
+            }
 
-            if ($translation->getLanguage()->getAbbrev() == \Locale::getDefault())
+            if ($translation->getLanguage()->getAbbrev() == Locale::getDefault()) {
                 $fallbackTranslation = $translation;
+            }
         }
 
-        if ($allowFallback && isset($fallbackTranslation))
+        if ($allowFallback && isset($fallbackTranslation)) {
             return $fallbackTranslation;
+        }
 
         return null;
     }

@@ -17,6 +17,14 @@
  */
 
 return array(
+    'guest' => array(
+        'system' => true,
+        'actions' => array(
+            'secretary_registration' => array(
+                'add',
+            ),
+        ),
+    ),
     'student' => array(
         'system' => true,
         'parents' => array(
@@ -24,7 +32,7 @@ return array(
         ),
         'actions' => array(
             'secretary_registration' => array(
-                'add', 'complete', 'edit', 'saveStudies', 'saveSubjects', 'studies', 'subjects'
+                'add', 'complete', 'edit', 'saveStudies', 'saveSubjects', 'studies', 'subjects',
             ),
         ),
     ),

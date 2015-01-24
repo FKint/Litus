@@ -18,96 +18,56 @@
 
 namespace BrBundle\Form\Admin\Order;
 
-use CommonBundle\Component\Form\Admin\Element\Select,
-    CommonBundle\Component\Form\Admin\Element\Text,
-    CommonBundle\Component\Form\Admin\Element\Textarea,
-    CommonBundle\Component\Validator\Price as PriceValidator,
-    CommonBundle\Entity\General\AcademicYear,
-    BrBundle\Entity\Company,
-    BrBundle\Entity\Product\Order,
-    BrBundle\Component\Validator\ProductName as ProductNameValidator,
-    Doctrine\ORM\EntityManager,
-    Zend\InputFilter\InputFilter,
-    Zend\InputFilter\Factory as InputFactory,
-    Zend\Form\Element\Submit;
-
 /**
  * Add a product.
  *
  * @author Koen Certyn <koen.certyn@litus.cc>
  * @author Kristof Mariën <kristof.marien@litus.cc>
  */
-class AddProduct extends \CommonBundle\Component\Form\Admin\Form
+class AddProduct extends Add
 {
     /**
-     * @var \Doctrine\ORM\EntityManager The EntityManager instance
+     * @var array The currently used products
      */
-    protected $_entityManager = null;
+    protected $_currentProducts;
 
-    /**
-     * @param array                                     $currentProducts List of current products
-     * @param \Doctrine\ORM\EntityManager               $entityManager   The EntityManager instance
-     * @param \CommonBundle\Entity\General\AcademicYear $currentYear
-     * @param mixed                                     $opts            The validator's options
-     */
-    public function __construct($currentProducts, EntityManager $entityManager, AcademicYear $currentYear, $opts = null)
+    public function init()
     {
-        parent::__construct($opts);
+        parent::init();
 
-        $this->_entityManager = $entityManager;
+        $this->remove('submit');
 
-        $field = new Select('product');
-        $field->setLabel('Product')
-            ->setRequired()
-            ->setAttribute('options', $this->_createProductArray($currentProducts));
-        $this->add($field);
+        foreach ($this->getElements() as $element) {
+            if (in_array($element->getName(), array('csrf'))) {
+                continue;
+            }
+            $this->remove($element->getName());
+            $this->add(array(
+                'type'     => 'hidden',
+                'name'     => $element->getName(),
+                'value'    => $element->getValue(),
+                'required' => $element->isRequired(),
+                'options'  => $element->getOptions(),
+            ));
+        }
 
-        $field = new Text('amount');
-        $field->setLabel('Amount')
-            ->setRequired();
-        $this->add($field);
+        $this->add(array(
+            'type'     => 'select',
+            'name'     => 'new_product',
+            'label'    => 'Product',
+            'required' => true,
+            'attributes' => array(
+                'options' => $this->_createProductArray(),
+            ),
+        ));
 
-        $field = new Submit('submit');
-        $field->setValue('Add')
-            ->setAttribute('class', 'product_add');
-        $this->add($field);
-    }
-
-    private function _createProductArray(array $currentProducts)
-    {
-        $products = $this->_entityManager
-            ->getRepository('BrBundle\Entity\Product')
-            ->findAll();
-
-        $productArray = array(
-            '' => ''
-        );
-        foreach ($products as $product)
-            if(! in_array($product, $currentProducts) && $product->isOld() == false)
-                $productArray[$product->getId()] = $product->getName();
-
-        return $productArray;
-    }
-
-    public function getInputFilter()
-    {
-        $inputFilter = new InputFilter();
-        $factory = new InputFactory();
-
-        $inputFilter->add(
-            $factory->createInput(
-                array(
-                    'name'     => 'product',
-                    'required' => true,
-                )
-            )
-        );
-
-        $inputFilter->add(
-            $factory->createInput(
-                array(
-                    'name'     => 'amount',
-                    'required' => true,
+        $this->add(array(
+            'type'     => 'text',
+            'name'     => 'new_product_amount',
+            'label'    => 'Amount',
+            'required' => true,
+            'options'  => array(
+                'input' => array(
                     'filters'  => array(
                         array('name' => 'StringTrim'),
                     ),
@@ -116,10 +76,39 @@ class AddProduct extends \CommonBundle\Component\Form\Admin\Form
                             'name' => 'int',
                         ),
                     ),
-                )
-            )
-        );
+                ),
+            ),
+        ));
 
-        return $inputFilter;
+        $this->addSubmit('Add', 'product_add');
+    }
+
+    /**
+     * @param  array $currentProducts
+     * @return self
+     */
+    public function setCurrentProducts(array $currentProducts)
+    {
+        $this->_currentProducts = $currentProducts;
+
+        return $this;
+    }
+
+    private function _createProductArray()
+    {
+        $products = $this->getEntityManager()
+            ->getRepository('BrBundle\Entity\Product')
+            ->findByAcademicYear($this->_currentYear);
+
+        $productArray = array(
+            '' => '',
+        );
+        foreach ($products as $product) {
+            if (!in_array($product, $this->_currentProducts) && $product->isOld() == false) {
+                $productArray[$product->getId()] = $product->getName();
+            }
+        }
+
+        return $productArray;
     }
 }

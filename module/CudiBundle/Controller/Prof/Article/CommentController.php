@@ -20,7 +20,6 @@ namespace CudiBundle\Controller\Prof\Article;
 
 use CudiBundle\Entity\Article,
     CudiBundle\Entity\Comment\Comment,
-    CudiBundle\Form\Prof\Comment\Add as AddForm,
     Zend\View\Model\ViewModel;
 
 /**
@@ -32,21 +31,21 @@ class CommentController extends \CudiBundle\Component\Controller\ProfController
 {
     public function manageAction()
     {
-        if (!($article = $this->_getArticle()))
+        if (!($article = $this->_getArticle())) {
             return new ViewModel();
+        }
 
         $mappings = $this->getEntityManager()
             ->getRepository('CudiBundle\Entity\Comment\Mapping')
             ->findByArticle($article);
 
-        $form = new AddForm();
+        $form = $this->getForm('cudi_prof_comment_add');
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
+                $formData = $form->getData();
 
                 $comment = new Comment(
                     $this->getEntityManager(),
@@ -90,12 +89,13 @@ class CommentController extends \CudiBundle\Component\Controller\ProfController
     {
         $this->initAjax();
 
-        if (!($mapping = $this->_getCommentMapping()))
+        if (!($mapping = $this->_getCommentMapping())) {
             return new ViewModel();
+        }
 
         if ($mapping->getComment()->getPerson()->getId() != $this->getAuthentication()->getPersonObject()->getId()) {
             return array(
-                'result' => (object) array("status" => "error")
+                'result' => (object) array("status" => "error"),
             );
         }
 

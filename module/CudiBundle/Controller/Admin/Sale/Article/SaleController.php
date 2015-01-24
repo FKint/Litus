@@ -18,10 +18,10 @@
 
 namespace CudiBundle\Controller\Admin\Sale\Article;
 
-use CudiBundle\Entity\Sale\SaleItem\Prof as ProfItem,
-    CudiBundle\Entity\Sale\SaleItem\External as ExternalItem,
-    CudiBundle\Form\Admin\Sales\Article\Sales\Add as AddForm,
+use CudiBundle\Entity\Sale\SaleItem\External as ExternalItem,
+    CudiBundle\Entity\Sale\SaleItem\Prof as ProfItem,
     Zend\View\Model\ViewModel;
+
 /**
  * SaleController
  *
@@ -31,20 +31,21 @@ class SaleController extends \CudiBundle\Component\Controller\ActionController
 {
     public function saleAction()
     {
-        if (!($article = $this->_getSaleArticle()))
+        if (!($article = $this->_getSaleArticle())) {
             return new ViewModel();
+        }
 
-        if (!($period = $this->getActiveStockPeriod()))
+        if (!($period = $this->getActiveStockPeriod())) {
             return new ViewModel();
+        }
 
-        $form = new AddForm();
+        $form = $this->getForm('cudi_sale_article_sale_add');
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
+                $formData = $form->getData();
 
                 if ('prof' == $formData['sale_to']) {
                     $saleItem = new ProfItem(
@@ -72,8 +73,9 @@ class SaleController extends \CudiBundle\Component\Controller\ActionController
                     ->findLastAssignedByArticle($article);
 
                 foreach ($bookings as $booking) {
-                    if ($nbToMuchAssigned <= 0)
+                    if ($nbToMuchAssigned <= 0) {
                         break;
+                    }
                     $booking->setStatus('booked', $this->getEntityManager());
                     $nbToMuchAssigned -= $booking->getNumber();
                 }
@@ -119,7 +121,7 @@ class SaleController extends \CudiBundle\Component\Controller\ActionController
             $this->redirect()->toRoute(
                 'cudi_admin_sales_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -139,7 +141,7 @@ class SaleController extends \CudiBundle\Component\Controller\ActionController
             $this->redirect()->toRoute(
                 'cudi_admin_sales_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

@@ -18,8 +18,9 @@
 
 namespace PageBundle\Component\Validator;
 
-use CommonBundle\Component\Util\Url,
-    Doctrine\ORM\EntityManager;
+use CommonBundle\Component\Form\Form,
+    CommonBundle\Component\Util\Url,
+    CommonBundle\Component\Validator\FormAwareInterface;
 
 /**
  * Matches the given page title against the database to check whether it is
@@ -27,38 +28,40 @@ use CommonBundle\Component\Util\Url,
  *
  * @author Kristof Mariën <kristof.marien@litus.cc>
  */
-class Title extends \Zend\Validator\AbstractValidator
+class Title extends \CommonBundle\Component\Validator\AbstractValidator implements FormAwareInterface
 {
     const NOT_VALID = 'notValid';
 
-    /**
-     * @var EntityManager The EntityManager instance
-     */
-    private $_entityManager = null;
+    protected $options = array(
+        'exclude' => null,
+    );
 
     /**
-     * @var string The name exluded from this check
+     * @var Form
      */
-    private $_exclude = '';
+    private $_form;
 
     /**
      * @var array The error messages
      */
     protected $messageTemplates = array(
-        self::NOT_VALID => 'There already exists a page with this title and the same parent'
+        self::NOT_VALID => 'There already exists a page with this title and the same parent',
     );
 
     /**
-     * @param EntityManager $entityManager The EntityManager instance
-     * @param string The name exluded from this check
-     * @param mixed         $opts          The validator's options
+     * Sets validator options
+     *
+     * @param int|array|\Traversable $options
      */
-    public function __construct(EntityManager $entityManager, $exclude = '', $opts = null)
+    public function __construct($options = array())
     {
-        parent::__construct($opts);
+        if (!is_array($options)) {
+            $args = func_get_args();
+            $options = array();
+            $options['exclude'] = array_shift($args);
+        }
 
-        $this->_entityManager = $entityManager;
-        $this->_exclude = $exclude;
+        parent::__construct($options);
     }
 
     /**
@@ -73,25 +76,37 @@ class Title extends \Zend\Validator\AbstractValidator
         $this->setValue($value);
 
         $parentName = null;
-        if (isset($context['parent_' . $context['category']]) && '' != $context['parent_' . $context['category']]) {
-            $realParent = $this->_entityManager
+        if ('' != $this->_form->get('parent_' . $this->_form->get('category')->getValue())->getValue()) {
+            $realParent = $this->getEntityManager()
                 ->getRepository('PageBundle\Entity\Node\Page')
-                ->findOneById($context['parent_' . $context['category']]);
+                ->findOneById($this->_form->get('parent_' . $this->_form->get('category')->getValue())->getValue());
 
             $parentName = $realParent->getName();
         }
 
-        $page = $this->_entityManager
+        $page = $this->getEntityManager()
             ->getRepository('PageBundle\Entity\Node\Page')
             ->findOneByNameAndParent(
                 Url::createSlug($value), Url::createSlug($parentName)
             );
 
-        if (null === $page || $page->getName() == $this->_exclude)
+        if (null === $page || $page->getName() == $this->options['exclude']) {
             return true;
+        }
 
         $this->error(self::NOT_VALID);
 
         return false;
+    }
+
+    /**
+     * @param  Form $form
+     * @return self
+     */
+    public function setForm(Form $form)
+    {
+        $this->_form = $form;
+
+        return $this;
     }
 }

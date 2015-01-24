@@ -18,8 +18,6 @@
 
 namespace CommonBundle\Form\Address;
 
-use CommonBundle\Component\Validator\NotZero as NotZeroValidator;
-
 /**
  * Add Address
  *
@@ -42,6 +40,20 @@ class AddPrimary extends \CommonBundle\Component\Form\Fieldset
             'attributes' => array(
                 'options' => $cities,
                 'class'   => 'city',
+            ),
+            'options' => array(
+                'input' => array(
+                    'input' => array(
+                        'filters'  => array(
+                            array('name' => 'StringTrim'),
+                        ),
+                    ),
+                    'validators' => array(
+                        array(
+                            'name' => 'notEmpty',
+                        ),
+                    ),
+                ),
             ),
         ));
 
@@ -107,7 +119,7 @@ class AddPrimary extends \CommonBundle\Component\Form\Fieldset
                 'name'       => $id,
                 'label'      => 'Street',
                 'attributes' => array(
-                    'class'   => 'street street-'.$id,
+                    'class'   => 'street street-' . $id,
                     'options' => $collection,
                 ),
             );
@@ -138,7 +150,7 @@ class AddPrimary extends \CommonBundle\Component\Form\Fieldset
                                 'allowWhiteSpace' => true,
                             ),
                         ),
-                        new NotZeroValidator(),
+                        array('name' => 'not_zero'),
                     ),
                 ),
             ),
@@ -165,18 +177,20 @@ class AddPrimary extends \CommonBundle\Component\Form\Fieldset
     {
         $this->get('street')->setRequired($required);
         $this->get('number')->setRequired($required);
+        $this->get('mailbox')->setRequired(false);
         $this->get('city')->setRequired($required);
 
         $this->get('other')->setRequired($required);
 
-        return $this->setElementRequired($required);
+        return $this;
     }
 
     private function getCities()
     {
         if (null !== $this->getCache()) {
-            if (null !== ($result = $this->getCache()->getItem('Litus_CommonBundle_Entity_General_Address_Cities_Streets')))
+            if (null !== ($result = $this->getCache()->getItem('Litus_CommonBundle_Entity_General_Address_Cities_Streets'))) {
                 return $result;
+            }
         }
 
         $cities = $this->getEntityManager()
@@ -186,7 +200,7 @@ class AddPrimary extends \CommonBundle\Component\Form\Fieldset
         $optionsCity = array('' => '');
         $optionsStreet = array();
         foreach ($cities as $city) {
-            $optionsCity[$city->getId()] = $city->getPostal().' '.$city->getName();
+            $optionsCity[$city->getId()] = $city->getPostal() . ' ' . $city->getName();
             $optionsStreet[$city->getId()] = array('' => '');
 
             foreach ($city->getStreets() as $street) {
@@ -210,23 +224,26 @@ class AddPrimary extends \CommonBundle\Component\Form\Fieldset
 
     public function getInputFilterSpecification()
     {
-        $specification = parent::getInputFilterSpecification();
+        $specs = parent::getInputFilterSpecification();
 
-        if ('' === $this->data['city']) {
+        if ('' === $this->get('city')->getValue()) {
             // empty form
             return array();
         }
 
-        if ($this->data['city'] !== 'other') {
-            unset($specification['other']);
+        if ($this->get('city')->getValue() !== 'other') {
+            unset($specs['other']);
 
-            foreach ($specification['street'] as $city => $streetSpecification) {
-                $streetSpecification['required'] = $city === $this->data['city'];
+            foreach ($specs['street'] as $city => $streetSpecification) {
+                if ('type' == $city) {
+                    continue;
+                }
+                $specs['street'][$city]['required'] = ($city == $this->get('city')->getValue());
             }
         } else {
-            unset($specification['street']);
+            unset($specs['street']);
         }
 
-        return $specification;
+        return $specs;
     }
 }

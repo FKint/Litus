@@ -47,6 +47,7 @@ return array(
 
     'General' => 'Algemeen',
 
+    'The textbooks have been booked!' => 'De boeken zijn gereserveerd!',
     'The textbooks have been booked! Please wait for them to be assigned before coming to cudi.' => 'De boeken zijn gereserveerd! Gelieve te wachten totdat deze toegewezen zijn voor je naar de cursusdienst komt.',
 
     'New bookings have been assigned to you, and you can go and collect them.' => 'Er zijn nieuwe reservaties aan je toegewezen, die je mag komen afhalen.',
@@ -70,4 +71,9 @@ return array(
     'Keep Me Updated' => 'Verwittig Me',
     'You won\'t receive an e-mail when the catalog is updated.' => 'Er wordt geen e-mail verstuurd wanneer de catalogus aangepast wordt.',
     'Don\'t Keep Me Updated' => 'Verwittig Me Niet',
+
+    'Color' => 'Kleur',
+    'Status' => 'Status',
+    'Booked' => 'Gereserveerd',
+    'Bought' => 'Aangekocht',
 );

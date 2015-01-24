@@ -18,9 +18,9 @@
 
 namespace CommonBundle\Controller\Admin;
 
-use CommonBundle\Entity\User\Person\Academic;
-use Doctrine\ORM\Query;
-use Zend\View\Model\ViewModel;
+use CommonBundle\Entity\User\Person\Academic,
+    Doctrine\ORM\Query,
+    Zend\View\Model\ViewModel;
 
 /**
  * AcademicController
@@ -67,6 +67,7 @@ class AcademicController extends \CommonBundle\Component\Controller\ActionContro
             $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
+                $formData = $form->getData();
                 $academic = $form->hydrateObject();
 
                 $this->getEntityManager()->persist($academic);
@@ -104,8 +105,9 @@ class AcademicController extends \CommonBundle\Component\Controller\ActionContro
 
     public function editAction()
     {
-        if (!($academic = $this->_getAcademic()))
+        if (!($academic = $this->_getAcademic())) {
             return new ViewModel();
+        }
 
         $form = $this->getForm('common_academic_edit', array('academic' => $academic));
 
@@ -141,8 +143,9 @@ class AcademicController extends \CommonBundle\Component\Controller\ActionContro
 
     public function activateAction()
     {
-        if (!($academic = $this->_getAcademic()))
+        if (!($academic = $this->_getAcademic())) {
             return new ViewModel();
+        }
 
         $academic->activate(
             $this->getEntityManager(),
@@ -172,8 +175,9 @@ class AcademicController extends \CommonBundle\Component\Controller\ActionContro
     {
         $this->initAjax();
 
-        if (!($academic = $this->_getAcademic()))
+        if (!($academic = $this->_getAcademic())) {
             return new ViewModel();
+        }
 
         $sessions = $this->getEntityManager()
             ->getRepository('CommonBundle\Entity\User\Session')
@@ -209,7 +213,7 @@ class AcademicController extends \CommonBundle\Component\Controller\ActionContro
             $item->id = $academic->getId();
             $item->name = $academic->getFullName();
             $item->universityIdentification = $identification;
-            $item->value = $academic->getFullName().' - '.$identification;
+            $item->value = $academic->getFullName() . ' - ' . $identification;
             $result[] = $item;
         }
 

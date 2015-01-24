@@ -18,7 +18,8 @@
 
 namespace CommonBundle\Repository\General;
 
-use CommonBundle\Component\Doctrine\ORM\EntityRepository;
+use CommonBundle\Component\Doctrine\ORM\EntityRepository,
+    RuntimeException;
 
 /**
  * Organization
@@ -41,8 +42,9 @@ class Organization extends EntityRepository
 
     public function findOne()
     {
-        if (count($this->findAll()) > 1)
-            throw new \RuntimeException('There is more than one organization');
+        if (count($this->findAll()) > 1) {
+            throw new RuntimeException('There is more than one organization');
+        }
 
         return $this->findAll()[0];
     }

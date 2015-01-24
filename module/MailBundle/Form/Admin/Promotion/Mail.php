@@ -29,6 +29,17 @@ class Mail extends \CommonBundle\Component\Form\Admin\Form
     {
         parent::init();
 
+        $groups = $this->getEntityManager()
+            ->getRepository('SyllabusBundle\Entity\Group')
+            ->findAll();
+
+        $groupNames = array();
+        foreach ($groups as $group) {
+            if (strpos($group->getName(), "Master") === 0) {
+                $groupNames[$group->getId()] = $group->getName();
+            }
+        }
+
         $this->add(array(
             'type'       => 'select',
             'name'       => 'to',
@@ -42,6 +53,18 @@ class Mail extends \CommonBundle\Component\Form\Admin\Form
             ),
         ));
 
+        if (!empty($groupNames)) {
+            $this->add(array(
+                'type'       => 'select',
+                'name'       => 'groups',
+                'label'      => 'Groups',
+                'attributes' => array(
+                    'multiple' => true,
+                    'options'  => $groupNames,
+                ),
+            ));
+        }
+
         $this->add(array(
             'type'       => 'text',
             'name'       => 'subject',
@@ -54,6 +77,25 @@ class Mail extends \CommonBundle\Component\Form\Admin\Form
                 'input' => array(
                     'filters' => array(
                         array('name' => 'StringTrim'),
+                    ),
+                ),
+            ),
+        ));
+
+        $this->add(array(
+            'type'       => 'text',
+            'name'       => 'bcc',
+            'label'      => 'Additional BCC',
+            'attributes' => array(
+                'style' => 'width: 400px;',
+            ),
+            'options'    => array(
+                'input' => array(
+                    'filters'  => array(
+                        array('name' => 'StringTrim'),
+                    ),
+                    'validators' => array(
+                        array('name' => 'mail_multi_mail'),
                     ),
                 ),
             ),
@@ -76,6 +118,27 @@ class Mail extends \CommonBundle\Component\Form\Admin\Form
             ),
         ));
 
+        $this->add(array(
+            'type'       => 'file',
+            'name'       => 'file',
+            'label'      => 'Attachments',
+            'attributes' => array(
+                'multiple' => true,
+            ),
+            'options'    => array(
+                'input' => array(
+                    'validators' => array(
+                        array(
+                            'name' => 'filefilessize',
+                            'options' => array(
+                                'max' => '50MB',
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ));
+
         $this->addSubmit('Send', 'mail');
     }
 
@@ -86,8 +149,9 @@ class Mail extends \CommonBundle\Component\Form\Admin\Form
             ->findAll();
 
         $promotionsArray = array();
-        foreach ($academicYears as $academicYear)
+        foreach ($academicYears as $academicYear) {
             $promotionsArray[$academicYear->getId()] = $academicYear->getCode();
+        }
 
         return $promotionsArray;
     }

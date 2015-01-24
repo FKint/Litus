@@ -18,9 +18,9 @@
 
 namespace TicketBundle\Form\Ticket;
 
-use LogicException,
+use CommonBundle\Entity\User\Person,
+    LogicException,
     RuntimeException,
-    TicketBundle\Component\Validator\NumberTickets as NumberTicketsValidator,
     TicketBundle\Entity\Event;
 
 /**
@@ -33,14 +33,19 @@ class Book extends \CommonBundle\Component\Form\Bootstrap\Form
     /**
      * @var Event
      */
-    private $event;
+    private $_event;
+
+    /**
+    * @var Person
+    */
+    private $_person;
 
     public function init()
     {
-        if (null === $this->event) {
+        if (null === $this->_event) {
             throw new LogicException('Cannot book ticket for null form.');
         }
-        if (null === $this->getAuthentication()->getPersonObject()) {
+        if (null === $this->_person) {
             throw new RuntimeException('You have to be logged in to book tickets.');
         }
 
@@ -48,7 +53,7 @@ class Book extends \CommonBundle\Component\Form\Bootstrap\Form
 
         $this->setAttribute('id', 'ticket_sale_form');
 
-        if (empty($this->event->getOptions())) {
+        if (empty($this->_event->getOptions())) {
             $this->add(array(
                 'type'       => 'select',
                 'name'       => 'number_member',
@@ -60,13 +65,19 @@ class Book extends \CommonBundle\Component\Form\Bootstrap\Form
                     'input' => array(
                         'required' => true,
                         'validators' => array(
-                            new NumberTicketsValidator($this->getEntityManager(), $this->event, $this->getAuthentication()->getPersonObject()),
-                        )
+                            array(
+                                'name' => 'ticket_number_tickets',
+                                'options' => array(
+                                    'event' => $this->_event,
+                                    'person' => $this->_person,
+                                ),
+                            ),
+                        ),
                     ),
                 ),
             ));
 
-            if (!$this->event->isOnlyMembers()) {
+            if (!$this->_event->isOnlyMembers()) {
                 $this->add(array(
                     'type'       => 'select',
                     'name'       => 'number_non_member',
@@ -78,14 +89,20 @@ class Book extends \CommonBundle\Component\Form\Bootstrap\Form
                         'input' => array(
                             'required' => true,
                             'validators' => array(
-                                new NumberTicketsValidator($this->getEntityManager(), $this->event, $this->getAuthentication()->getPersonObject()),
-                            )
+                                array(
+                                    'name' => 'ticket_number_tickets',
+                                    'options' => array(
+                                        'event' => $this->_event,
+                                        'person' => $this->_person,
+                                    ),
+                                ),
+                            ),
                         ),
                     ),
                 ));
             }
         } else {
-            foreach ($this->event->getOptions() as $option) {
+            foreach ($this->_event->getOptions() as $option) {
                 $this->add(array(
                     'type'       => 'select',
                     'name'       => 'option_' . $option->getId() . '_number_member',
@@ -97,13 +114,19 @@ class Book extends \CommonBundle\Component\Form\Bootstrap\Form
                         'input' => array(
                             'required' => true,
                             'validators' => array(
-                                new NumberTicketsValidator($this->getEntityManager(), $this->event, $this->getAuthentication()->getPersonObject()),
-                            )
+                                array(
+                                    'name' => 'ticket_number_tickets',
+                                    'options' => array(
+                                        'event' => $this->_event,
+                                        'person' => $this->_person,
+                                    ),
+                                ),
+                            ),
                         ),
                     ),
                 ));
 
-                if (!$this->event->isOnlyMembers()) {
+                if (!$this->_event->isOnlyMembers()) {
                     $this->add(array(
                         'type'       => 'select',
                         'name'       => 'option_' . $option->getId() . '_number_non_member',
@@ -115,8 +138,14 @@ class Book extends \CommonBundle\Component\Form\Bootstrap\Form
                             'input' => array(
                                 'required' => true,
                                 'validators' => array(
-                                    new NumberTicketsValidator($this->getEntityManager(), $this->event, $this->getAuthentication()->getPersonObject()),
-                                )
+                                    array(
+                                        'name' => 'ticket_number_tickets',
+                                        'options' => array(
+                                            'event' => $this->_event,
+                                            'person' => $this->_person,
+                                        ),
+                                    ),
+                                ),
                             ),
                         ),
                     ));
@@ -130,7 +159,7 @@ class Book extends \CommonBundle\Component\Form\Bootstrap\Form
     private function getNumberOptions()
     {
         $numbers = array();
-        $max = $this->event->getLimitPerPerson() == 0 ? 10 : $this->event->getLimitPerPerson();
+        $max = $this->_event->getLimitPerPerson() == 0 ? 10 : $this->_event->getLimitPerPerson();
 
         for ($i = 0 ; $i <= $max ; $i++) {
             $numbers[$i] = $i;
@@ -145,7 +174,18 @@ class Book extends \CommonBundle\Component\Form\Bootstrap\Form
      */
     public function setEvent(Event $event)
     {
-        $this->event = $event;
+        $this->_event = $event;
+
+        return $this;
+    }
+
+    /**
+    * @param  Person $person
+    * @return self
+    */
+    public function setPerson(Person $person)
+    {
+        $this->_person = $person;
 
         return $this;
     }

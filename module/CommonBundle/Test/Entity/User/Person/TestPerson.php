@@ -22,8 +22,4 @@ use CommonBundle\Entity\User\Person;
 
 class TestPerson extends Person
 {
-    public function __construct()
-    {
-        parent::__construct('TestPerson', array(), 'Test', 'Person');
-    }
 }

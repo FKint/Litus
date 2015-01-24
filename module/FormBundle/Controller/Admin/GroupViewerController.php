@@ -18,8 +18,7 @@
 
 namespace FormBundle\Controller\Admin;
 
-use FormBundle\Form\Admin\Viewer\Add as AddForm,
-    FormBundle\Entity\ViewerMap,
+use FormBundle\Entity\ViewerMap,
     Zend\View\Model\ViewModel;
 
 /**
@@ -31,8 +30,9 @@ class GroupViewerController extends \CommonBundle\Component\Controller\ActionCon
 {
     public function manageAction()
     {
-        if (!($group = $this->_getGroup()))
+        if (!($group = $this->_getGroup())) {
             return new ViewModel();
+        }
 
         if (!$group->canBeEditedBy($this->getAuthentication()->getPersonObject())) {
             $this->flashMessenger()->error(
@@ -64,8 +64,9 @@ class GroupViewerController extends \CommonBundle\Component\Controller\ActionCon
 
     public function addAction()
     {
-        if (!($group = $this->_getGroup()))
+        if (!($group = $this->_getGroup())) {
             return new ViewModel();
+        }
 
         if (!$group->canBeEditedBy($this->getAuthentication()->getPersonObject())) {
             $this->flashMessenger()->error(
@@ -83,29 +84,25 @@ class GroupViewerController extends \CommonBundle\Component\Controller\ActionCon
             return new ViewModel();
         }
 
-        $form = new AddForm($this->getEntityManager());
+        $form = $this->getForm('form_viewer_add');
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
+                $formData = $form->getData();
 
-                $repository = $this->getEntityManager()
-                    ->getRepository('CommonBundle\Entity\User\Person');
-                if ($formData['person_id'] == '') {
-                    $person = $repository->findOneByUsername($formData['person_name']);
-                } else {
-                    $person = $repository->findOneById($formData['person_id']);
-                }
+                $person = $this->getEntityManager()
+                    ->getRepository('CommonBundle\Entity\User\Person')
+                    ->findOneById($formData['person']['id']);
 
                 $repositoryCheck = $this->getEntityManager()
                     ->getRepository('FormBundle\Entity\ViewerMap')
                     ->findOneBy(
                         array(
                             'form' => $group->getForms()[0]->getForm(),
-                            'person' => $person
+                            'person' => $person,
                         )
                     );
 
@@ -115,14 +112,10 @@ class GroupViewerController extends \CommonBundle\Component\Controller\ActionCon
                         'This user has already been given access to this list!'
                     );
                 } else {
-                    foreach ($group->getForms() as $form) {
-                        $viewer = new ViewerMap(
-                            $form->getForm(),
-                            $person,
-                            $formData['edit'],
-                            $formData['mail']
+                    foreach ($group->getForms() as $formMapping) {
+                        $this->getEntityManager()->persist(
+                            $form->hydrateObject(new ViewerMap($formMapping->getForm()))
                         );
-                        $this->getEntityManager()->persist($viewer);
                     }
 
                     $this->getEntityManager()->flush();
@@ -157,8 +150,9 @@ class GroupViewerController extends \CommonBundle\Component\Controller\ActionCon
     {
         $this->initAjax();
 
-        if (!($viewer = $this->_getViewer()))
+        if (!($viewer = $this->_getViewer())) {
             return new ViewModel();
+        }
 
         if (!$viewer->getForm()->canBeEditedBy($this->getAuthentication()->getPersonObject())) {
             $this->flashMessenger()->error(
@@ -216,7 +210,7 @@ class GroupViewerController extends \CommonBundle\Component\Controller\ActionCon
             $this->redirect()->toRoute(
                 'form_admin_group',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -236,7 +230,7 @@ class GroupViewerController extends \CommonBundle\Component\Controller\ActionCon
             $this->redirect()->toRoute(
                 'form_admin_group',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -252,7 +246,7 @@ class GroupViewerController extends \CommonBundle\Component\Controller\ActionCon
             $this->redirect()->toRoute(
                 'form_admin_group',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

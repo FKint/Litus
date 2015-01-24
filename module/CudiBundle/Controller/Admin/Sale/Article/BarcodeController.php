@@ -19,7 +19,6 @@
 namespace CudiBundle\Controller\Admin\Sale\Article;
 
 use CudiBundle\Entity\Sale\Article\Barcode,
-    CudiBundle\Form\Admin\Sales\Article\Barcodes\Add as AddForm,
     Zend\View\Model\ViewModel;
 
 /**
@@ -31,17 +30,17 @@ class BarcodeController extends \CudiBundle\Component\Controller\ActionControlle
 {
     public function manageAction()
     {
-        if (!($article = $this->_getSaleArticle()))
+        if (!($article = $this->_getSaleArticle())) {
             return new ViewModel();
+        }
 
-        $form = new AddForm($this->getEntityManager());
+        $form = $this->getForm('cudi_sale_article_barcode_add');
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
+                $formData = $form->getData();
 
                 $article->addBarcode(new Barcode($article, $formData['barcode']));
 
@@ -73,6 +72,7 @@ class BarcodeController extends \CudiBundle\Component\Controller\ActionControlle
 
         return new ViewModel(
             array(
+                'form' => $form,
                 'article' => $article,
                 'paginator' => $paginator,
                 'paginationControl' => $this->paginator()->createControl(true),
@@ -84,8 +84,9 @@ class BarcodeController extends \CudiBundle\Component\Controller\ActionControlle
     {
         $this->initAjax();
 
-        if (!($barcode = $this->_getBarcode()) || $barcode->isMain())
+        if (!($barcode = $this->_getBarcode()) || $barcode->isMain()) {
             return new ViewModel();
+        }
 
         $this->getEntityManager()->remove($barcode);
         $this->getEntityManager()->flush();
@@ -111,7 +112,7 @@ class BarcodeController extends \CudiBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'cudi_admin_sales_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -131,7 +132,7 @@ class BarcodeController extends \CudiBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'cudi_admin_sales_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -152,7 +153,7 @@ class BarcodeController extends \CudiBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'cudi_admin_sales_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -172,7 +173,7 @@ class BarcodeController extends \CudiBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'cudi_admin_sales_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

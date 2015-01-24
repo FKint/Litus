@@ -18,8 +18,7 @@
 
 namespace ShiftBundle\Form\Admin\Shift;
 
-use CommonBundle\Component\Validator\DateCompare as DateCompareValidator,
-    RuntimeException;
+use RuntimeException;
 
 /**
  * Add Shift
@@ -35,27 +34,6 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
         parent::init();
 
         $this->add(array(
-            'type'       => 'hidden',
-            'name'       => 'manager_id',
-            'attributes' => array(
-                'id' => 'managerId',
-            ),
-            'options'    => array(
-                'input' => array(
-                    'required'   => true,
-                    'filters'    => array(
-                        array('name' => 'StringTrim'),
-                    ),
-                    'validators' => array(
-                        array(
-                            'name' => 'int',
-                        ),
-                    ),
-                ),
-            ),
-        ));
-
-        $this->add(array(
             'type'     => 'datetime',
             'name'     => 'start_date',
             'label'    => 'Start Date',
@@ -63,7 +41,13 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
             'options'  => array(
                 'input' => array(
                     'validators' => array(
-                        new DateCompareValidator('now', 'd/m/Y H:i'),
+                        array(
+                            'name' => 'date_compare',
+                            'options' => array(
+                                'first_date' => 'now',
+                                'format' => 'd/m/Y H:i',
+                            ),
+                        ),
                     ),
                 ),
             ),
@@ -77,7 +61,13 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
             'options'  => array(
                 'input' => array(
                     'validators' => array(
-                        new DateCompareValidator('start_date', 'd/m/Y H:i'),
+                        array(
+                            'name' => 'date_compare',
+                            'options' => array(
+                                'first_date' => 'start_date',
+                                'format' => 'd/m/Y H:i',
+                            ),
+                        ),
                     ),
                 ),
             ),
@@ -93,13 +83,11 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
             ),
             'options'    => array(
                 'input' => array(
+                    'filters'  => array(
+                        array('name' => 'StringTrim'),
+                    ),
                     'validators' => array(
-                        'filters'  => array(
-                            array('name' => 'StringTrim'),
-                        ),
-                        'validators' => array(
-                            array('name' => 'int'),
-                        ),
+                        array('name' => 'int'),
                     ),
                 ),
             ),
@@ -115,13 +103,11 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
             ),
             'options'    => array(
                 'input' => array(
+                    'filters'  => array(
+                        array('name' => 'StringTrim'),
+                    ),
                     'validators' => array(
-                        'filters'  => array(
-                            array('name' => 'StringTrim'),
-                        ),
-                        'validators' => array(
-                            array('name' => 'int'),
-                        ),
+                        array('name' => 'int'),
                     ),
                 ),
             ),
@@ -138,21 +124,17 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
         ));
 
         $this->add(array(
-            'type'       => 'text',
+            'type'       => 'typeahead',
             'name'       => 'manager',
             'label'      => 'Manager',
             'required'   => true,
-            'attributes' => array(
-                'autocomplete' => 'off',
-                'data-provide' => 'typeahead',
-                'id'           => 'managerSearch',
-            ),
             'options'    => array(
                 'input' => array(
+                    'filters'  => array(
+                        array('name' => 'StringTrim'),
+                    ),
                     'validators' => array(
-                        'filters'  => array(
-                            array('name' => 'StringTrim'),
-                        ),
+                        array('name' => 'typeahead_person'),
                     ),
                 ),
             ),
@@ -165,13 +147,11 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
             'required' => true,
             'options'  => array(
                 'input' => array(
+                    'filters'  => array(
+                        array('name' => 'StringTrim'),
+                    ),
                     'validators' => array(
-                        'filters'  => array(
-                            array('name' => 'StringTrim'),
-                        ),
-                        'validators' => array(
-                            array('name' => 'int'),
-                        ),
+                        array('name' => 'int'),
                     ),
                 ),
             ),
@@ -184,13 +164,11 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
             'required' => true,
             'options'  => array(
                 'input' => array(
+                    'filters'  => array(
+                        array('name' => 'StringTrim'),
+                    ),
                     'validators' => array(
-                        'filters'  => array(
-                            array('name' => 'StringTrim'),
-                        ),
-                        'validators' => array(
-                            array('name' => 'int'),
-                        ),
+                        array('name' => 'int'),
                     ),
                 ),
             ),
@@ -248,10 +226,8 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
             'required' => true,
             'options'  => array(
                 'input' => array(
-                    'validators' => array(
-                        'filters'  => array(
-                            array('name' => 'StringTrim'),
-                        ),
+                    'filters'  => array(
+                        array('name' => 'StringTrim'),
                     ),
                 ),
             ),
@@ -263,14 +239,12 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
             'label'      => 'Description',
             'required'   => true,
             'attributes' => array(
-                'rows' => 5
+                'rows' => 5,
             ),
             'options'    => array(
                 'input' => array(
-                    'validators' => array(
-                        'filters'  => array(
-                            array('name' => 'StringTrim'),
-                        ),
+                    'filters'  => array(
+                        array('name' => 'StringTrim'),
                     ),
                 ),
             ),
@@ -295,12 +269,14 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
             ->getRepository('CommonBundle\Entity\General\Organization\Unit')
             ->findAllActive();
 
-        if (empty($units))
+        if (empty($units)) {
             throw new RuntimeException('There needs to be at least one unit before you can add a shift');
+        }
 
         $unitsArray = array();
-        foreach ($units as $unit)
+        foreach ($units as $unit) {
             $unitsArray[$unit->getId()] = $unit->getName();
+        }
 
         return $unitsArray;
     }
@@ -312,10 +288,11 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
             ->findAllActive();
 
         $eventsArray = array(
-            '' => ''
+            '' => '',
         );
-        foreach ($events as $event)
+        foreach ($events as $event) {
             $eventsArray[$event->getId()] = $event->getTitle();
+        }
 
         return $eventsArray;
     }
@@ -326,12 +303,14 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
             ->getRepository('CommonBundle\Entity\General\Location')
             ->findAllActive();
 
-        if (empty($locations))
+        if (empty($locations)) {
             throw new RuntimeException('There needs to be at least one location before you can add a shift');
+        }
 
         $locationsArray = array();
-        foreach ($locations as $location)
+        foreach ($locations as $location) {
             $locationsArray[$location->getId()] = $location->getName();
+        }
 
         return $locationsArray;
     }
@@ -344,12 +323,14 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
 
         $rolesArray = array();
         foreach ($roles as $role) {
-            if (!$role->getSystem())
+            if (!$role->getSystem()) {
                 $rolesArray[$role->getName()] = $role->getName();
+            }
         }
 
-        if (empty($rolesArray))
+        if (empty($rolesArray)) {
             throw new RuntimeException('There needs to be at least one role before you can add a page');
+        }
 
         return $rolesArray;
     }

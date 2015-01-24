@@ -23,32 +23,37 @@ namespace CommonBundle\Component\Validator;
  *
  * @author Lars Vierbergen <lars.vierbergen@litus.cc>
  */
-class PositiveNumber extends \Zend\Validator\AbstractValidator
+class PositiveNumber extends AbstractValidator
 {
     const NOT_POSITIVE = 'notPositive';
     const NOT_STRICT_POSITIVE = 'notStrictPositive';
 
-    /**
-     * @var bool Strictly positive checking enabled or not.
-     */
-    private $_strict = null;
+    protected $options = array(
+        'strict' => true,
+    );
 
     /**
      * @var array The error messages
      */
     protected $messageTemplates = array(
         self::NOT_POSITIVE => 'The value may not be negative',
-        self::NOT_STRICT_POSITIVE => 'The value may not be negative or zero'
+        self::NOT_STRICT_POSITIVE => 'The value may not be negative or zero',
     );
 
     /**
-     * @param bool  $strict Enable striclty positive checking (i.e. zero is not allowed)
-     * @param mixed $opts   The validator's options
+     * Sets validator options
+     *
+     * @param int|array|\Traversable $options
      */
-    public function __construct($strict = true, $opts = null)
+    public function __construct($options = array())
     {
-        $this->_strict = $strict;
-        parent::__construct($opts);
+        if (!is_array($options)) {
+            $args = func_get_args();
+            $options = array();
+            $options['strict'] = array_shift($args);
+        }
+
+        parent::__construct($options);
     }
 
     /**
@@ -63,13 +68,15 @@ class PositiveNumber extends \Zend\Validator\AbstractValidator
         $this->setValue($value);
 
         $intVal = intval(trim($value), 10);
-        if ($intVal > 0)
+        if ($intVal > 0) {
             return true;
+        }
 
-        if ($this->_strict && $intVal == 0)
+        if ($this->options['strict'] && $intVal == 0) {
             $this->error (self::NOT_STRICT_POSITIVE);
-        else
+        } else {
             $this->error (self::NOT_POSITIVE);
+        }
 
         return false;
     }

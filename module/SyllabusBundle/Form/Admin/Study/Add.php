@@ -18,9 +18,7 @@
 
 namespace SyllabusBundle\Form\Admin\Study;
 
-use SyllabusBundle\Component\Validator\Study\KulId as KulIdValidator,
-    SyllabusBundle\Component\Validator\Study\Recursion as RecursionValidator,
-    SyllabusBundle\Entity\Study;
+use SyllabusBundle\Entity\Study;
 
 /**
  * Add Study
@@ -52,7 +50,12 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
                     ),
                     'validators' => array(
                         array('name' => 'int'),
-                        new KulIdValidator($this->getEntityManager(), $this->study),
+                        array(
+                            'name' => 'syllabus_study_kul_id',
+                            'options' => array(
+                                'study' => $this->study,
+                            ),
+                        ),
                     ),
                 ),
             ),
@@ -100,49 +103,29 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
             ),
         ));
 
-        $this->add(array(
-            'type'       => 'hidden',
-            'name'       => 'parent_id',
-            'attributes' => array(
-                'id' => 'parentId',
-            ),
-            'options'    => array(
-                'input' => array(
-                    'filters'  => array(
-                        array('name' => 'StringTrim'),
-                    ),
-                    'validators' => array(
-                        array(
-                            'name' => 'int',
-                        ),
-                    ),
-                ),
-            ),
-        ));
-
-        $validators = array();
+        $validators = array(
+            array('name' => 'syllabus_typeahead_study'),
+        );
 
         if (null !== $this->study) {
-            $validators[] = new RecursionValidator($this->getEntityManager(), $this->study);
+            $validators[] = array(
+                'name' => 'syllabus_study_recursion',
+                'options' => array(
+                    'study' => $this->study,
+                ),
+            );
         }
 
         $this->add(array(
-            'type'       => 'text',
+            'type'       => 'typeahead',
             'name'       => 'parent',
             'label'      => 'Parent',
             'required'   => true,
             'attributes' => array(
-                'autocomplete' => 'off',
-                'data-provide' => 'typeahead',
-                'id'           => 'studySearch',
                 'style'        => 'width: 400px',
             ),
             'options'    => array(
                 'input' => array(
-                    'required' => false,
-                    'filters'  => array(
-                        array('name' => 'StringTrim'),
-                    ),
                     'validators' => $validators,
                 ),
             ),

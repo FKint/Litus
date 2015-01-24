@@ -22,7 +22,6 @@ use DateInterval,
     DateTime,
     IntlDateFormatter,
     LogisticsBundle\Entity\Reservation\PianoReservation,
-    LogisticsBundle\Form\PianoReservation\Add as AddForm,
     Zend\Mail\Message,
     Zend\View\Model\ViewModel;
 
@@ -33,10 +32,11 @@ class PianoController extends \CommonBundle\Component\Controller\ActionControlle
 {
     public function indexAction()
     {
-        if (!$this->getAuthentication()->isAuthenticated())
+        if (!$this->getAuthentication()->isAuthenticated()) {
             return new ViewModel();
+        }
 
-        $form = new AddForm($this->getEntityManager(), $this->getLanguage());
+        $form = $this->getForm('logistics_piano-reservation_add');
 
         $reservations = array();
         if ($this->getAuthentication()->isAuthenticated()) {
@@ -56,11 +56,11 @@ class PianoController extends \CommonBundle\Component\Controller\ActionControlle
             $startDate = null;
             $endDate = null;
             foreach ($form->getWeeks() as $key => $week) {
-                if (isset($formData['submit_' . $key])) {
+                if (isset($formData['week_' . $key]['submit'])) {
                     $weekIndex = $key;
 
-                    $startDate = self::_loadDate($formData['start_date_' . $weekIndex]);
-                    $endDate = self::_loadDate($formData['end_date_' . $weekIndex]);
+                    $startDate = self::_loadDate($formData['week_' . $key]['start_date']);
+                    $endDate = self::_loadDate($formData['week_' . $key]['end_date']);
                     break;
                 }
             }
@@ -71,13 +71,13 @@ class PianoController extends \CommonBundle\Component\Controller\ActionControlle
                     ->findOneByName(PianoReservation::PIANO_RESOURCE_NAME);
 
                 $reservation = new PianoReservation(
-                    $startDate,
-                    $endDate,
                     $piano,
-                    '',
-                    $this->getAuthentication()->getPersonObject(),
                     $this->getAuthentication()->getPersonObject()
                 );
+
+                $reservation->setStartDate($startDate)
+                    ->setEndDate($endDate)
+                    ->setPlayer($this->getAuthentication()->getPersonObject());
 
                 $startWeek = new DateTime();
                 $startWeek->setISODate($reservation->getStartDate()->format('Y'), $weekIndex, 1)
@@ -162,8 +162,9 @@ class PianoController extends \CommonBundle\Component\Controller\ActionControlle
                     )
                     ->setSubject($subject);
 
-                if ('development' != getenv('APPLICATION_ENV'))
+                if ('development' != getenv('APPLICATION_ENV')) {
                     $this->getMailTransport()->send($mail);
+                }
 
                 $this->getEntityManager()->persist($reservation);
                 $this->getEntityManager()->flush();
@@ -198,6 +199,6 @@ class PianoController extends \CommonBundle\Component\Controller\ActionControlle
      */
     private static function _loadDate($date)
     {
-        return DateTime::createFromFormat('D d#m#Y H#i', $date) ?: null;
+        return DateTime::createFromFormat('d#m#Y H#i', $date) ?: null;
     }
 }

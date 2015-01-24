@@ -23,10 +23,13 @@ return array(
             'cudi_prof_auth' => array(
                 'login', 'logout', 'shibboleth',
             ),
-            'cudi_opening_hour' => array(
-                'week'
+            'cudi_sale_auth' => array(
+                'login', 'logout', 'shibboleth',
             ),
-        )
+            'cudi_opening_hour' => array(
+                'week',
+            ),
+        ),
     ),
     'supplier' => array(
         'system' => true,
@@ -35,12 +38,12 @@ return array(
         ),
         'actions' => array(
             'cudi_supplier_article' => array(
-                'manage'
+                'manage',
             ),
             'cudi_supplier_index' => array(
-                'index'
+                'index',
             ),
-        )
+        ),
     ),
     'prof' => array(
         'system' => true,
@@ -49,30 +52,30 @@ return array(
         ),
         'actions' => array(
             'cudi_prof_article' => array(
-                'add', 'addFromSubject', 'edit', 'manage', 'typeahead'
+                'add', 'addFromSubject', 'edit', 'manage', 'typeahead',
             ),
             'cudi_prof_article_mapping' => array(
-                'activate', 'add', 'delete'
+                'activate', 'add', 'delete',
             ),
             'cudi_prof_article_comment' => array(
-                'delete', 'manage'
+                'delete', 'manage',
             ),
             'cudi_prof_subject_comment' => array(
-                'delete', 'manage'
+                'delete', 'manage',
             ),
             'cudi_prof_file' => array(
-                'delete', 'download', 'manage', 'upload'
+                'delete', 'download', 'manage', 'upload',
             ),
             'cudi_prof_index' => array(
-                'index'
+                'index',
             ),
             'cudi_prof_prof' => array(
-                'add', 'delete', 'typeahead'
+                'add', 'delete', 'typeahead',
             ),
             'cudi_prof_subject' => array(
-                'manage', 'subject', 'typeahead'
+                'manage', 'subject', 'typeahead',
             ),
-        )
+        ),
     ),
     'student' => array(
         'system' => true,
@@ -81,7 +84,7 @@ return array(
         ),
         'actions' => array(
             'cudi_booking' => array(
-                'book', 'bookSearch', 'cancel', 'keepUpdated', 'search', 'view'
+                'book', 'bookSearch', 'cancel', 'keepUpdated', 'search', 'view',
             ),
         ),
     ),

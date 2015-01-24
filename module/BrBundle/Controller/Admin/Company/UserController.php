@@ -18,11 +18,7 @@
 
 namespace BrBundle\Controller\Admin\Company;
 
-use BrBundle\Entity\User\Person\Corporate as CorporatePerson,
-    BrBundle\Form\Admin\Company\User\Add as AddForm,
-    BrBundle\Form\Admin\Company\User\Edit as EditForm,
-    CommonBundle\Component\FlashMessenger\FlashMessage,
-    Zend\View\Model\ViewModel;
+use Zend\View\Model\ViewModel;
 
 /**
  * ContactController
@@ -34,18 +30,19 @@ class UserController extends \CommonBundle\Component\Controller\ActionController
 {
     public function manageAction()
     {
-        if (!($company = $this->_getCompany()))
+        if (!($company = $this->_getCompany())) {
             return;
+        }
 
         $paginator = $this->paginator()->createFromEntity(
             'BrBundle\Entity\User\Person\Corporate',
             $this->getParam('page'),
             array(
                 'canLogin' => 'true',
-                'company'  => $company->getId()
+                'company'  => $company->getId(),
             ),
             array(
-                'username' => 'ASC'
+                'username' => 'ASC',
             )
         );
 
@@ -60,32 +57,26 @@ class UserController extends \CommonBundle\Component\Controller\ActionController
 
     public function addAction()
     {
-        if (!($company = $this->_getCompany()))
+        if (!($company = $this->_getCompany())) {
             return;
+        }
 
-        $form = new AddForm($this->getEntityManager());
+        $form = $this->getForm('br_company_user_add');
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
+                $user = $form->hydrateObject();
+                $user->setCompany($company);
 
-                $user = new CorporatePerson(
-                    $company,
-                    $formData['username'],
-                    array(
-                        $this->getEntityManager()
-                            ->getRepository('CommonBundle\Entity\Acl\Role')
-                            ->findOneByName('corporate')
-                    ),
-                    $formData['first_name'],
-                    $formData['last_name'],
-                    $formData['email'],
-                    $formData['phone_number'],
-                    $formData['sex']
+                $user->activate(
+                    $this->getEntityManager(),
+                    $this->getMailTransport(),
+                    false
                 );
+
                 $this->getEntityManager()->persist($user);
                 $this->getEntityManager()->flush();
 
@@ -116,24 +107,17 @@ class UserController extends \CommonBundle\Component\Controller\ActionController
 
     public function editAction()
     {
-        if (!($user = $this->_getUser()))
+        if (!($user = $this->_getUser())) {
             return;
+        }
 
-        $form = new EditForm($this->getEntityManager(), $user);
+        $form = $this->getForm('br_company_user_edit', $user);
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
-
-                $user->setFirstName($formData['first_name'])
-                    ->setLastName($formData['last_name'])
-                    ->setEmail($formData['email'])
-                    ->setSex($formData['sex'])
-                    ->setPhoneNumber($formData['phone_number']);
-
                 $this->getEntityManager()->flush();
 
                 $this->flashMessenger()->success(
@@ -145,7 +129,7 @@ class UserController extends \CommonBundle\Component\Controller\ActionController
                     'br_admin_company_user',
                     array(
                         'action' => 'manage',
-                        'id' => $user->getCompany()->getId()
+                        'id' => $user->getCompany()->getId(),
                     )
                 );
 
@@ -163,8 +147,9 @@ class UserController extends \CommonBundle\Component\Controller\ActionController
 
     public function activateAction()
     {
-        if (!($user = $this->_getUser()))
+        if (!($user = $this->_getUser())) {
             return new ViewModel();
+        }
 
         $user->activate(
             $this->getEntityManager(),
@@ -196,8 +181,9 @@ class UserController extends \CommonBundle\Component\Controller\ActionController
     {
         $this->initAjax();
 
-        if (!($user = $this->_getUser()))
+        if (!($user = $this->_getUser())) {
             return new ViewModel();
+        }
 
         $user->disableLogin();
         $this->getEntityManager()->flush();
@@ -223,7 +209,7 @@ class UserController extends \CommonBundle\Component\Controller\ActionController
             $this->redirect()->toRoute(
                 'br_admin_company',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -243,7 +229,7 @@ class UserController extends \CommonBundle\Component\Controller\ActionController
             $this->redirect()->toRoute(
                 'br_admin_company',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -267,7 +253,7 @@ class UserController extends \CommonBundle\Component\Controller\ActionController
             $this->redirect()->toRoute(
                 'br_admin_company',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -287,7 +273,7 @@ class UserController extends \CommonBundle\Component\Controller\ActionController
             $this->redirect()->toRoute(
                 'br_admin_company',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

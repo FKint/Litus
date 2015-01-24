@@ -18,8 +18,7 @@
 
 namespace CudiBundle\Controller\Sale;
 
-use CudiBundle\Form\Sale\Queue\SignIn as SignInForm,
-    Zend\View\Model\ViewModel;
+use Zend\View\Model\ViewModel;
 
 /**
  * QueueController
@@ -58,8 +57,9 @@ class QueueController extends \CudiBundle\Component\Controller\SaleController
 
         $nbPayDesks = sizeof($payDesks);
         for ($i = 0; $i < $nbPayDesks; $i++) {
-            if (strpos('paydesk', $payDesks[$i]->getCode()) !== 0)
+            if (strpos('paydesk', $payDesks[$i]->getCode()) !== 0) {
                 unset($payDesks[$i]);
+            }
         }
 
         return new ViewModel(
@@ -79,7 +79,7 @@ class QueueController extends \CudiBundle\Component\Controller\SaleController
 
     public function signInAction()
     {
-        $form = new SignInForm();
+        $form = $this->getForm('cudi_sale_queue_sign-in');
 
         return new ViewModel(
             array(

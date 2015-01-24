@@ -45,85 +45,26 @@ class RequestController extends \CommonBundle\Component\Controller\ActionControl
         );
     }
 
-    public function viewAction()
-    {
-        if (!($request = $this->_getRequest()))
-            return new ViewModel();
-
-        switch ($request->getJob()->getType()) {
-            case 'internship':
-                $this->redirect()->toRoute(
-                    'br_career_internship',
-                    array(
-                        'action' => 'view',
-                        'id' => $request->getJob()->getId()
-                    )
-                );
-                break;
-
-            case 'vacancy':
-                $this->redirect()->toRoute(
-                    'br_career_vacancy',
-                    array(
-                        'action' => 'view',
-                        'id' => $request->getJob()->getId()
-                    )
-                );
-                break;
-
-            default:break;
-        }
-    }
-
-    public function viewEditAction()
-    {
-        if (!($request = $this->_getRequest()))
-            return new ViewModel();
-
-        switch ($request->getJob()->getType()) {
-            case 'internship':
-                $this->redirect()->toRoute(
-                    'br_career_internship',
-                    array(
-                        'action' => 'view',
-                        'id' => $request->getEditJob()->getId()
-                    )
-                );
-                break;
-
-            case 'vacancy':
-                $this->redirect()->toRoute(
-                    'br_career_vacancy',
-                    array(
-                        'action' => 'view',
-                        'id' => $request->getEditJob()->getId()
-                    )
-                );
-                break;
-
-            default:break;
-        }
-    }
-
     public function approveAction()
     {
-        if (!($request = $this->_getRequest()))
+        if (!($request = $this->_getRequest())) {
             return new ViewModel();
+        }
 
         $request->approveRequest();
         $request->handled();
 
         $this->getEntityManager()->flush();
 
-        $this->flashMessenger()->error(
-            'Error',
+        $this->flashMessenger()->success(
+            'Success',
             'The request was succesfully approved.'
         );
 
         $this->redirect()->toRoute(
             'br_admin_request',
             array(
-                'action' => 'manage'
+                'action' => 'manage',
             )
         );
 
@@ -132,23 +73,24 @@ class RequestController extends \CommonBundle\Component\Controller\ActionControl
 
     public function rejectAction()
     {
-        if (!($request = $this->_getRequest()))
+        if (!($request = $this->_getRequest())) {
             return new ViewModel();
+        }
 
         $request->rejectRequest();
         $request->handled();
 
         $this->getEntityManager()->flush();
 
-        $this->flashMessenger()->error(
-            'Error',
+        $this->flashMessenger()->success(
+            'Success',
             'The request was succesfully rejected.'
         );
 
         $this->redirect()->toRoute(
             'br_admin_request',
             array(
-                'action' => 'manage'
+                'action' => 'manage',
             )
         );
 
@@ -166,7 +108,7 @@ class RequestController extends \CommonBundle\Component\Controller\ActionControl
             $this->redirect()->toRoute(
                 'br_admin_request',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -186,7 +128,7 @@ class RequestController extends \CommonBundle\Component\Controller\ActionControl
             $this->redirect()->toRoute(
                 'br_admin_request',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -199,8 +141,9 @@ class RequestController extends \CommonBundle\Component\Controller\ActionControl
     private function _getSectors()
     {
         $sectorArray = array();
-        foreach (Company::$possibleSectors as $key => $sector)
+        foreach (Company::$possibleSectors as $key => $sector) {
             $sectorArray[$key] = $sector;
+        }
 
         return $sectorArray;
     }

@@ -18,9 +18,9 @@
 
 namespace CudiBundle\Entity\Sale;
 
-use CommonBundle\Entity\User\Person,
-    CommonBundle\Entity\General\AcademicYear,
+use CommonBundle\Entity\General\AcademicYear,
     CommonBundle\Entity\General\Organization,
+    CommonBundle\Entity\User\Person,
     CudiBundle\Entity\Article as MainArticle,
     CudiBundle\Entity\Sale\Article\Barcode,
     CudiBundle\Entity\Sale\Article\Restriction\Member as MemberRestriction,
@@ -158,34 +158,17 @@ class Article
     private $_entityManager;
 
     /**
-     * @param MainArticle $mainArticle   The main article of this sale article
-     * @param integer     $barcode       The barcode of the article
-     * @param integer     $purchasePrice The purchase price of the articl
-     * @param integer     $sellPrice     The sell price of the article
-     * @param boolean     $bookable      Flag whether the article is bookable
-     * @param boolean     $unbookable    Flag whether the article is unbookable
-     * @param boolean     $sellable      Flag whether the article is sellable
-     * @param Supplier    $supplier      The supplier of the article
-     * @param boolean     $canExpire     Flag whether the aritcle can expire
+     * @param MainArticle $mainArticle The main article of this sale article
      */
-    public function __construct(MainArticle $mainArticle, $barcode, $purchasePrice, $sellPrice, $bookable, $unbookable, $sellable, Supplier $supplier, $canExpire)
+    public function __construct(MainArticle $mainArticle)
     {
         $this->discounts = new ArrayCollection();
         $this->barcodes = new ArrayCollection();
 
-        $this->setMainArticle($mainArticle)
-            ->setBarcode($barcode)
-            ->setPurchasePrice($purchasePrice)
-            ->setSellPrice($sellPrice)
-            ->setIsBookable($bookable)
-            ->setIsUnbookable($unbookable)
-            ->setIsSellable($sellable)
-            ->setSupplier($supplier)
-            ->setCanExpire($canExpire)
-            ->setVersionNumber(1)
-            ->setIsHistory(false);
+        $this->setMainArticle($mainArticle);
         $this->timestamp = new DateTime();
         $this->stockValue = 0;
+        $this->isHistory = false;
     }
 
     /**
@@ -242,9 +225,22 @@ class Article
     public function getBarcode()
     {
         foreach ($this->barcodes as $barcode) {
-            if ($barcode->isMain())
+            if ($barcode->isMain()) {
                 return $barcode->getBarcode();
+            }
         }
+    }
+
+    /**
+     * Removes all barcodes
+     *
+     * @return self
+     */
+    public function clearBarcode()
+    {
+        $this->barcodes->clear();
+
+        return $this;
     }
 
     /**
@@ -254,23 +250,31 @@ class Article
      */
     public function setBarcode($barcode)
     {
+        if ('' == $barcode) {
+            return $this;
+        }
+
         $main = null;
         $found = null;
         foreach ($this->barcodes as $object) {
-            if ($object->isMain())
+            if ($object->isMain()) {
                 $main = $object;
-            if ($object->getBarcode() == $barcode)
+            }
+            if ($object->getBarcode() == $barcode) {
                 $found = $object;
+            }
         }
 
         if (!(null !== $main && $main->getBarcode() == $barcode)) {
-            if ($main)
+            if ($main) {
                 $main->setIsMain(false);
+            }
 
-            if ($found)
+            if ($found) {
                 $found->setIsMain(true);
-            else
+            } else {
                 $this->addBarcode(new Barcode($this, $barcode, true));
+            }
         }
 
         return $this;
@@ -541,37 +545,31 @@ class Article
         $memberRestriction = $entityManager->getRepository('CudiBundle\Entity\Sale\Article\Restriction\Member')
             ->findOneByArticle($this);
 
-        if ($onlyMember && null === $memberRestriction)
+        if ($onlyMember && null === $memberRestriction) {
             $restrictions[] = new MemberRestriction($this, false);
+        }
 
         foreach ($restrictions as $restriction) {
-            if (!$restriction->canBook($person, $entityManager))
+            if (!$restriction->canBook($person, $entityManager)) {
                 return false;
+            }
         }
 
         return true;
     }
 
-    /**
-     * @return self
-     */
-    public function duplicate()
+    public function __clone()
     {
-        $article = new Article(
-            $this->getMainArticle(),
-            $this->getBarcode(),
-            $this->getPurchasePrice()/100,
-            $this->getSellPrice()/100,
-            $this->isBookable(),
-            $this->isUnbookable(),
-            $this->isSellable(),
-            $this->getSupplier(),
-            $this->canExpire()
-        );
-        foreach($this->barcodes as $barcode)
-            $article->addBarcode(new Barcode($article, $barcode->getBarcode()));
+        $this->timestamp = new DateTime();
+        $this->stockValue = 0;
+        $this->id = null;
 
-        return $article;
+        $barcodes = $this->barcodes;
+        $this->barcodes = new ArrayCollection();
+
+        foreach ($barcodes as $barcode) {
+            $this->addBarcode(new Barcode($this, $barcode->getBarcode()));
+        }
     }
 
     /**

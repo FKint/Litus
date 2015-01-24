@@ -19,9 +19,9 @@
 namespace SportBundle\Entity;
 
 use CommonBundle\Entity\General\AcademicYear,
+    Doctrine\Common\Collections\ArrayCollection,
     Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Mapping as ORM,
-    \Doctrine\Common\Collections\ArrayCollection;
+    Doctrine\ORM\Mapping as ORM;
 
 /**
  * This entity represents a group of friends.
@@ -31,6 +31,8 @@ use CommonBundle\Entity\General\AcademicYear,
  */
 class Group
 {
+    public static $ALL_MEMBERS = array('one', 'two', 'three', 'four', 'five');
+
     /**
      * @var int The ID of this group
      *
@@ -77,15 +79,10 @@ class Group
 
     /**
      * @param AcademicYear $academicYear
-     * @param string       $name
-     * @param array        $happyHours
      */
-    public function __construct(AcademicYear $academicYear, $name, array $happyHours)
+    public function __construct(AcademicYear $academicYear)
     {
         $this->academicYear = $academicYear;
-
-        $this->name = $name;
-        $this->happyHours = serialize($happyHours);
         $this->members = new ArrayCollection();
     }
 
@@ -114,6 +111,14 @@ class Group
         $this->name = $name;
 
         return $this;
+    }
+
+    /**
+     * @return AcademicYear
+     */
+    public function getAcademicYear()
+    {
+        return $this->academicYear;
     }
 
     /**
@@ -167,8 +172,9 @@ class Group
             $member->setEntityManager($this->_entityManager);
 
             foreach ($member->getLaps($academicYear) as $lap) {
-                if (null === $lap->getEndTime())
+                if (null === $lap->getEndTime()) {
                     continue;
+                }
 
                 $lap->setEntityManager($this->_entityManager);
 
@@ -179,8 +185,9 @@ class Group
 
                 $happyHours = $this->getHappyHours();
                 for ($i = 0; isset($happyHours[$i]); $i++) {
-                    if ($startTime >= substr($happyHours[$i], 0, 2) && $endTime <= substr($happyHours[$i], 2))
+                    if ($startTime >= substr($happyHours[$i], 0, 2) && $endTime <= substr($happyHours[$i], 2)) {
                         $points += $lap->getPoints();
+                    }
                 }
             }
         }

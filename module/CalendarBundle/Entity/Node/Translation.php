@@ -18,7 +18,8 @@
 
 namespace CalendarBundle\Entity\Node;
 
-use CommonBundle\Entity\General\Language,
+use CommonBundle\Component\Util\String as StringUtil,
+    CommonBundle\Entity\General\Language,
     Doctrine\ORM\Mapping as ORM,
     Markdown_Parser;
 
@@ -85,7 +86,7 @@ class Translation
      */
     public function __construct(Event $event, Language $language, $location, $title, $content)
     {
-        $this->event= $event;
+        $this->event = $event;
         $this->language = $language;
         $this->location = $location;
         $this->title = $title;
@@ -184,6 +185,6 @@ class Translation
         $parser = new Markdown_Parser();
         $summary = $parser->transform($this->content);
 
-        return \CommonBundle\Component\Util\String::truncateNoHtml($summary, $length, '...');
+        return StringUtil::truncateNoHtml($summary, $length, '...');
     }
 }

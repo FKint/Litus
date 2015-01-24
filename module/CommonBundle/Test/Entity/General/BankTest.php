@@ -17,15 +17,14 @@
  */
 namespace CommonBundle\Test\Entity\General;
 
-use CommonBundle\Entity\General\Bank\CashRegister,
-    CommonBundle\Entity\General\Bank\BankDevice,
+use CommonBundle\Entity\General\Bank\BankDevice,
     CommonBundle\Entity\General\Bank\BankDevice\Amount as BAmount,
-    CommonBundle\Entity\General\Bank\MoneyUnit\Amount as MAmount,
-    CommonBundle\Entity\General\Bank\MoneyUnit;
+    CommonBundle\Entity\General\Bank\CashRegister,
+    CommonBundle\Entity\General\Bank\MoneyUnit,
+    CommonBundle\Entity\General\Bank\MoneyUnit\Amount as MAmount;
 
 class BankTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testBank()
     {
         $cashRegister = new CashRegister();
@@ -53,6 +52,11 @@ class BankTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Device2', $bankDevice2->getName());
         $this->assertEquals(10, $moneyUnit1->getUnit());
         $this->assertEquals(200, $moneyUnit2->getUnit());
+
+        $this->assertEquals(1000, $ba1_1->getAmount());
+        $this->assertEquals(350, $ba1_2->getAmount());
+        $this->assertEquals(500, $ba2_1->getAmount());
+        $this->assertEquals(300, $ba2_2->getAmount());
 
         $this->assertEquals(0, $ca1_1->getValue());
         $this->assertEquals(40, $ca1_2->getValue());

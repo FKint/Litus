@@ -18,11 +18,12 @@
 
 namespace CommonBundle\Hydrator\User\Person;
 
-use CommonBundle\Entity\User\Person\Academic as AcademicEntity;
+use CommonBundle\Entity\User\Person\Academic as AcademicEntity,
+    CommonBundle\Entity\User\Status\University as UniversityStatus;
 
 class Academic extends \CommonBundle\Hydrator\User\Person
 {
-    private static $std_keys = array(
+    protected static $std_keys = array(
         'university_identification', 'personal_email',
     );
 
@@ -37,7 +38,6 @@ class Academic extends \CommonBundle\Hydrator\User\Person
         $data['roles'] = $this->rolesToData($object->getRoles(false));
 
         $data['primary_email'] = $object->getEmail() === $object->getPersonalEmail();
-        $data['university_email'] = explode('@', $object->getUniversityEmail())[0];
         $data['birthday'] = $object->getBirthday() !== null
             ? $object->getBirthday()->format('d/m/Y')
             : '';
@@ -47,17 +47,37 @@ class Academic extends \CommonBundle\Hydrator\User\Person
         $data['primary_address'] = $this->getHydrator('CommonBundle\Hydrator\General\PrimaryAddress')
             ->extract($object->getPrimaryAddress());
 
-        return array_merge(
+        $data = array_merge(
             $data,
             $this->stdExtract($object, self::$std_keys)
-        );;
+        );
+
+        $academicYear = $this->getCurrentAcademicYear();
+
+        $data['university'] = array(
+            'email'          => explode('@', $object->getUniversityEmail())[0],
+            'identification' => $data['university_identification'],
+            'status'         => null !== $object->getUniversityStatus($academicYear)
+                    ? $object->getUniversityStatus($academicYear)->getStatus()
+                    : null,
+        );
+
+        $data['unit_roles'] = $this->rolesToData($object->getUnitRoles());
+
+        return $data;
     }
 
     public function doHydrate(array $data, $object = null)
     {
+        $academicYear = $this->getCurrentAcademicYear();
+
         if (null === $object) {
             $object = new AcademicEntity();
-            $object->setUsername($data['university_identification']);
+            if (isset($data['username'])) {
+                $object->setUsername($data['username']);
+            } else {
+                $object->setUsername($data['university']['identification']);
+            }
 
             $object->setRoles(array(
                 $this->getEntityManager()
@@ -69,11 +89,33 @@ class Academic extends \CommonBundle\Hydrator\User\Person
             ));
         }
 
+        if (!empty($data['university']['status'])) {
+            if (null !== $object->getUniversityStatus($academicYear)) {
+                $object->getUniversityStatus($academicYear)
+                    ->setStatus($data['university']['status']);
+            } else {
+                $object->addUniversityStatus(
+                    new UniversityStatus(
+                        $object,
+                        $data['university']['status'],
+                        $academicYear
+                    )
+                );
+            }
+        } else {
+            $status = $object->getUniversityStatus($academicYear);
+            if (null !== $status) {
+                $object->removeUniversityStatus(
+                    $object->getUniversityStatus($academicYear)
+                );
+            }
+        }
+
         $studentDomain = $this->getEntityManager()
             ->getRepository('CommonBundle\Entity\General\Config')
             ->getConfigValue('student_email_domain');
 
-        $universityEmail = preg_replace('/[^a-z0-9\.@]/i', '', iconv("UTF-8", "US-ASCII//TRANSLIT", $data['university_email'])).$studentDomain;
+        $universityEmail = preg_replace('/[^a-z0-9\.@]/i', '', iconv("UTF-8", "US-ASCII//TRANSLIT", $data['university']['email'])) . $studentDomain;
 
         if (isset($data['primary_email'])) {
             if ($data['primary_email']) {
@@ -83,24 +125,25 @@ class Academic extends \CommonBundle\Hydrator\User\Person
             }
         }
 
-        $object->setBirthday(self::loadDate($data['birthday']))
-            ->setUniversityEmail($universityEmail);
-
-        if (!isset($data['secondary_address'])) {
-            $data['secondary_address'] = array();
+        if (isset($data['birthday'])) {
+            $object->setBirthday(self::loadDate($data['birthday']));
         }
-        $object->setSecondaryAddress(
-            $this->getHydrator('CommonBundle\Hydrator\General\Address')
-                ->hydrate($data['secondary_address'], $object->getSecondaryAddress())
-        );
+        $object->setUniversityEmail($universityEmail)
+            ->setUniversityIdentification($data['university']['identification']);
 
-        if (!isset($data['primary_address'])) {
-            $data['primary_address'] = array();
+        if (isset($data['secondary_address']) && !empty($data['secondary_address']['city'])) {
+            $object->setSecondaryAddress(
+                $this->getHydrator('CommonBundle\Hydrator\General\Address')
+                    ->hydrate($data['secondary_address'], $object->getSecondaryAddress())
+            );
         }
-        $object->setPrimaryAddress(
-            $this->getHydrator('CommonBundle\Hydrator\General\PrimaryAddress')
-                ->hydrate($data['primary_address'], $object->getPrimaryAddress())
-        );
+
+        if (isset($data['primary_address']) && !empty($data['primary_address']['city'])) {
+            $object->setPrimaryAddress(
+                $this->getHydrator('CommonBundle\Hydrator\General\PrimaryAddress')
+                    ->hydrate($data['primary_address'], $object->getPrimaryAddress())
+            );
+        }
 
         parent::doHydrate($data, $object);
 

@@ -19,7 +19,6 @@
 namespace CudiBundle\Controller\Admin\Stock;
 
 use CudiBundle\Entity\Stock\Retour,
-    CudiBundle\Form\Admin\Stock\Deliveries\Retour as RetourForm,
     Zend\View\Model\ViewModel;
 
 /**
@@ -53,11 +52,13 @@ class RetourController extends \CudiBundle\Component\Controller\ActionController
 
     public function supplierAction()
     {
-        if (!($supplier = $this->_getSupplier()))
+        if (!($supplier = $this->_getSupplier())) {
             return new ViewModel();
+        }
 
-        if (!($period = $this->getActiveStockPeriod()))
+        if (!($period = $this->getActiveStockPeriod())) {
             return new ViewModel();
+        }
 
         $paginator = $this->paginator()->createFromQuery(
             $this->getEntityManager()
@@ -82,8 +83,9 @@ class RetourController extends \CudiBundle\Component\Controller\ActionController
 
     public function addAction()
     {
-        if (!($period = $this->getActiveStockPeriod()))
+        if (!($period = $this->getActiveStockPeriod())) {
             return new ViewModel();
+        }
 
         $academicYear = $this->getAcademicYear();
 
@@ -91,18 +93,19 @@ class RetourController extends \CudiBundle\Component\Controller\ActionController
             ->getRepository('CommonBundle\Entity\General\Config')
             ->getConfigValue('cudi.article_barcode_prefix') . $this->getAcademicYear()->getCode(true);
 
-        $form = new RetourForm($this->getEntityManager(), $prefix);
+        $form = $this->getForm('cudi_stock_delivery_retour', array(
+            'barcode_prefix' => $prefix,
+        ));
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
+                $formData = $form->getData();
 
                 $article = $this->getEntityManager()
                     ->getRepository('CudiBundle\Entity\Sale\Article')
-                    ->findOneById($formData['article_id']);
+                    ->findOneById($formData['article']['id']);
 
                 $item = new Retour($article, $formData['number'], $this->getAuthentication()->getPersonObject(), $formData['comment']);
                 $this->getEntityManager()->persist($item);
@@ -152,8 +155,9 @@ class RetourController extends \CudiBundle\Component\Controller\ActionController
     {
         $this->initAjax();
 
-        if (!($retour = $this->_getRetour()))
+        if (!($retour = $this->_getRetour())) {
             return new ViewModel();
+        }
 
         $retour->getArticle()->addStockValue(-$retour->getNumber());
         $this->getEntityManager()->remove($retour);
@@ -177,7 +181,7 @@ class RetourController extends \CudiBundle\Component\Controller\ActionController
             $this->redirect()->toRoute(
                 'cudi_admin_stock_retour',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -197,7 +201,7 @@ class RetourController extends \CudiBundle\Component\Controller\ActionController
             $this->redirect()->toRoute(
                 'cudi_admin_stock_retour',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -218,7 +222,7 @@ class RetourController extends \CudiBundle\Component\Controller\ActionController
             $this->redirect()->toRoute(
                 'cudi_admin_stock_retour',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -238,7 +242,7 @@ class RetourController extends \CudiBundle\Component\Controller\ActionController
             $this->redirect()->toRoute(
                 'cudi_admin_stock_retour',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

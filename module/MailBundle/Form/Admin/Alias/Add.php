@@ -18,9 +18,6 @@
 
 namespace MailBundle\Form\Admin\Alias;
 
-use CommonBundle\Component\Validator\Academic as AcademicValidator,
-    MailBundle\Component\Validator\Alias as NameValidator;
-
 /**
  * Send Mail
  *
@@ -45,50 +42,21 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
                         array('name' => 'StringTrim'),
                     ),
                     'validators' => array(
-                        new NameValidator($this->getEntityManager()),
+                        array('name' => 'mail_alias'),
                     ),
                 ),
             ),
         ));
 
         $this->add(array(
-            'type'       => 'hidden',
-            'name'       => 'person_id',
-            'required'   => true,
-            'attributes' => array(
-                'id' => 'personId',
-            ),
-            'options'    => array(
-                'input' => array(
-                    'filters' => array(
-                        array('name' => 'StringTrim'),
-                    ),
-                    'validators' => array(
-                        new AcademicValidator(
-                            $this->getEntityManager(),
-                            array(
-                                'byId' => true,
-                            )
-                        )
-                    ),
-                ),
-            ),
-        ));
-
-        $this->add(array(
-            'type'       => 'text',
-            'name'       => 'person_name',
+            'type'       => 'typeahead',
+            'name'       => 'person',
             'label'      => 'Account',
             'required'   => true,
-            'attributes' => array(
-                'id'           => 'personSearch',
-                'autocomplete' => 'off',
-                'data-provide' => 'typeahead',
-            ),
             'options'    => array(
                 'input' => array(
-                    'filters' => array(
-                        array('name' => 'StringTrim'),
+                    'validators' => array(
+                        array('name' => 'typeahead_person'),
                     ),
                 ),
             ),

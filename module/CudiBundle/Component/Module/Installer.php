@@ -19,8 +19,8 @@
 namespace CudiBundle\Component\Module;
 
 use CommonBundle\Component\Util\AcademicYear,
-    CommonBundle\Entity\General\Address,
     CommonBundle\Entity\General\AcademicYear as AcademicYearEntity,
+    CommonBundle\Entity\General\Address,
     CommonBundle\Entity\General\Bank\BankDevice,
     CommonBundle\Entity\General\Bank\MoneyUnit,
     CommonBundle\Entity\General\Config,
@@ -158,14 +158,13 @@ class Installer extends \CommonBundle\Component\Module\AbstractInstaller
                 ->getRepository('CommonBundle\Entity\General\Config')
                 ->getConfigValue('cudi.delivery_address');
         } catch (Exception $e) {
-            $address = new Address(
-                'Kasteelpark Arenberg',
-                41,
-                null,
-                3001,
-                'Heverlee',
-                'BE'
-            );
+            $address = (new Address())
+                ->setStreet('Kasteelpark Arenberg')
+                ->setNumber(41)
+                ->setMailbox(null)
+                ->setPostal(3001)
+                ->setCity('Heverlee')
+                ->setCountry('BE');
             $this->getEntityManager()->persist($address);
             $config = new Config('cudi.delivery_address', (string) $address->getId());
             $config->setDescription('The delivery address of the cudi');
@@ -177,14 +176,13 @@ class Installer extends \CommonBundle\Component\Module\AbstractInstaller
                 ->getRepository('CommonBundle\Entity\General\Config')
                 ->getConfigValue('cudi.billing_address');
         } catch (Exception $e) {
-            $address = new Address(
-                'Studentenwijk Arenberg',
-                '6',
-                '0',
-                3001,
-                'Heverlee',
-                'BE'
-            );
+            $address = (new Address())
+                ->setStreet('Studentenwijk Arenberg')
+                ->setNumber(6)
+                ->setMailbox('0')
+                ->setPostal(3001)
+                ->setCity('Heverlee')
+                ->setCountry('BE');
             $this->getEntityManager()->persist($address);
             $config = new Config('cudi.billing_address', (string) $address->getId());
             $config->setDescription('The billing address of the cudi');

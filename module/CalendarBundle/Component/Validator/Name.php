@@ -21,9 +21,7 @@ namespace CalendarBundle\Component\Validator;
 use CommonBundle\Component\Form\Form,
     CommonBundle\Component\Util\Url,
     CommonBundle\Component\Validator\FormAwareInterface,
-    CommonBundle\Entity\General\Language,
-    Doctrine\ORM\EntityManager,
-    CalendarBundle\Entity\Node\Event;
+    DateTime;
 
 /**
  * Matches the given event title against the database to check whether it is
@@ -31,24 +29,13 @@ use CommonBundle\Component\Form\Form,
  *
  * @author Kristof Mariën <kristof.marien@litus.cc>
  */
-class Name extends \Zend\Validator\AbstractValidator implements FormAwareInterface
+class Name extends \CommonBundle\Component\Validator\AbstractValidator implements FormAwareInterface
 {
     const NOT_VALID = 'notValid';
 
-    /**
-     * @var EntityManager The EntityManager instance
-     */
-    private $_entityManager = null;
-
-    /**
-     * @var Event The event exluded from this check
-     */
-    private $_event;
-
-    /**
-     * @var Language
-     */
-    private $_language;
+    protected $options = array(
+        'event' => null,
+    );
 
     /**
      * @var Form
@@ -59,22 +46,23 @@ class Name extends \Zend\Validator\AbstractValidator implements FormAwareInterfa
      * @var array The error messages
      */
     protected $messageTemplates = array(
-        self::NOT_VALID => 'This event title already exists'
+        self::NOT_VALID => 'This event title already exists',
     );
 
     /**
-     * @param EntityManager $entityManager The EntityManager instance
-     * @param Language      $language
-     * @param Event         $event         The event exluded from this check
-     * @param mixed         $opts          The validator's options
+     * Sets validator options
+     *
+     * @param int|array|\Traversable $options
      */
-    public function __construct(EntityManager $entityManager, Language $language, Event $event = null, $opts = null)
+    public function __construct($options = array())
     {
-        parent::__construct($opts);
+        if (!is_array($options)) {
+            $args = func_get_args();
+            $options = array();
+            $options['event'] = array_shift($args);
+        }
 
-        $this->_entityManager = $entityManager;
-        $this->_language = $language;
-        $this->_event = $event;
+        parent::__construct($options);
     }
 
     /**
@@ -88,17 +76,18 @@ class Name extends \Zend\Validator\AbstractValidator implements FormAwareInterfa
     {
         $this->setValue($value);
 
-        $date = \DateTime::createFromFormat('d#m#Y H#i', $this->_form->get('start_date')->getValue());
+        $date = DateTime::createFromFormat('d#m#Y H#i', $this->_form->get('start_date')->getValue());
 
         if ($date) {
             $title = $date->format('Ymd') . '_' . Url::createSlug($value);
 
-            $event = $this->_entityManager
+            $event = $this->getEntityManager()
                 ->getRepository('CalendarBundle\Entity\Node\Event')
                 ->findOneByName($title);
 
-            if (null === $event || ($this->_event && $event->getEvent() == $this->_event))
+            if (null === $event || ($this->options['event'] && $event->getEvent() == $this->options['event'])) {
                 return true;
+            }
 
             $this->error(self::NOT_VALID);
         }

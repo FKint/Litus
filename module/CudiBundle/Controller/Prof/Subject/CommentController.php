@@ -20,8 +20,6 @@ namespace CudiBundle\Controller\Prof\Subject;
 
 use SyllabusBundle\Entity\Subject\Comment,
     SyllabusBundle\Entity\Subject\Reply,
-    CudiBundle\Form\Prof\Comment\Add as AddCommentForm,
-    CudiBundle\Form\Prof\Comment\Reply as AddReplyForm,
     Zend\View\Model\ViewModel;
 
 /**
@@ -33,15 +31,16 @@ class CommentController extends \CudiBundle\Component\Controller\ProfController
 {
     public function manageAction()
     {
-        if (!($subject = $this->_getSubject()))
+        if (!($subject = $this->_getSubject())) {
             return new ViewModel();
+        }
 
         $comments = $this->getEntityManager()
             ->getRepository('SyllabusBundle\Entity\Subject\Comment')
             ->findBySubject($subject);
 
-        $commentForm = new AddCommentForm();
-        $replyForm = new AddReplyForm();
+        $commentForm = $this->getForm('cudi_prof_comment_add');
+        $replyForm = $this->getForm('cudi_prof_comment_reply');
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
@@ -50,7 +49,7 @@ class CommentController extends \CudiBundle\Component\Controller\ProfController
                 $replyForm->setData($formData);
 
                 if ($replyForm->isValid()) {
-                    $formData = $replyForm->getFormData($formData);
+                    $formData = $replyForm->getData();
 
                     $comment = $this->getEntityManager()
                         ->getRepository('SyllabusBundle\Entity\Subject\Comment')
@@ -87,7 +86,7 @@ class CommentController extends \CudiBundle\Component\Controller\ProfController
                 $commentForm->setData($formData);
 
                 if ($commentForm->isValid()) {
-                    $formData = $commentForm->getFormData($formData);
+                    $formData = $commentForm->getData();
 
                     $comment = new Comment(
                         $this->getAuthentication()->getPersonObject(),
@@ -132,12 +131,13 @@ class CommentController extends \CudiBundle\Component\Controller\ProfController
     {
         $this->initAjax();
 
-        if (!($comment = $this->_getComment()))
+        if (!($comment = $this->_getComment())) {
             return new ViewModel();
+        }
 
         if ($comment->getPerson()->getId() != $this->getAuthentication()->getPersonObject()->getId()) {
             return array(
-                'result' => (object) array("status" => "error")
+                'result' => (object) array("status" => "error"),
             );
         }
 
@@ -158,8 +158,9 @@ class CommentController extends \CudiBundle\Component\Controller\ProfController
     {
         $id = $id == null ? $this->getParam('id') : $id;
 
-        if (!($academicYear = $this->getCurrentAcademicYear()))
+        if (!($academicYear = $this->getCurrentAcademicYear())) {
             return;
+        }
 
         if (null === $id) {
             $this->flashMessenger()->error(

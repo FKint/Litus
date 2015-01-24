@@ -19,7 +19,6 @@
 namespace CudiBundle\Controller\Admin\Article;
 
 use CudiBundle\Entity\Comment\Comment,
-    CudiBundle\Form\Admin\Article\Comment\Add as AddForm,
     Zend\View\Model\ViewModel;
 
 /**
@@ -31,8 +30,9 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
 {
     public function manageAction()
     {
-        if (!($article = $this->_getArticle()))
+        if (!($article = $this->_getArticle())) {
             return new ViewModel();
+        }
 
         $paginator = $this->paginator()->createFromQuery(
             $this->getEntityManager()
@@ -41,21 +41,18 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
             $this->getParam('page')
         );
 
-        $form = new AddForm();
+        $form = $this->getForm('cudi_article_comment_add');
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
-
-                $comment = new Comment(
-                    $this->getEntityManager(),
-                    $this->getAuthentication()->getPersonObject(),
-                    $article,
-                    $formData['text'],
-                    $formData['type']
+                $comment = $form->hydrateObject(
+                    new Comment(
+                        $this->getEntityManager(),
+                        $this->getAuthentication()->getPersonObject(),
+                        $article
+                    )
                 );
 
                 $this->getEntityManager()->persist($comment);
@@ -92,8 +89,9 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
     {
         $this->initAjax();
 
-        if (!($mapping = $this->_getCommentMapping()))
+        if (!($mapping = $this->_getCommentMapping())) {
             return new ViewModel();
+        }
 
         $this->getEntityManager()->remove($mapping);
         $this->getEntityManager()->flush();
@@ -121,7 +119,7 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'cudi_admin_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -141,7 +139,7 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'cudi_admin_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -162,7 +160,7 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'cudi_admin_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -182,7 +180,7 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'cudi_admin_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

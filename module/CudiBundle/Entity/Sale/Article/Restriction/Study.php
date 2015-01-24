@@ -34,7 +34,7 @@ use CommonBundle\Component\Util\AcademicYear,
 class Study extends Restriction
 {
     /**
-     * @var string|null The value of the restriction
+     * @var ArrayCollection The value of the restriction
      *
      * @ORM\ManyToMany(targetEntity="SyllabusBundle\Entity\Study")
      * @ORM\JoinTable(name="cudi.sales_articles_restrictions_study_map",
@@ -68,14 +68,15 @@ class Study extends Restriction
     public function getValue()
     {
         $value = '';
-        foreach ($this->studies as $study)
+        foreach ($this->studies as $study) {
             $value .= 'Phase ' . $study->getPhase() . ' - ' . $study->getFullTitle() . ' ; ';
+        }
 
         return $value;
     }
 
     /**
-     * @return string|null
+     * @return ArrayCollection
      */
     public function getStudies()
     {
@@ -83,7 +84,7 @@ class Study extends Restriction
     }
 
     /**
-     * @param  SyllabusBundle\Entity\Study $study
+     * @param  StudyEntity $study
      * @return self
      */
     public function addStudy(StudyEntity $study)
@@ -101,25 +102,22 @@ class Study extends Restriction
      */
     public function canBook(Person $person, EntityManager $entityManager)
     {
-        $startAcademicYear = AcademicYear::getStartOfAcademicYear();
-        $startAcademicYear->setTime(0, 0);
-
-        $academicYear = $entityManager
-            ->getRepository('CommonBundle\Entity\General\AcademicYear')
-            ->findOneByUniversityStart($startAcademicYear);
+        $academicYear = AcademicYear::getUniversityYear($entityManager);
 
         $studies = $entityManager
             ->getRepository('SecretaryBundle\Entity\Syllabus\StudyEnrollment')
             ->findAllByAcademicAndAcademicYear($person, $academicYear);
 
         $allowedStudies = $this->studies->toArray();
-        foreach ($this->studies as $study)
+        foreach ($this->studies as $study) {
             $allowedStudies = array_merge($allowedStudies, $study->getAllChildren());
+        }
 
         foreach ($studies as $study) {
             foreach ($allowedStudies as $allowedStudy) {
-                if ($allowedStudy == $study->getStudy())
+                if ($allowedStudy == $study->getStudy()) {
                     return true;
+                }
             }
         }
 

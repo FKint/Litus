@@ -18,7 +18,8 @@
 
 namespace CommonBundle\Component\Form;
 
-use Zend\Form\ElementInterface as OriginalElementInterface,
+use CommonBundle\Component\InputFilter\Factory as InputFilterFactory,
+    Zend\Form\ElementInterface as OriginalElementInterface,
     Zend\Form\FieldsetInterface as OriginalFieldsetInterface;
 
 /**
@@ -52,12 +53,14 @@ class Factory extends \Zend\Form\Factory
      */
     public function create($spec, $data = null)
     {
-        if (isset($spec['instance']))
+        if (isset($spec['instance'])) {
             return $spec['instance'];
+        }
 
         if (null === $data && is_array($spec)
-                && isset($spec['options']['data']))
+                && isset($spec['options']['data'])) {
             $data = $spec['options']['data'];
+        }
 
         if ($data === null || is_array($data)) {
             $this->getFormElementManager()->setData($data);
@@ -114,5 +117,14 @@ class Factory extends \Zend\Form\Factory
         }
 
         return parent::prepareAndInjectElements($elements, $fieldset, $method);
+    }
+
+    public function getInputFilterFactory()
+    {
+        if (null === $this->inputFilterFactory) {
+            $this->setInputFilterFactory(new InputFilterFactory());
+        }
+
+        return $this->inputFilterFactory;
     }
 }

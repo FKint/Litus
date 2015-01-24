@@ -19,8 +19,8 @@
 namespace PublicationBundle\Controller\Admin\Edition;
 
 use DateTime,
-    PublicationBundle\Entity\Publication,
     PublicationBundle\Entity\Edition\Pdf as PdfEdition,
+    PublicationBundle\Entity\Publication,
     Zend\Http\Headers,
     Zend\View\Model\ViewModel;
 
@@ -33,8 +33,9 @@ class PdfController extends \CommonBundle\Component\Controller\ActionController\
 {
     public function manageAction()
     {
-        if (!($publication = $this->_getPublication()))
+        if (!($publication = $this->_getPublication())) {
             return new ViewModel();
+        }
 
         $paginator = $this->paginator()->createFromQuery(
             $this->getEntityManager()
@@ -54,8 +55,9 @@ class PdfController extends \CommonBundle\Component\Controller\ActionController\
 
     public function addAction()
     {
-        if (!($publication = $this->_getPublication()))
+        if (!($publication = $this->_getPublication())) {
             return new ViewModel();
+        }
 
         $form = $this->getForm('publication_edition_pdf_add', array('publication' => $publication));
         $form->setAttribute(
@@ -79,8 +81,9 @@ class PdfController extends \CommonBundle\Component\Controller\ActionController\
 
     public function uploadAction()
     {
-        if (!($publication = $this->_getPublication()))
+        if (!($publication = $this->_getPublication())) {
             return new ViewModel();
+        }
 
         $form = $this->getForm('publication_edition_pdf_add', array('publication' => $publication));
         $formData = $this->getRequest()->getPost();
@@ -132,25 +135,11 @@ class PdfController extends \CommonBundle\Component\Controller\ActionController\
                 )
             );
         } else {
-            $errors = $form->getMessages();
-            $formErrors = array();
-
-            foreach ($form->getElements() as $key => $element) {
-                if (!isset($errors[$element->getName()]))
-                    continue;
-
-                $formErrors[$element->getAttribute('id')] = array();
-
-                foreach ($errors[$element->getName()] as $error) {
-                    $formErrors[$element->getAttribute('id')][] = $error;
-                }
-            }
-
             return new ViewModel(
                 array(
                     'status' => 'error',
                     'form' => array(
-                        'errors' => $formErrors,
+                        'errors' => $form->getMessages(),
                     ),
                 )
             );
@@ -161,15 +150,17 @@ class PdfController extends \CommonBundle\Component\Controller\ActionController\
     {
         $this->initAjax();
 
-        if (!($edition = $this->_getEdition()))
+        if (!($edition = $this->_getEdition())) {
             return new ViewModel();
+        }
 
         $filePath = 'public' . $this->getEntityManager()
             ->getRepository('CommonBundle\Entity\General\Config')
             ->getConfigValue('publication.public_pdf_directory');
 
-        if (file_exists($filePath . $edition->getFileName()))
+        if (file_exists($filePath . $edition->getFileName())) {
             unlink($filePath . $edition->getFileName());
+        }
 
         $this->getEntityManager()->remove($edition);
         $this->getEntityManager()->flush();
@@ -183,8 +174,9 @@ class PdfController extends \CommonBundle\Component\Controller\ActionController\
 
     public function viewAction()
     {
-        if (!($edition = $this->_getEdition()))
+        if (!($edition = $this->_getEdition())) {
             return new ViewModel();
+        }
 
         $filePath = 'public' . $this->getEntityManager()
             ->getRepository('CommonBundle\Entity\General\Config')
@@ -223,7 +215,7 @@ class PdfController extends \CommonBundle\Component\Controller\ActionController\
             $this->redirect()->toRoute(
                 'publication_admin_publication',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -243,7 +235,7 @@ class PdfController extends \CommonBundle\Component\Controller\ActionController\
             $this->redirect()->toRoute(
                 'publication_admin_publication',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -263,7 +255,7 @@ class PdfController extends \CommonBundle\Component\Controller\ActionController\
             $this->redirect()->toRoute(
                 'publication_admin_publication',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -283,7 +275,7 @@ class PdfController extends \CommonBundle\Component\Controller\ActionController\
             $this->redirect()->toRoute(
                 'publication_admin_publication',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

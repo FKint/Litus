@@ -30,12 +30,13 @@ class AdminMap extends \CommonBundle\Component\Hydrator\Hydrator
 {
     protected function doHydrate(array $data, $object = null)
     {
-        if (null === $object)
+        if (null === $object) {
             throw new InvalidObjectException();
+        }
 
         $academic = $this->getEntityManager()
             ->getRepository('CommonBundle\Entity\User\Person\Academic')
-            ->findOneById($data['person_id']);
+            ->findOneById($data['person']['id']);
 
         $object->setAcademic($academic)
             ->setEditAdmin($data['edit_admin']);

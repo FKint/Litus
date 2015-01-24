@@ -19,7 +19,6 @@
 namespace BrBundle\Controller\Career;
 
 use BrBundle\Entity\Company,
-    BrBundle\Form\Career\Search\Vacancy as VacancySearchForm,
     Zend\View\Model\ViewModel;
 
 /**
@@ -31,34 +30,36 @@ class VacancyController extends \BrBundle\Component\Controller\CareerController
 {
     public function overviewAction()
     {
-        $vacancySearchForm = new VacancySearchForm();
+        $vacancySearchForm = $this->getForm('br_career_search_vacancy');
 
         $query = $this->getEntityManager()
             ->getRepository('BrBundle\Entity\Company\Job')
             ->findAllActiveByTypeQuery('vacancy');
 
-        $formData = $this->getRequest()->getQuery();
-        $vacancySearchForm->setData($formData);
+        if ($this->getRequest()->isPost()) {
+            $formData = $this->getRequest()->getPost();
+            $vacancySearchForm->setData($formData);
 
-        if ($vacancySearchForm->isValid()) {
-            $formData = $vacancySearchForm->getFormData($formData);
+            if ($vacancySearchForm->isValid()) {
+                $formData = $vacancySearchForm->getData();
 
-            $repository = $this->getEntityManager()
-                ->getRepository('BrBundle\Entity\Company\Job');
+                $repository = $this->getEntityManager()
+                    ->getRepository('BrBundle\Entity\Company\Job');
 
-            if ('all' != $formData['sector']) {
-                if ('company' == $formData['searchType']) {
-                    $query = $repository->findAllActiveByTypeAndSectorQuery('vacancy', $formData['sector']);
-                } elseif ('vacancy' == $formData['searchType']) {
-                    $query = $repository->findAllActiveByTypeAndSectorByJobNameQuery('vacancy', $formData['sector']);
-                } elseif ('mostRecent' == $formData['searchType']) {
-                    $query = $repository->findAllActiveByTypeAndSectorByDateQuery('vacancy', $formData['sector']);
-                }
-            } else {
-                if ('vacancy' == $formData['searchType']) {
-                    $query = $repository->findAllActiveByTypeByJobNameQuery('vacancy');
-                } elseif ('mostRecent' == $formData['searchType']) {
-                    $query = $repository->findAllActiveByTypeByDateQuery('vacancy');
+                if ('all' != $formData['sector']) {
+                    if ('company' == $formData['searchType']) {
+                        $query = $repository->findAllActiveByTypeAndSectorQuery('vacancy', $formData['sector']);
+                    } elseif ('vacancy' == $formData['searchType']) {
+                        $query = $repository->findAllActiveByTypeAndSectorByJobNameQuery('vacancy', $formData['sector']);
+                    } elseif ('mostRecent' == $formData['searchType']) {
+                        $query = $repository->findAllActiveByTypeAndSectorByDateQuery('vacancy', $formData['sector']);
+                    }
+                } else {
+                    if ('vacancy' == $formData['searchType']) {
+                        $query = $repository->findAllActiveByTypeByJobNameQuery('vacancy');
+                    } elseif ('mostRecent' == $formData['searchType']) {
+                        $query = $repository->findAllActiveByTypeByDateQuery('vacancy');
+                    }
                 }
             }
         }
@@ -109,7 +110,7 @@ class VacancyController extends \BrBundle\Component\Controller\CareerController
             $this->redirect()->toRoute(
                 'br_career_vacancy',
                 array(
-                    'action' => 'overview'
+                    'action' => 'overview',
                 )
             );
 
@@ -129,7 +130,7 @@ class VacancyController extends \BrBundle\Component\Controller\CareerController
             $this->redirect()->toRoute(
                 'br_career_vacancy',
                 array(
-                    'action' => 'overview'
+                    'action' => 'overview',
                 )
             );
 
@@ -142,8 +143,9 @@ class VacancyController extends \BrBundle\Component\Controller\CareerController
     private function _getSectors()
     {
         $sectorArray = array();
-        foreach (Company::$possibleSectors as $key => $sector)
+        foreach (Company::$possibleSectors as $key => $sector) {
             $sectorArray[$key] = $sector;
+        }
 
         return $sectorArray;
     }

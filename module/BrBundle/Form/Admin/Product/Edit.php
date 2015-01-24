@@ -18,12 +18,6 @@
 
 namespace BrBundle\Form\Admin\Product;
 
-use BrBundle\Entity\Product,
-    BrBundle\Component\Validator\ProductName as ProductNameValidator,
-    Doctrine\ORM\EntityManager,
-    Zend\InputFilter\Factory as InputFactory,
-    Zend\Form\Element\Submit;
-
 /**
  * Edit a product.
  *
@@ -32,53 +26,12 @@ use BrBundle\Entity\Product,
  */
 class Edit extends Add
 {
-    /**
-     * @var \BrBundle\Entity\Contract\Product
-     */
-    private $_product;
-
-    /**
-     * @param \Doctrine\ORM\EntityManager $entityManager The EntityManager instance
-     * @param \BrBundle\Entity\Product    $product       The product to edit
-     * @param mixed                       $opts          The validator's options
-     */
-    public function __construct(EntityManager $entityManager, Product $product, $options = null)
+    public function init()
     {
-        parent::__construct($entityManager, $options);
-
-        $this->_product = $product;
+        parent::init();
 
         $this->remove('submit');
 
-        $field = new Submit('submit');
-        $field->setValue('Save')
-            ->setAttribute('class', 'product_edit');
-        $this->add($field);
-
-        $this->populateFromProduct($product);
-    }
-
-    public function getInputFilter()
-    {
-        $inputFilter = parent::getInputFilter();
-        $factory = new InputFactory();
-
-        $inputFilter->remove('name');
-        $inputFilter->add(
-            $factory->createInput(
-                array(
-                    'name'     => 'name',
-                    'required' => true,
-                    'filters'  => array(
-                        array('name' => 'StringTrim'),
-                    ),
-                    'validators' => array(
-                        new ProductNameValidator($this->_entityManager, $this->_product),
-                    ),
-                )
-            )
-        );
-
-        return $inputFilter;
+        $this->addSubmit('Save', 'product_edit');
     }
 }

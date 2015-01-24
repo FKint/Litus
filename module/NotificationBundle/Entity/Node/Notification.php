@@ -22,7 +22,8 @@ use CommonBundle\Entity\General\Language,
     CommonBundle\Entity\User\Person,
     DateTime,
     Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\ORM\Mapping as ORM;
+    Doctrine\ORM\Mapping as ORM,
+    Locale;
 
 /**
  * This entity stores the node item.
@@ -33,7 +34,7 @@ use CommonBundle\Entity\General\Language,
 class Notification extends \CommonBundle\Entity\Node
 {
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection The translations of this notification item
+     * @var ArrayCollection The translations of this notification item
      *
      * @ORM\OneToMany(targetEntity="NotificationBundle\Entity\Node\Translation", mappedBy="notification", cascade={"persist", "remove"})
      */
@@ -154,15 +155,18 @@ class Notification extends \CommonBundle\Entity\Node
     public function getTranslation(Language $language = null, $allowFallback = true)
     {
         foreach ($this->translations as $translation) {
-            if (null !== $language && $translation->getLanguage() == $language)
+            if (null !== $language && $translation->getLanguage() == $language) {
                 return $translation;
+            }
 
-            if ($translation->getLanguage()->getAbbrev() == \Locale::getDefault())
+            if ($translation->getLanguage()->getAbbrev() == Locale::getDefault()) {
                 $fallbackTranslation = $translation;
+            }
         }
 
-        if ($allowFallback && isset($fallbackTranslation))
+        if ($allowFallback && isset($fallbackTranslation)) {
             return $fallbackTranslation;
+        }
 
         return null;
     }
@@ -176,8 +180,9 @@ class Notification extends \CommonBundle\Entity\Node
     {
         $translation = $this->getTranslation($language, $allowFallback);
 
-        if (null !== $translation)
+        if (null !== $translation) {
             return $translation->getContent();
+        }
 
         return '';
     }

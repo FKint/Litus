@@ -19,7 +19,6 @@
 namespace CudiBundle\Controller\Admin\Sale\Article;
 
 use CudiBundle\Entity\Sale\Article\Discount\Discount,
-    CudiBundle\Form\Admin\Sales\Article\Discounts\Add as AddForm,
     Zend\View\Model\ViewModel;
 
 /**
@@ -31,17 +30,17 @@ class DiscountController extends \CudiBundle\Component\Controller\ActionControll
 {
     public function manageAction()
     {
-        if (!($article = $this->_getSaleArticle()))
+        if (!($article = $this->_getSaleArticle())) {
             return new ViewModel();
+        }
 
-        $form = new AddForm($article, $this->getEntityManager());
+        $form = $this->getForm('cudi_sale_article_discount_add', array('article' => $article));
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
+                $formData = $form->getData();
 
                 $discount = new Discount($article);
 
@@ -98,12 +97,17 @@ class DiscountController extends \CudiBundle\Component\Controller\ActionControll
             $this->getParam('page')
         );
 
+        $templates = $this->getEntityManager()
+            ->getRepository('CudiBundle\Entity\Sale\Article\Discount\Template')
+            ->findAll();
+
         return new ViewModel(
             array(
                 'article' => $article,
                 'paginator' => $paginator,
                 'paginationControl' => $this->paginator()->createControl(true),
                 'form' => $form,
+                'templates' => $templates,
             )
         );
     }
@@ -112,8 +116,9 @@ class DiscountController extends \CudiBundle\Component\Controller\ActionControll
     {
         $this->initAjax();
 
-        if (!($discount = $this->_getDiscount()))
+        if (!($discount = $this->_getDiscount())) {
             return new ViewModel();
+        }
 
         $this->getEntityManager()->remove($discount);
         $this->getEntityManager()->flush();
@@ -139,7 +144,7 @@ class DiscountController extends \CudiBundle\Component\Controller\ActionControll
             $this->redirect()->toRoute(
                 'cudi_admin_sales_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -159,7 +164,7 @@ class DiscountController extends \CudiBundle\Component\Controller\ActionControll
             $this->redirect()->toRoute(
                 'cudi_admin_sales_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -180,7 +185,7 @@ class DiscountController extends \CudiBundle\Component\Controller\ActionControll
             $this->redirect()->toRoute(
                 'cudi_admin_sales_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -200,7 +205,7 @@ class DiscountController extends \CudiBundle\Component\Controller\ActionControll
             $this->redirect()->toRoute(
                 'cudi_admin_sales_article',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

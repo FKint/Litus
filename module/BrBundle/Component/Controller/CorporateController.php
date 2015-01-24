@@ -41,17 +41,9 @@ class CorporateController extends \CommonBundle\Component\Controller\ActionContr
     {
         $result = parent::onDispatch($e);
 
-        if (!method_exists($this->getAuthentication()->getPersonObject(), 'getCompany') && $this->getAuthentication()->isAuthenticated())
+        if (!method_exists($this->getAuthentication()->getPersonObject(), 'getCompany') && $this->getAuthentication()->isAuthenticated()) {
             throw new HasNoAccessException('You do not have sufficient permissions to access this resource');
-
-        $loginForm = new LoginForm(
-            $this->url()->fromRoute(
-                'br_corporate_auth',
-                array(
-                    'action' => 'login'
-                )
-            )
-        );
+        }
 
         $result->cvArchiveYears = unserialize(
             $this->getEntityManager()
@@ -59,7 +51,15 @@ class CorporateController extends \CommonBundle\Component\Controller\ActionContr
                 ->getConfigValue('br.cv_archive_years')
         );
 
-        $result->loginForm = $loginForm;
+        $result->loginForm = $this->getForm('common_auth_login')
+            ->setAttribute('class', '')
+            ->setAttribute('action', $this->url()->fromRoute(
+                'br_corporate_auth',
+                array(
+                    'action' => 'login',
+                )
+            ));
+        ;
         $result->organizationUrl = $this->getEntityManager()
             ->getRepository('CommonBundle\Entity\General\Config')
             ->getConfigValue('organization_url');
@@ -77,8 +77,9 @@ class CorporateController extends \CommonBundle\Component\Controller\ActionContr
     protected function getAcademicYear()
     {
         $date = null;
-        if (null !== $this->getParam('academicyear'))
+        if (null !== $this->getParam('academicyear')) {
             $date = AcademicYear::getDateTime($this->getParam('academicyear'));
+        }
 
         return AcademicYear::getUniversityYear($this->getEntityManager(), $date);
     }
@@ -96,7 +97,7 @@ class CorporateController extends \CommonBundle\Component\Controller\ActionContr
             'controller'     => 'common_index',
 
             'auth_route'     => 'br_corporate_index',
-            'redirect_route' => 'br_corporate_index'
+            'redirect_route' => 'br_corporate_index',
         );
     }
 }

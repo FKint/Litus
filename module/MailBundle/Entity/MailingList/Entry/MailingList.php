@@ -18,8 +18,8 @@
 
 namespace MailBundle\Entity\MailingList\Entry;
 
-use MailBundle\Entity\MailingList as MailingListEntity,
-    Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping as ORM,
+    MailBundle\Entity\MailingList as MailingListEntity;
 
 /**
  * This is the entity for the list entry of a list.
@@ -36,16 +36,6 @@ class MailingList extends \MailBundle\Entity\MailingList\Entry
      * @ORM\JoinColumn(name="entry", referencedColumnName="id", nullable=false)
      */
     private $entry;
-
-    /**
-     * Creates a new list entry for the given list with the given list.
-     *
-     * @param MailingListEntity $list The list for this entry
-     */
-    public function __construct(MailingListEntity $list)
-    {
-        parent::__construct($list);
-    }
 
     /**
      * @return MailingListEntity

@@ -18,10 +18,10 @@
 
 namespace LogisticsBundle\Entity;
 
-use CommonBundle\Entity\User\Person,
-    CommonBundle\Entity\General\AcademicYear,
-    Doctrine\ORM\Mapping as ORM,
-    Doctrine\Common\Collections\ArrayCollection;
+use CommonBundle\Entity\General\AcademicYear,
+    CommonBundle\Entity\User\Person,
+    Doctrine\Common\Collections\ArrayCollection,
+    Doctrine\ORM\Mapping as ORM;
 
 /**
  * This is the entity for a driver.
@@ -69,10 +69,9 @@ class Driver
      * @param Person $person The person to mark as a driver
      * @param $color The color for this driver
      */
-    public function __construct(Person $person, $color)
+    public function __construct(Person $person)
     {
         $this->person = $person;
-        $this->color = $color;
         $this->removed = false;
 
         $this->years = new ArrayCollection();
@@ -110,10 +109,11 @@ class Driver
      */
     public function getColor()
     {
-        if ($this->color)
+        if ($this->color) {
             return $this->color;
-        else
+        } else {
             return '#888888';
+        }
     }
 
     /**

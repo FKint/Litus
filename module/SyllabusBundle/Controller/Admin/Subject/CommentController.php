@@ -32,8 +32,9 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
 {
     public function manageAction()
     {
-        if (!($academicYear = $this->_getAcademicYear()))
+        if (!($academicYear = $this->_getAcademicYear())) {
             return new ViewModel();
+        }
 
         $paginator = $this->paginator()->createFromQuery(
             $this->getEntityManager()
@@ -58,8 +59,9 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
 
     public function subjectAction()
     {
-        if (!($subject = $this->_getSubject()))
+        if (!($subject = $this->_getSubject())) {
             return new ViewModel();
+        }
 
         $comments = $this->getEntityManager()
             ->getRepository('SyllabusBundle\Entity\Subject\Comment')
@@ -71,13 +73,8 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
             $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $formData = $form->getData();
-
-                $comment = new Comment(
-                    $this->getAuthentication()->getPersonObject(),
-                    $subject,
-                    $formData['text'],
-                    $formData['type']
+                $comment = $form->hydrateObject(
+                    new Comment($this->getAuthentication()->getPersonObject(), $subject)
                 );
 
                 $this->getEntityManager()->persist($comment);
@@ -111,8 +108,9 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
 
     public function replyAction()
     {
-        if (!($comment = $this->_getComment()))
+        if (!($comment = $this->_getComment())) {
             return new ViewModel();
+        }
 
         $replies = $this->getEntityManager()
             ->getRepository('SyllabusBundle\Entity\Subject\Reply')
@@ -125,16 +123,17 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
         );
 
         if ($this->getRequest()->isPost()) {
-            $post = $this->getRequest()->getPost();
+            $formData = $this->getRequest()->getPost();
 
-            if (isset($post['mark_as_read'])) {
-                $markAsReadForm->setData($post);
+            if (isset($formData['mark_as_read'])) {
+                $markAsReadForm->setData($formData);
 
                 if ($markAsReadForm->isValid()) {
-                    if ($comment->isRead())
+                    if ($comment->isRead()) {
                         $comment->setReadBy(null);
-                    else
+                    } else {
                         $comment->setReadBy($this->getAuthentication()->getPersonObject());
+                    }
 
                     $this->getEntityManager()->flush();
 
@@ -154,15 +153,11 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
                     return new ViewModel();
                 }
             } else {
-                $form->setData($post);
+                $form->setData($formData);
 
                 if ($form->isValid()) {
-                    $formData = $form->getData();
-
-                    $reply = new Reply(
-                        $this->getAuthentication()->getPersonObject(),
-                        $comment,
-                        $formData['text']
+                    $reply = $form->hydrateObject(
+                        new Reply($this->getAuthentication()->getPersonObject(), $comment)
                     );
 
                     $this->getEntityManager()->persist($reply);
@@ -200,8 +195,9 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
     {
         $this->initAjax();
 
-        if (!($comment = $this->_getComment()))
+        if (!($comment = $this->_getComment())) {
             return new ViewModel();
+        }
 
         $this->getEntityManager()->remove($comment);
         $this->getEntityManager()->flush();
@@ -229,7 +225,7 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'syllabus_admin_study',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -249,7 +245,7 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'syllabus_admin_study',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -273,7 +269,7 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'syllabus_admin_study',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -293,7 +289,7 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'syllabus_admin_study',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -309,8 +305,9 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
     private function _getAcademicYear()
     {
         $date = null;
-        if (null !== $this->getParam('academicyear'))
+        if (null !== $this->getParam('academicyear')) {
             $date = AcademicYear::getDateTime($this->getParam('academicyear'));
+        }
         $academicYear = AcademicYear::getOrganizationYear($this->getEntityManager(), $date);
 
         if (null === $academicYear) {
@@ -322,7 +319,7 @@ class CommentController extends \CudiBundle\Component\Controller\ActionControlle
             $this->redirect()->toRoute(
                 'syllabus_admin_subject_comment',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

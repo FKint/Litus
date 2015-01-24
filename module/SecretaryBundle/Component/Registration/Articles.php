@@ -49,29 +49,32 @@ class Articles
                 ->getRepository('CudiBundle\Entity\Sale\Article')
                 ->findOneById($ids[$organization->getId()]);
 
-            $booking = $entityManager
-                ->getRepository('CudiBundle\Entity\Sale\Booking')
-                ->findOneSoldOrAssignedOrBookedByArticleAndPersonInAcademicYear(
-                    $membershipArticle,
-                    $academic,
-                    $academicYear
-                );
+            if (null !== $membershipArticle) {
+                $booking = $entityManager
+                    ->getRepository('CudiBundle\Entity\Sale\Booking')
+                    ->findOneSoldOrAssignedOrBookedByArticleAndPersonInAcademicYear(
+                        $membershipArticle,
+                        $academic,
+                        $academicYear
+                    );
 
-            if (null === $booking) {
-                $booking = new Booking(
-                    $entityManager,
-                    $academic,
-                    $membershipArticle,
-                    'assigned',
-                    1,
-                    true
-                );
+                if (null === $booking) {
+                    $booking = new Booking(
+                        $entityManager,
+                        $academic,
+                        $membershipArticle,
+                        'assigned',
+                        1,
+                        true
+                    );
 
-                $entityManager->persist($booking);
+                    $entityManager->persist($booking);
+                }
+
+                if (isset($options['payed']) && $options['payed']) {
+                    $booking->setStatus('sold', $entityManager);
+                }
             }
-
-            if (isset($options['payed']) && $options['payed'])
-                $booking->setStatus('sold', $entityManager);
         }
 
         $tshirts = unserialize(
@@ -147,8 +150,9 @@ class Articles
                     $academicYear
                 );
 
-            if (null !== $booking)
+            if (null !== $booking) {
                 continue;
+            }
 
             $booking = new Booking(
                 $entityManager,
@@ -199,8 +203,9 @@ class Articles
                     $academicYear
                 );
 
-            if (null !== $booking)
+            if (null !== $booking) {
                 $booking->setStatus('canceled', $entityManager);
+            }
         }
 
         $tshirts = unserialize(
@@ -220,8 +225,9 @@ class Articles
                     $academicYear
                 );
 
-            if (null !== $booking)
+            if (null !== $booking) {
                 $booking->setStatus('canceled', $entityManager);
+            }
         }
 
         $registrationArticles = unserialize(
@@ -241,8 +247,9 @@ class Articles
                     $academicYear
                 );
 
-            if (null !== $booking)
-                    $booking->setStatus('canceled', $entityManager);
+            if (null !== $booking) {
+                $booking->setStatus('canceled', $entityManager);
+            }
         }
     }
 }

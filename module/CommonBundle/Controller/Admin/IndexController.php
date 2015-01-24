@@ -21,6 +21,8 @@ namespace CommonBundle\Controller\Admin;
 use CommonBundle\Component\Piwik\Analytics,
     DateInterval,
     DateTime,
+    Doctrine\Common\Version as DoctrineVersion,
+    Zend\Version\Version as ZendVersion,
     Zend\View\Model\ViewModel;
 
 /**
@@ -53,7 +55,7 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
             $piwik = array(
                 'uniqueVisitors' => $analytics->getUniqueVisitors(),
                 'liveCounters' => $analytics->getLiveCounters(),
-                'visitsGraph' => $this->_getVisitsGraph($analytics)
+                'visitsGraph' => $this->_getVisitsGraph($analytics),
             );
         }
 
@@ -62,8 +64,9 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
             ->getConfigValue('secretary.enable_registration');
 
         $registrationsGraph = null;
-        if ($enableRegistration)
+        if ($enableRegistration) {
             $registrationsGraph = $this->_getRegistrationsGraph();
+        }
 
         $profActions = $this->getEntityManager()
             ->getRepository('CudiBundle\Entity\Prof\Action')
@@ -97,8 +100,8 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
                 'registrationsGraph' => $registrationsGraph,
                 'versions' => array(
                     'php' => phpversion(),
-                    'zf' => \Zend\Version\Version::VERSION,
-                    'doctrine' => \Doctrine\Common\Version::VERSION
+                    'zf' => ZendVersion::VERSION,
+                    'doctrine' => DoctrineVersion::VERSION,
                 ),
             )
         );
@@ -113,8 +116,9 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
         if (null !== $this->getCache()) {
             if ($this->getCache()->hasItem('CommonBundle_Controller_IndexController_VisitsGraph')) {
                 $now = new DateTime();
-                if ($this->getCache()->getItem('CommonBundle_Controller_IndexController_VisitsGraph')['expirationTime'] > $now)
+                if ($this->getCache()->getItem('CommonBundle_Controller_IndexController_VisitsGraph')['expirationTime'] > $now) {
                     return $this->getCache()->getItem('CommonBundle_Controller_IndexController_VisitsGraph');
+                }
             }
 
             $this->getCache()->setItem(
@@ -140,7 +144,7 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
             'expirationTime' => $now->add(new DateInterval('P1D')),
 
             'labels' => array(),
-            'dataset' => array()
+            'dataset' => array(),
         );
 
         foreach ((array) $analytics->getUniqueVisitors('previous7') as $dateString => $count) {
@@ -161,8 +165,9 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
         if (null !== $this->getCache()) {
             if ($this->getCache()->hasItem('CommonBundle_Controller_IndexController_RegistrationsGraph')) {
                 $now = new DateTime();
-                if ($this->getCache()->getItem('CommonBundle_Controller_IndexController_RegistrationsGraph')['expirationTime'] > $now)
+                if ($this->getCache()->getItem('CommonBundle_Controller_IndexController_RegistrationsGraph')['expirationTime'] > $now) {
                     return $this->getCache()->getItem('CommonBundle_Controller_IndexController_RegistrationsGraph');
+                }
             }
 
             $this->getCache()->setItem(
@@ -187,7 +192,7 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
             'expirationTime' => $now->add(new DateInterval('PT1H')),
 
             'labels' => array(),
-            'dataset' => array()
+            'dataset' => array(),
         );
 
         $data = array();
@@ -205,8 +210,9 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
 
         $data = array();
         foreach ($registrations as $registration) {
-            if (isset($data[$registration->getTimestamp()->format('d/m/Y')]))
+            if (isset($data[$registration->getTimestamp()->format('d/m/Y')])) {
                 $data[$registration->getTimestamp()->format('d/m/Y')]++;
+            }
         }
 
         foreach (array_reverse($data) as $label => $value) {

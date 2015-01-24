@@ -34,8 +34,6 @@ class Unit extends \CommonBundle\Component\Form\Bootstrap\Form
     {
         parent::init();
 
-        $this->setAttribute('class', 'form-inline');
-
         $this->add(array(
             'type'       => 'select',
             'name'       => 'unit',
@@ -57,10 +55,11 @@ class Unit extends \CommonBundle\Component\Form\Bootstrap\Form
             ->findAllActiveAndDisplayed();
 
         $unitsArray = array(
-            '' => ''
+            '' => '',
         );
-        foreach ($units as $unit)
+        foreach ($units as $unit) {
             $unitsArray[$unit->getId()] = $unit->getName();
+        }
 
         return $unitsArray;
     }

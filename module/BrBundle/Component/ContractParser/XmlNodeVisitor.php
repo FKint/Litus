@@ -19,35 +19,52 @@
 namespace BrBundle\Component\ContractParser;
 
 /**
- *
- *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
-class XmlNodeVisitor
+class XmlNodeVisitor implements NodeVisitor
 {
+    /**
+     * @var string
+     */
     private $string = '';
 
-    public function visitEntry($entry)
+    /**
+     * @param Entry $entry
+     */
+    public function visitEntry(Entry $entry)
     {
         $this->string .= '<entry>';
-        foreach ($entry->getNodes() as $node)
+        foreach ($entry->getNodes() as $node) {
             $node->visitNode($this);
+        }
 
         $this->string .= '</entry>';
     }
-    public function visitEntries($entries)
+
+    /**
+     * @param Entries $entries
+     */
+    public function visitEntries(Entries $entries)
     {
         $this->string .= '<entries>';
-        foreach ($entries->getEntries() as $entry)
+        foreach ($entries->getEntries() as $entry) {
             $entry->visitNode($this);
+        }
 
         $this->string .= '</entries>';
     }
-    public function visitText($text)
+
+    /**
+     * @param Text $text
+     */
+    public function visitText(Text $text)
     {
         $this->string .= $text->getText();
     }
 
+    /**
+     * @return string
+     */
     public function getXml()
     {
         return $this->string;

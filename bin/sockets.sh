@@ -110,6 +110,11 @@ trap on_usr1 SIGUSR1
 #
 
 function socket() {
+    if ! php public/index.php "socket:$1" --is-enabled; then
+        # the socket is disabled
+        return
+    fi
+
     # we know this is only run if the sockets aren't running...
 
     local _PIDFILE="$_TMPDIR/pids/$1.pid"
@@ -126,7 +131,7 @@ function socket() {
         log "Starting socket $1";
 
         # start socket in background
-        php public/index.php "socket:$1" --run &
+        php public/index.php "socket:$1" --run >> $_LOGFILE &
 
         # get PID
         local _PID=$!

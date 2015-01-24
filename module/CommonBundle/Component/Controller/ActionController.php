@@ -65,13 +65,16 @@ class ActionController extends \Zend\Mvc\Controller\AbstractActionController imp
             ->plugin('headMeta')
             ->setCharset('utf-8');
 
+        $this->_initAcademicYear();
+
         $this->_initAuthenticationService();
         $this->_initControllerPlugins();
         $this->_initFallbackLanguage();
         $this->_initViewHelpers();
 
-        if (null !== $this->initAuthentication())
+        if (null !== $this->initAuthentication()) {
             return new ViewModel();
+        }
 
         $this->initLocalization();
 
@@ -82,8 +85,9 @@ class ActionController extends \Zend\Mvc\Controller\AbstractActionController imp
         }
 
         $authenticatedPerson = null;
-        if ($this->getAuthentication()->isAuthenticated())
+        if ($this->getAuthentication()->isAuthenticated()) {
             $authenticatedPerson = $this->getAuthentication()->getPersonObject();
+        }
 
         $result = parent::onDispatch($e);
 
@@ -118,6 +122,20 @@ class ActionController extends \Zend\Mvc\Controller\AbstractActionController imp
                 'This page is accessible only through an asynchroneous request'
             );
         }
+    }
+
+    private function _initAcademicYear()
+    {
+        $this->getServiceLocator()
+            ->setService('litus.academic_year', $this->findCurrentAcademicYear());
+    }
+
+    /**
+     * @return \CommonBundle\Entity\General\AcademicYear
+     */
+    protected function findCurrentAcademicYear()
+    {
+        return $this->getCurrentAcademicYear(false);
     }
 
     private function _initAuthenticationService()
@@ -222,8 +240,9 @@ class ActionController extends \Zend\Mvc\Controller\AbstractActionController imp
         $headers = $this->getResponse()->getHeaders();
 
         $contentType = $headers->get('Content-Type');
-        if ($contentType instanceof HeaderInterface)
+        if ($contentType instanceof HeaderInterface) {
             $headers->removeHeader($contentType);
+        }
 
         $headers->addHeaders(
             array_merge(
@@ -358,8 +377,9 @@ class ActionController extends \Zend\Mvc\Controller\AbstractActionController imp
      */
     protected function getLanguage()
     {
-        if (null !== $this->_language)
+        if (null !== $this->_language) {
             return $this->_language;
+        }
 
         if ($this->getParam('language')) {
             $language = $this->getEntityManager()
@@ -416,6 +436,20 @@ class ActionController extends \Zend\Mvc\Controller\AbstractActionController imp
     public function getTranslator()
     {
         return $this->getServiceLocator()->get('translator');
+    }
+
+    /**
+     * Retrieve lilo from the DI container.
+     *
+     * @param  string   $message
+     * @param  string[] $tags
+     * @return void
+     */
+    protected function logToLilo($message, array $tags = array())
+    {
+        if ('development' != getenv('APPLICATION_ENV')) {
+            $this->getServiceLocator()->get('lilo')->sendLog($message, $tags);
+        }
     }
 
     /**

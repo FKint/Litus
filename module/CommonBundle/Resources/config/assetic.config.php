@@ -105,6 +105,7 @@ return array(
             '@common_jquery',
             '@bootstrap_js_dropdown',
             '@bootstrap_js_transition',
+            '@bootstrap_js_modal',
             '@bootstrap_js_carousel',
             '@bootstrap_js_collapse',
             '@bootstrap_js_alert',
@@ -115,6 +116,7 @@ return array(
             '@common_jquery',
             '@bootstrap_js_dropdown',
             '@bootstrap_js_transition',
+            '@bootstrap_js_modal',
             '@bootstrap_js_carousel',
             '@bootstrap_js_collapse',
             '@bootstrap_js_alert',
@@ -128,6 +130,7 @@ return array(
             '@common_jquery',
             '@bootstrap_js_dropdown',
             '@bootstrap_js_transition',
+            '@bootstrap_js_modal',
             '@bootstrap_js_carousel',
             '@bootstrap_js_collapse',
             '@bootstrap_js_alert',
@@ -141,11 +144,23 @@ return array(
             '@common_jquery',
             '@bootstrap_js_dropdown',
             '@bootstrap_js_transition',
+            '@bootstrap_js_modal',
             '@bootstrap_js_carousel',
             '@bootstrap_js_collapse',
             '@bootstrap_js_alert',
 
             '@common_holder_js',
+        ),
+        'common_privacy' => array(
+            '@bootstrap_css',
+            '@site_css',
+            '@common_jquery',
+            '@bootstrap_js_dropdown',
+            '@bootstrap_js_transition',
+            '@bootstrap_js_modal',
+            '@bootstrap_js_carousel',
+            '@bootstrap_js_collapse',
+            '@bootstrap_js_alert',
         ),
     ),
 
@@ -189,7 +204,7 @@ return array(
         ),
         'common_jquery_table_sort' => array(
             'assets' => array(
-                'common/js/jquery.sortable-table.js'
+                'common/js/jquery.sortable-table.js',
             ),
             'filters' => array('js'),
         ),
@@ -271,13 +286,20 @@ return array(
             'filters' => array('js'),
         ),
 
+        'display_form_error_js' => array(
+            'assets' => array(
+                'site/js/displayFormErrors.js',
+            ),
+            'filters' => array('js'),
+        ),
+
         'site_css' => array(
             'assets' => array(
                 'site/less/base.less',
             ),
             'filters' => array('less'),
             'options' => array(
-                'output' => 'site_css.css'
+                'output' => 'site_css.css',
             ),
         ),
 
@@ -290,7 +312,7 @@ return array(
 
         'gollum_css' => array(
             'assets' => array(
-                'gollum/css/editor.css'
+                'gollum/css/editor.css',
             ),
             'filters' => array('css'),
             'options' => array(

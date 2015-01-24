@@ -20,8 +20,7 @@ namespace FormBundle\Entity\Field;
 
 use CommonBundle\Entity\General\Language,
     Doctrine\ORM\Mapping as ORM,
-    FormBundle\Entity\Field,
-    FormBundle\Entity\Node\Form;
+    FormBundle\Entity\Field;
 
 /**
  * This entity stores the node item.
@@ -53,24 +52,6 @@ class String extends Field
     private $multiLine;
 
     /**
-     * @param Form        $form
-     * @param integer     $order
-     * @param boolean     $required
-     * @param Field|null  $visibityDecisionField
-     * @param string|null $visibilityValue
-     * @param integer     $lineLength
-     * @param integer     $lines
-     * @param boolean     $multiLine
-     */
-    public function __construct(Form $form, $order, $required, Field $visibityDecisionField = null, $visibilityValue = null, $lineLength, $lines, $multiLine)
-    {
-        parent::__construct($form, $order, $required, $visibityDecisionField, $visibilityValue);
-        $this->lineLength = $lineLength;
-        $this->lines = $lines;
-        $this->multiLine = $multiLine;
-    }
-
-    /**
      * Returns the maximum number of characters per line for this field.
      *
      * @return integer The maximum number of characters per line.
@@ -98,8 +79,10 @@ class String extends Field
      */
     public function getLines()
     {
-        if (!$this->isMultiLine())
+        if (!$this->isMultiLine()) {
             return 1;
+        }
+
         return $this->lines;
     }
 

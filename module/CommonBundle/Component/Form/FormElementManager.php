@@ -18,12 +18,12 @@
 
 namespace CommonBundle\Component\Form;
 
-use RuntimeException,
+use CommonBundle\Component\Util\String as StringUtil,
+    RuntimeException,
     Zend\Form\FormFactoryAwareInterface,
     Zend\ServiceManager\ConfigInterface,
-    Zend\ServiceManager\ServiceLocatorInterface,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
-    CommonBundle\Component\Util\String as StringUtil,
+    Zend\ServiceManager\ServiceLocatorInterface,
     Zend\Stdlib\Hydrator\ClassMethods as ClassMethodHydrator;
 
 /**
@@ -86,11 +86,12 @@ class FormElementManager extends \Zend\Form\FormElementManager
     {
         if ($element instanceof FormFactoryAwareInterface) {
             $element->setFormFactory(new Factory($this));
+            $factory = $element->getFormFactory();
 
-            if ($this->serviceLocator instanceof ServiceLocatorInterface
-                && $this->serviceLocator->has('InputFilterManager')
+            if ($this->mainServiceLocator instanceof ServiceLocatorInterface
+                && $this->mainServiceLocator->has('InputFilterManager')
             ) {
-                $inputFilters = $this->serviceLocator->get('InputFilterManager');
+                $inputFilters = $this->mainServiceLocator->get('InputFilterManager');
                 $factory->getInputFilterFactory()->setInputFilterManager($inputFilters);
             }
         }
@@ -115,8 +116,9 @@ class FormElementManager extends \Zend\Form\FormElementManager
      */
     public function hydrateElement($element)
     {
-        if (null !== $this->data)
+        if (null !== $this->data) {
             $this->hydrator->hydrate($this->data, $element);
+        }
         $this->data = null;
     }
 

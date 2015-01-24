@@ -72,6 +72,7 @@ class Street
         $this->city = $city;
         $this->registerNumber = $registerNumber;
         $this->name = $name;
+        $city->addStreet($this);
     }
 
     /**

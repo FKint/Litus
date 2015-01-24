@@ -20,8 +20,7 @@ namespace CalendarBundle\Hydrator\Node;
 
 use CalendarBundle\Entity\Node\Event as EventEntity,
     CalendarBundle\Entity\Node\Translation as TranslationEntity,
-    CommonBundle\Component\Hydrator\Exception\InvalidDateException,
-    DateTime;
+    CommonBundle\Component\Hydrator\Exception\InvalidDateException;
 
 /**
  * This hydrator hydrates/extracts event data.
@@ -37,13 +36,14 @@ class Event extends \CommonBundle\Component\Hydrator\Hydrator
             $object = new EventEntity($this->getPerson());
         }
 
-        $startDate = self::_loadDate($data['start_date']);
+        $startDate = self::loadDateTime($data['start_date']);
 
-        if (null === $startDate)
+        if (null === $startDate) {
             throw new InvalidDateException();
+        }
 
         $object->setStartDate($startDate)
-            ->setEndDate(self::_loadDate($data['end_date']));
+            ->setEndDate(self::loadDateTime($data['end_date']));
 
         foreach ($this->getLanguages() as $language) {
             $translation = $object->getTranslation($language, false);
@@ -82,8 +82,9 @@ class Event extends \CommonBundle\Component\Hydrator\Hydrator
         $data = array();
 
         $data['start_date'] = $object->getStartDate()->format('d/m/Y H:i');
-        if (null !== $object->getEndDate())
+        if (null !== $object->getEndDate()) {
             $data['end_date'] = $object->getEndDate()->format('d/m/Y H:i');
+        }
 
         foreach ($this->getLanguages() as $language) {
             $data['tab_content']['tab_' . $language->getAbbrev()]['title'] = $object->getTitle($language, false);
@@ -92,21 +93,5 @@ class Event extends \CommonBundle\Component\Hydrator\Hydrator
         }
 
         return $data;
-    }
-
-    private function getLanguages()
-    {
-        return $this->getEntityManager()
-            ->getRepository('CommonBundle\Entity\General\Language')
-            ->findAll();
-    }
-
-    /**
-     * @param  string        $date
-     * @return DateTime|null
-     */
-    private static function _loadDate($date)
-    {
-        return DateTime::createFromFormat('d#m#Y H#i', $date) ?: null;
     }
 }

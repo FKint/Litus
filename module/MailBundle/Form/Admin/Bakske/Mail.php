@@ -18,7 +18,8 @@
 
 namespace MailBundle\Form\Admin\Bakske;
 
-use CommonBundle\Entity\General\AcademicYear;
+use CommonBundle\Entity\General\AcademicYear,
+    RuntimeException;
 
 /**
  * Send Mail
@@ -27,6 +28,11 @@ use CommonBundle\Entity\General\AcademicYear;
  */
 class Mail extends \CommonBundle\Component\Form\Admin\Form
 {
+    /**
+     * @var AcademicYear
+     */
+    private $_academicYear;
+
     public function init()
     {
         parent::init();
@@ -81,12 +87,14 @@ class Mail extends \CommonBundle\Component\Form\Admin\Form
             ->getRepository('PublicationBundle\Entity\Edition\Html')
             ->findAllByPublicationAndAcademicYear($publication, $this->getAcademicYear());
 
-        if (empty($editions))
-            throw new \RuntimeException('There needs to be at least one edition before you can mail it');
+        if (empty($editions)) {
+            throw new RuntimeException('There needs to be at least one edition before you can mail it');
+        }
 
         $editionsArray = array();
-        foreach ($editions as $edition)
+        foreach ($editions as $edition) {
             $editionsArray[$edition->getId()] = $edition->getTitle();
+        }
 
         return $editionsArray;
     }

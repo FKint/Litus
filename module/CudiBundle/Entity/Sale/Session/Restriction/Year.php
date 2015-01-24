@@ -75,7 +75,7 @@ class Year extends Restriction
     }
 
     /**
-     * @return string
+     * @return integer
      */
     public function getStartValue()
     {
@@ -83,7 +83,7 @@ class Year extends Restriction
     }
 
     /**
-     * @return string
+     * @return integer
      */
     public function getEndValue()
     {
@@ -110,8 +110,9 @@ class Year extends Restriction
             ->getYearsByPerson($person);
 
         foreach ($years as $year) {
-            if ($year >= $this->startValue && $year <= $this->endValue)
+            if ($year >= $this->startValue && $year <= $this->endValue) {
                 return true;
+            }
         }
 
         return false;

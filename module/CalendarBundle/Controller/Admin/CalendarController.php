@@ -86,7 +86,7 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
                 $this->redirect()->toRoute(
                     'calendar_admin_calendar',
                     array(
-                        'action' => 'manage'
+                        'action' => 'manage',
                     )
                 );
 
@@ -103,8 +103,9 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
 
     public function editAction()
     {
-        if (!($event = $this->_getEvent()))
+        if (!($event = $this->_getEvent())) {
             return new ViewModel();
+        }
 
         $form = $this->getForm('calendar_event_edit', array('event' => $event));
 
@@ -123,7 +124,7 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
                 $this->redirect()->toRoute(
                     'calendar_admin_calendar',
                     array(
-                        'action' => 'manage'
+                        'action' => 'manage',
                     )
                 );
 
@@ -143,8 +144,9 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
     {
         $this->initAjax();
 
-        if (!($event = $this->_getEvent()))
+        if (!($event = $this->_getEvent())) {
             return new ViewModel();
+        }
 
         $this->getEntityManager()->remove($event);
         $this->getEntityManager()->flush();
@@ -152,7 +154,7 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
         return new ViewModel(
             array(
                 'result' => array(
-                    'status' => 'success'
+                    'status' => 'success',
                 ),
             )
         );
@@ -160,8 +162,9 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
 
     public function editPosterAction()
     {
-        if (!($event = $this->_getEvent()))
+        if (!($event = $this->_getEvent())) {
             return new ViewModel();
+        }
 
         $form = $this->getForm('calendar_event_poster');
         $form->setAttribute(
@@ -206,8 +209,9 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
 
     public function uploadAction()
     {
-        if (!($event = $this->_getEvent()))
+        if (!($event = $this->_getEvent())) {
             return new ViewModel();
+        }
 
         $form = $this->getForm('calendar_event_poster');
 
@@ -235,30 +239,16 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
                         'info' => array(
                             'info' => array(
                                 'name' => $event->getPoster(),
-                            )
-                        )
+                            ),
+                        ),
                     )
                 );
             } else {
-                $errors = $form->getMessages();
-                $formErrors = array();
-
-                foreach ($form->getElements() as $key => $element) {
-                    if (!isset($errors[$element->getName()]))
-                        continue;
-
-                    $formErrors[$element->getAttribute('id')] = array();
-
-                    foreach ($errors[$element->getName()] as $error) {
-                        $formErrors[$element->getAttribute('id')][] = $error;
-                    }
-                }
-
                 return new ViewModel(
                     array(
                         'status' => 'error',
                         'form' => array(
-                            'errors' => $formErrors
+                            'errors' => $form->getMessages(),
                         ),
                     )
                 );
@@ -274,8 +264,9 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
 
     public function posterAction()
     {
-        if (!($event = $this->_getEventByPoster()))
+        if (!($event = $this->_getEventByPoster())) {
             return new ViewModel();
+        }
 
         $filePath = $this->getEntityManager()
             ->getRepository('CommonBundle\Entity\General\Config')
@@ -312,7 +303,7 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
             $this->redirect()->toRoute(
                 'calendar_admin_calendar',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -332,7 +323,7 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
             $this->redirect()->toRoute(
                 'calendar_admin_calendar',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -356,7 +347,7 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
             $this->redirect()->toRoute(
                 'calendar_admin_calendar',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -376,7 +367,7 @@ class CalendarController extends \CommonBundle\Component\Controller\ActionContro
             $this->redirect()->toRoute(
                 'calendar_admin_calendar',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 

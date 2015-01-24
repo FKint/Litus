@@ -46,8 +46,6 @@ class Event extends \CommonBundle\Component\Form\Bootstrap\Form
 
         parent::init();
 
-        $this->setAttribute('class', 'form-inline');
-
         $this->add(array(
             'type'       => 'select',
             'name'       => 'event',
@@ -63,7 +61,7 @@ class Event extends \CommonBundle\Component\Form\Bootstrap\Form
     }
 
     /**
-     * @param  Language $langauge
+     * @param  Language $language
      * @return self
      */
     public function setLanguage(Language $language)
@@ -80,10 +78,11 @@ class Event extends \CommonBundle\Component\Form\Bootstrap\Form
             ->findAllActive();
 
         $eventsArray = array(
-            '' => ''
+            '' => '',
         );
-        foreach ($events as $event)
+        foreach ($events as $event) {
             $eventsArray[$event->getId()] = $event->getTitle($this->language);
+        }
 
         return $eventsArray;
     }

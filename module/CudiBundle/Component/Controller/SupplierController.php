@@ -19,7 +19,7 @@
 namespace CudiBundle\Component\Controller;
 
 use CommonBundle\Component\Controller\Exception\HasNoAccessException,
-    CommonBundle\Form\Auth\Login as LoginForm,
+    CudiBundle\Entity\User\Person\Supplier,
     Zend\Mvc\MvcEvent;
 
 /**
@@ -38,20 +38,21 @@ class SupplierController extends \CommonBundle\Component\Controller\ActionContro
      */
     public function onDispatch(MvcEvent $e)
     {
-        if (!method_exists($this->getAuthentication()->getPersonObject(), 'getSupplier') && $this->getAuthentication()->isAuthenticated())
+        if (!method_exists($this->getAuthentication()->getPersonObject(), 'getSupplier') && $this->getAuthentication()->isAuthenticated()) {
             throw new HasNoAccessException('You do not have sufficient permissions to access this resource');
+        }
 
         $result = parent::onDispatch($e);
 
         $result->supplier = $this->getSupplier();
-        $result->loginForm = new LoginForm(
-            $this->url()->fromRoute(
+        $result->loginForm = $this->getForm('common_auth_login')
+            ->setAttribute('class', '')
+            ->setAttribute('action', $this->url()->fromRoute(
                 'cudi_supplier_auth',
                 array(
-                    'action' => 'login'
+                    'action' => 'login',
                 )
-            )
-        );
+            ));
 
         $result->organizationUrl = $this->getEntityManager()
             ->getRepository('CommonBundle\Entity\General\Config')
@@ -75,7 +76,7 @@ class SupplierController extends \CommonBundle\Component\Controller\ActionContro
             'controller'     => 'common_index',
 
             'auth_route'     => 'cudi_supplier_index',
-            'redirect_route' => 'cudi_supplier_index'
+            'redirect_route' => 'cudi_supplier_index',
         );
     }
 
@@ -86,7 +87,9 @@ class SupplierController extends \CommonBundle\Component\Controller\ActionContro
      */
     protected function getSupplier()
     {
-        if ($this->getAuthentication()->isAuthenticated())
-            return $this->getAuthentication()->getPersonObject()->getSupplier();
+        $person = $this->getAuthentication()->getPersonObject();
+        if ($this->getAuthentication()->isAuthenticated() && $person instanceof Supplier) {
+            return $person->getSupplier();
+        }
     }
 }

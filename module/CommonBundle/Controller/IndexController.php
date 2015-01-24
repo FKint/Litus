@@ -41,6 +41,7 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
             array(
                 'bookings' => $this->_getBookings(),
                 'calendarItems' => $this->_getCalendarItems(),
+                'wiki' => $this->_getWiki(),
                 'cudi' => $this->_getCudiInfo(),
                 'newsItems' => $this->_getNewsItems(),
                 'notifications' => $notifications,
@@ -60,14 +61,16 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
             ->getRepository('CommonBundle\Entity\General\Config')
             ->getConfigValue('common.sport_info_on_homepage');
 
-        if ($showInfo != '1')
+        if ($showInfo != '1') {
             return null;
+        }
 
         $fileContents = @file_get_contents('data/cache/' . md5('run_result_page'));
 
         $resultPage = null;
-        if (false !== $fileContents)
+        if (false !== $fileContents) {
             $resultPage = (array) json_decode($fileContents);
+        }
 
         $returnArray = null;
         if (null !== $resultPage) {
@@ -118,12 +121,14 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
                 ->findAllOpenByPerson($this->getAuthentication()->getPersonObject());
 
             foreach ($bookings as $key => $booking) {
-                if ('assigned' != $booking->getStatus())
+                if ('assigned' != $booking->getStatus()) {
                     unset($bookings[$key]);
+                }
             }
 
-            if (0 == count($bookings))
+            if (0 == count($bookings)) {
                 $bookings = null;
+            }
         }
 
         return $bookings;
@@ -163,7 +168,7 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
             if (!isset($calendarItems[$date])) {
                 $calendarItems[$date] = (object) array(
                     'date' => $event->getStartDate(),
-                    'events' => array()
+                    'events' => array(),
                 );
             }
             $calendarItems[$date]->events[] = $event;
@@ -210,8 +215,9 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
             ->getRepository('CommonBundle\Entity\General\Config')
             ->getConfigValue('common.enable_piwik');
 
-        if ('development' == getenv('APPLICATION_ENV') || !$enablePiwik)
+        if ('development' == getenv('APPLICATION_ENV') || !$enablePiwik) {
             return null;
+        }
 
         return array(
             'url' => parse_url(
@@ -222,7 +228,7 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
             ),
             'site_id' => $this->getEntityManager()
                 ->getRepository('CommonBundle\Entity\General\Config')
-                ->getConfigValue('common.piwik_id_site')
+                ->getConfigValue('common.piwik_id_site'),
         );
     }
 
@@ -231,11 +237,24 @@ class IndexController extends \CommonBundle\Component\Controller\ActionControlle
      */
     private function _getMyShifts()
     {
-        if (!$this->getAuthentication()->getPersonObject())
+        if (!$this->getAuthentication()->getPersonObject()) {
             return null;
+        }
 
         return $this->getEntityManager()
             ->getRepository('ShiftBundle\Entity\Shift')
             ->findAllActiveByPerson($this->getAuthentication()->getPersonObject());
+    }
+
+    private function _getWiki()
+    {
+        return array(
+            'enable' => $this->getEntityManager()
+                ->getRepository('CommonBundle\Entity\General\Config')
+                ->getConfigValue('common.wiki_button'),
+            'url' => $this->getEntityManager()
+                ->getRepository('CommonBundle\Entity\General\Config')
+                ->getConfigValue('wiki.url'),
+        );
     }
 }

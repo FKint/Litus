@@ -42,6 +42,7 @@ class Ticket
      */
     public static function book(Event $event, Person $person = null, GuestInfo $guestInfo = null, $numbers, $payed, EntityManager $entityManager)
     {
+        $createdTickets = array();
         if ($event->areTicketsGenerated()) {
             $tickets = $entityManager->getRepository('TicketBundle\Entity\Ticket')
                 ->findAllEmptyByEvent($event);
@@ -50,28 +51,32 @@ class Ticket
                 $number = $numbers['member'];
                 $count = count($tickets);
                 for ($i = 0 ; $i < $count ; $i++) {
-                    if (0 == $number)
+                    if (0 == $number) {
                         break;
+                    }
 
                     $number--;
                     $tickets[$i]->setPerson($person)
                         ->setGuestInfo($guestInfo)
                         ->setMember(true)
                         ->setStatus($payed ? 'sold' : 'booked');
+                    $createdTickets[] = $tickets[$i];
                 }
 
                 if (!$event->isOnlyMembers()) {
                     $number = $numbers['non_member'];
                     $count = count($tickets);
                     for (; $i < $count ; $i++) {
-                        if (0 == $number)
+                        if (0 == $number) {
                             break;
+                        }
 
                         $number--;
                         $tickets[$i]->setPerson($person)
                             ->setGuestInfo($guestInfo)
                             ->setMember(false)
                             ->setStatus($payed ? 'sold' : 'booked');
+                        $createdTickets[] = $tickets[$i];
                     }
                 }
             } else {
@@ -79,8 +84,9 @@ class Ticket
                     $number = $numbers['option_' . $option->getId() . '_number_member'];
                     $count = count($tickets);
                     for ($i = 0; $i < $count ; $i++) {
-                        if (0 == $number)
+                        if (0 == $number) {
                             break;
+                        }
 
                         $number--;
                         $tickets[$i]->setPerson($person)
@@ -88,14 +94,16 @@ class Ticket
                             ->setMember(true)
                             ->setOption($option)
                             ->setStatus($payed ? 'sold' : 'booked');
+                        $createdTickets[] = $tickets[$i];
                     }
 
                     if (!$event->isOnlyMembers()) {
                         $number = $numbers['option_' . $option->getId() . '_number_non_member'];
                         $count = count($tickets);
                         for (; $i < $count ; $i++) {
-                            if (0 == $number)
+                            if (0 == $number) {
                                 break;
+                            }
 
                             $number--;
                             $tickets[$i]->setPerson($person)
@@ -103,6 +111,7 @@ class Ticket
                                 ->setMember(false)
                                 ->setOption($option)
                                 ->setStatus($payed ? 'sold' : 'booked');
+                            $createdTickets[] = $tickets[$i];
                         }
                     }
                 }
@@ -110,38 +119,40 @@ class Ticket
         } else {
             if (count($event->getOptions()) == 0) {
                 for ($i = 0 ; $i < $numbers['member'] ; $i++) {
-                    $entityManager->persist(
-                        self::_createTicket($event, $person, $guestInfo, true, $payed, null, $entityManager)
-                    );
+                    $ticket = self::_createTicket($event, $person, $guestInfo, true, $payed, null, $entityManager);
+                    $entityManager->persist($ticket);
+                    $createdTickets[] = $ticket;
                 }
 
                 if (!$event->isOnlyMembers()) {
                     for ($i = 0 ; $i < $numbers['non_member'] ; $i++) {
-                        $entityManager->persist(
-                            self::_createTicket($event, $person, $guestInfo, false, $payed, null, $entityManager)
-                        );
+                        $ticket = self::_createTicket($event, $person, $guestInfo, false, $payed, null, $entityManager);
+                        $entityManager->persist($ticket);
+                        $createdTickets[] = $ticket;
                     }
                 }
             } else {
                 foreach ($event->getOptions() as $option) {
                     $count = $numbers['option_' . $option->getId() . '_number_member'];
                     for ($i = 0 ; $i < $count ; $i++) {
-                        $entityManager->persist(
-                            self::_createTicket($event, $person, $guestInfo, true, $payed, $option, $entityManager)
-                        );
+                        $ticket = self::_createTicket($event, $person, $guestInfo, true, $payed, $option, $entityManager);
+                        $entityManager->persist($ticket);
+                        $createdTickets[] = $ticket;
                     }
 
                     if (!$event->isOnlyMembers()) {
                         $count = $numbers['option_' . $option->getId() . '_number_non_member'];
                         for ($i = 0 ; $i < $count ; $i++) {
-                            $entityManager->persist(
-                                self::_createTicket($event, $person, $guestInfo, false, $payed, $option, $entityManager)
-                            );
+                            $ticket = self::_createTicket($event, $person, $guestInfo, false, $payed, $option, $entityManager);
+                            $entityManager->persist($ticket);
+                            $createdTickets[] = $ticket;
                         }
                     }
                 }
             }
         }
+
+        return $createdTickets;
     }
 
     /**

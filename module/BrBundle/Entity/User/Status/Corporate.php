@@ -20,7 +20,8 @@ namespace BrBundle\Entity\User\Status;
 
 use BrBundle\Entity\User\Person\Corporate as CorporatePerson,
     CommonBundle\Component\Util\AcademicYear,
-    Doctrine\ORM\Mapping as ORM;
+    Doctrine\ORM\Mapping as ORM,
+    InvalidArgumentException;
 
 /**
  * A classification of a user based on his status at our Alma Mater.
@@ -35,7 +36,7 @@ class Corporate
      * @var array All the possible status values allowed
      */
     private static $_possibleStatuses = array(
-        'correspondence', 'signatory'
+        'correspondence', 'signatory',
     );
 
     /**
@@ -48,7 +49,7 @@ class Corporate
     private $id;
 
     /**
-     * @var \BrBundle\Entity\User\Person\Corporate The person this company status belongs to
+     * @var CorporatePerson The person this company status belongs to
      *
      * @ORM\ManyToOne(
      *      targetEntity="BrBundle\Entity\User\Person\Corporate", inversedBy="corporateStatuses"
@@ -72,14 +73,15 @@ class Corporate
     private $year;
 
     /**
-     * @param  \BrBundle\Entity\User\Person\Corporate $person The person that should be given the status
-     * @param  string                                 $status The status that should be given to the person
-     * @throws \InvalidArgumentException
+     * @param  CorporatePerson          $person The person that should be given the status
+     * @param  string                   $status The status that should be given to the person
+     * @throws InvalidArgumentException
      */
     public function __construct(CorporatePerson $person, $status)
     {
-        if (!self::isValidPerson($person))
-            throw new \InvalidArgumentException('Invalid person');
+        if (!self::isValidPerson($person)) {
+            throw new InvalidArgumentException('Invalid person');
+        }
 
         $this->person = $person;
 
@@ -96,7 +98,7 @@ class Corporate
     }
 
     /**
-     * @return \BrBundle\Entity\User\Person\Corporate
+     * @return CorporatePerson
      */
     public function getPerson()
     {
@@ -107,7 +109,7 @@ class Corporate
      * Returns whether the given user can have a corporate status.
      *
      * @static
-     * @param  \BrBundle\Entity\User\Person\Corporate $person the user to check
+     * @param  CorporatePerson $person the user to check
      * @return boolean
      */
     public static function isValidPerson(CorporatePerson $person)
@@ -129,8 +131,9 @@ class Corporate
      */
     public function setStatus($status)
     {
-        if (self::isValidStatus($status))
+        if (self::isValidStatus($status)) {
             $this->status = $status;
+        }
 
         return $this;
     }

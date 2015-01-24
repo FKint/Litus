@@ -42,6 +42,9 @@ class Add extends \CommonBundle\Component\Form\Admin\Form\Tabbable
             'name'       => 'category',
             'label'      => 'Category',
             'required'   => true,
+            'attributes' => array(
+                'id'      => 'category',
+            ),
             'options'    => array(
                 'options' => $this->createCategoriesArray(),
             ),
@@ -57,6 +60,7 @@ class Add extends \CommonBundle\Component\Form\Admin\Form\Tabbable
                 'name'       => 'parent_' . $category->getId(),
                 'label'      => 'Parent',
                 'attributes' => array(
+                    'id'    => 'parent_' . $category->getId(),
                     'class' => 'parent',
                 ),
                 'options'    => array(
@@ -108,12 +112,14 @@ class Add extends \CommonBundle\Component\Form\Admin\Form\Tabbable
             ->getRepository('PageBundle\Entity\Category')
             ->findAll();
 
-        if (empty($categories))
+        if (empty($categories)) {
             throw new RuntimeException('There needs to be at least one category before you can add a link');
+        }
 
         $categoryOptions = array();
-        foreach($categories as $category)
+        foreach ($categories as $category) {
             $categoryOptions[$category->getId()] = $category->getName();
+        }
 
         asort($categoryOptions);
 
@@ -127,10 +133,11 @@ class Add extends \CommonBundle\Component\Form\Admin\Form\Tabbable
             ->findByCategory($category, array('name' => 'ASC'));
 
         $pageOptions = array(
-            '' => ''
+            '' => '',
         );
-        foreach($pages as $page)
+        foreach ($pages as $page) {
             $pageOptions[$page->getId()] = $page->getTitle();
+        }
 
         return $pageOptions;
     }

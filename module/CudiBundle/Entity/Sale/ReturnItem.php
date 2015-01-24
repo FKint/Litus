@@ -20,7 +20,8 @@ namespace CudiBundle\Entity\Sale;
 
 use DateTime,
     Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Mapping as ORM;
+    Doctrine\ORM\Mapping as ORM,
+    InvalidArgumentException;
 
 /**
  * @ORM\Entity(repositoryClass="CudiBundle\Repository\Sale\ReturnItem")
@@ -84,8 +85,9 @@ class ReturnItem
     public function __construct(Article $article, $price, QueueItem $queueItem = null, EntityManager $entityManager = null)
     {
         if (null == $queueItem) {
-            if (null == $entityManager)
-                throw new \InvalidArgumentException('EntityManager must be set');
+            if (null == $entityManager) {
+                throw new InvalidArgumentException('EntityManager must be set');
+            }
             $this->session = $entityManager->getRepository('CudiBundle\Entity\Sale\Session')
                 ->getLast();
         } else {

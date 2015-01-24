@@ -68,10 +68,16 @@ trait ServiceLocatorAwareTrait
      * @param  boolean                                   $organization
      * @return \CommonBundle\Entity\General\AcademicYear
      */
-    public function getCurrentAcademicYear($organization = false)
+    public function getCurrentAcademicYear($organization = null)
     {
-        if ($organization)
+        if (null === $organization) {
+            return $this->getServiceLocator()
+                ->get('litus.academic_year');
+        }
+
+        if ($organization) {
             return AcademicYear::getOrganizationYear($this->getEntityManager());
+        }
 
         return AcademicYear::getUniversityYear($this->getEntityManager());
     }

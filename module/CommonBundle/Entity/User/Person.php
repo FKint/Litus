@@ -18,18 +18,18 @@
 
 namespace CommonBundle\Entity\User;
 
-use CommonBundle\Component\Acl\RoleAware;
-use CommonBundle\Entity\Acl\Role;
-use CommonBundle\Entity\General\Address;
-use CommonBundle\Entity\General\AcademicYear as AcademicYearEntity;
-use CommonBundle\Entity\General\Language;
-use CommonBundle\Entity\User\Status\Organization as OrganizationStatus;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping as ORM;
-use Zend\Mail\Message;
-use Zend\Mail\Transport\TransportInterface;
-use InvalidArgumentException;
+use CommonBundle\Component\Acl\RoleAware,
+    CommonBundle\Entity\Acl\Role,
+    CommonBundle\Entity\General\AcademicYear as AcademicYearEntity,
+    CommonBundle\Entity\General\Address,
+    CommonBundle\Entity\General\Language,
+    CommonBundle\Entity\User\Status\Organization as OrganizationStatus,
+    Doctrine\Common\Collections\ArrayCollection,
+    Doctrine\ORM\EntityManager,
+    Doctrine\ORM\Mapping as ORM,
+    InvalidArgumentException,
+    Zend\Mail\Message,
+    Zend\Mail\Transport\TransportInterface;
 
 /**
  * This is the entity for a person.
@@ -136,13 +136,13 @@ abstract class Person implements RoleAware
     private $canLogin;
 
     /**
-     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\User\Status\Organization", mappedBy="person", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\User\Status\Organization", mappedBy="person", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     private $organizationStatuses;
 
     /**
-     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\User\Barcode", mappedBy="person")
-     * @ORM\OrderBy({"time" = "ASC"})
+     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\User\Barcode", mappedBy="person", orphanRemoval=true, cascade={"persist", "remove"})
+     * @ORM\OrderBy({"creationTime" = "ASC"})
      */
     private $barcodes;
 
@@ -175,6 +175,7 @@ abstract class Person implements RoleAware
 
         $this->roles = new ArrayCollection();
         $this->organizationStatuses = new ArrayCollection();
+        $this->barcodes = new ArrayCollection();
     }
 
     /**
@@ -192,8 +193,9 @@ abstract class Person implements RoleAware
      */
     public function setUsername($username)
     {
-        if (($username === null) || !is_string($username))
+        if (($username === null) || !is_string($username)) {
             throw new InvalidArgumentException('Invalid username');
+        }
 
         $this->username = $username;
 
@@ -244,8 +246,9 @@ abstract class Person implements RoleAware
      */
     public function validateCredential($credential)
     {
-        if (null == $this->credential)
+        if (null == $this->credential) {
             return false;
+        }
 
         return $this->credential->validateCredential($credential);
     }
@@ -282,6 +285,13 @@ abstract class Person implements RoleAware
         return $this->_flattenRolesInheritance(
             $this->getRoles()
         );
+    }
+
+    public function getSystemRoles()
+    {
+        return array_filter($this->getFlattenedRoles(), function (Role $role) {
+            return $role->getSystem();
+        });
     }
 
     /**
@@ -342,7 +352,7 @@ abstract class Person implements RoleAware
      */
     public function getFullName()
     {
-        return $this->firstName.' '.$this->lastName;
+        return $this->firstName . ' ' . $this->lastName;
     }
 
     /**
@@ -411,8 +421,9 @@ abstract class Person implements RoleAware
      */
     public function setSex($sex)
     {
-        if(($sex !== 'm') && ($sex !== 'f') && ($sex !== null))
-            throw new \InvalidArgumentException('Invalid sex');
+        if (($sex !== 'm') && ($sex !== 'f') && ($sex !== null)) {
+            throw new InvalidArgumentException('Invalid sex');
+        }
 
         $this->sex = $sex;
 
@@ -454,6 +465,23 @@ abstract class Person implements RoleAware
     }
 
     /**
+     * @param  Barcode $code
+     * @return self
+     */
+    public function addBarcode(Barcode $code)
+    {
+        foreach ($this->barcodes as $barcode) {
+            if ($code->getBarcode() === $barcode->getBarcode()) {
+                return $this;
+            }
+        }
+
+        $this->barcodes->add($code);
+
+        return $this;
+    }
+
+    /**
      * @return Code
      */
     public function getCode()
@@ -488,9 +516,10 @@ abstract class Person implements RoleAware
      */
     public function setFailedLogins($failedLogins)
     {
-         // Limit of Postgres smallint datatype
-        if ($failedLogins > 32767)
+        // Limit of Postgres smallint datatype
+        if ($failedLogins > 32767) {
             $failedLogins = 32767;
+        }
 
         $this->failedLogins = $failedLogins;
 
@@ -546,8 +575,9 @@ abstract class Person implements RoleAware
     public function getOrganizationStatus(AcademicYearEntity $academicYear)
     {
         foreach ($this->organizationStatuses as $status) {
-            if ($status->getAcademicYear() == $academicYear)
+            if ($status->getAcademicYear() == $academicYear) {
                 return $status;
+            }
         }
 
         return null;
@@ -562,8 +592,9 @@ abstract class Person implements RoleAware
         if ($this->organizationStatuses->count() >= 1) {
             if ($this->organizationStatuses->exists(
                 function ($key, $value) use ($academicYear) {
-                    if ($value->getAcademicYear() == $academicYear)
+                    if ($value->getAcademicYear() == $academicYear) {
                         return true;
+                    }
                 }
             )) {
                 return false;
@@ -582,8 +613,9 @@ abstract class Person implements RoleAware
     public function isMember(AcademicYearEntity $academicYear)
     {
         if (null !== $this->getOrganizationStatus($academicYear)) {
-            if ($this->getOrganizationStatus($academicYear) == 'non_member')
+            if ($this->getOrganizationStatus($academicYear)->getStatus() == 'non_member') {
                 return false;
+            }
 
             return true;
         }
@@ -600,8 +632,9 @@ abstract class Person implements RoleAware
     public function isPraesidium(AcademicYearEntity $academicYear)
     {
         if (null !== $this->getOrganizationStatus($academicYear)) {
-            if ($this->getOrganizationStatus($academicYear)->getStatus() == 'praesidium')
+            if ($this->getOrganizationStatus($academicYear)->getStatus() == 'praesidium') {
                 return true;
+            }
         }
 
         return false;
@@ -660,8 +693,9 @@ abstract class Person implements RoleAware
                 ->addTo($this->getEmail(), $this->getFullName())
                 ->setSubject($subject);
 
-            if ('development' != getenv('APPLICATION_ENV'))
+            if ('development' != getenv('APPLICATION_ENV')) {
                 $mailTransport->send($mail);
+            }
         }
 
         return $this;
@@ -678,8 +712,9 @@ abstract class Person implements RoleAware
     private function _flattenRolesInheritance(array $inheritanceRoles, array $return = array())
     {
         foreach ($inheritanceRoles as $role) {
-            if (!in_array($role, $return))
+            if (!in_array($role, $return)) {
                 $return[] = $role;
+            }
             $return = $this->_flattenRolesInheritance($role->getParents(), $return);
         }
 

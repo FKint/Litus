@@ -18,7 +18,8 @@
 
 namespace BrBundle\Entity\Cv;
 
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping as ORM,
+    InvalidArgumentException;
 
 /**
  * This is the entity for a language specification on a cv.
@@ -56,7 +57,7 @@ class Language
     private $id;
 
     /**
-     * @var \BrBundle\Entity\Cv\Entry The cv entry where this language belongs to.
+     * @var Entry The cv entry where this language belongs to.
      *
      * @ORM\ManyToOne(targetEntity="BrBundle\Entity\Cv\Entry", cascade={"persist"})
      * @ORM\JoinColumn(name="entry", referencedColumnName="id")
@@ -107,7 +108,7 @@ class Language
     }
 
     /**
-     * @return \BrBundle\Entity\Cv\Entry The cv entry.
+     * @return Entry The cv entry.
      */
     public function getEntry()
     {
@@ -131,7 +132,6 @@ class Language
         return array_key_exists($skill, self::$WRITTEN_SKILLS);
     }
 
-
     /**
      * @param  string  $skill
      * @return boolean
@@ -142,13 +142,14 @@ class Language
     }
 
     /**
-     * @param  string                       $skill
-     * @return \BrBundle\Entity\Cv\Language
+     * @param  string $skill
+     * @return self
      */
     public function setWrittenSkill($skill)
     {
-        if (!self::isValidWrittenSkill($skill))
-            throw new \InvalidArgumentException('The skill is not valid.');
+        if (!self::isValidWrittenSkill($skill)) {
+            throw new InvalidArgumentException('The skill is not valid.');
+        }
         $this->written = $skill;
 
         return $this;
@@ -170,15 +171,15 @@ class Language
         return $this->written;
     }
 
-
     /**
-     * @param  string                       $skill
-     * @return \BrBundle\Entity\Cv\Language
+     * @param  string $skill
+     * @return self
      */
     public function setOralSkill($skill)
     {
-        if (!self::isValidOralSkill($skill))
-            throw new \InvalidArgumentException('The skill is not valid.');
+        if (!self::isValidOralSkill($skill)) {
+            throw new InvalidArgumentException('The skill is not valid.');
+        }
 
         $this->oral = $skill;
 

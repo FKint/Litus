@@ -27,7 +27,7 @@ class Group extends \CommonBundle\Component\Hydrator\Hydrator
     protected function doHydrate(array $data, $object = null)
     {
         if (null === $object) {
-            $object = new GroupEntity;
+            $object = new GroupEntity();
         }
 
         $extraMembers = preg_split("/[,;\s]+/", $data['extra_members']);
@@ -45,8 +45,16 @@ class Group extends \CommonBundle\Component\Hydrator\Hydrator
             return array();
         }
 
-        $extraMembers = unserialize($object->getExtraMembers()) or array();
-        $excludedMembers = unserialize($object->getExcludedMembers()) or array();
+        $extraMembers = unserialize($object->getExtraMembers());
+        $excludedMembers = unserialize($object->getExcludedMembers());
+
+        if (!$extraMembers) {
+            $extraMembers = array();
+        }
+
+        if (!$excludedMembers) {
+            $excludedMembers = array();
+        }
 
         $data = $this->stdExtract($object, self::$std_keys);
 

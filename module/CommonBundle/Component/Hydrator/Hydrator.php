@@ -18,11 +18,11 @@
 
 namespace CommonBundle\Component\Hydrator;
 
-use DateTime;
-use RecursiveArrayIterator;
-use RecursiveIteratorIterator;
-use RuntimeException;
-use Zend\Stdlib\Hydrator\Filter\FilterComposite;
+use DateTime,
+    RecursiveArrayIterator,
+    RecursiveIteratorIterator,
+    RuntimeException,
+    Zend\Stdlib\Hydrator\Filter\FilterComposite;
 
 /**
  * A common superclass for hydrators.
@@ -63,8 +63,9 @@ abstract class Hydrator implements \Zend\Stdlib\Hydrator\HydratorInterface, \Com
             $entity = get_class($this);
             $entity = explode('\\', $entity, 3);
 
-            if ('Hydrator' != $entity[1])
-                throw new RuntimeException('Class '.get_class($this).' should be placed in namespace '.$entity[0].'\Hydrator');
+            if ('Hydrator' != $entity[1]) {
+                throw new RuntimeException('Class ' . get_class($this) . ' should be placed in namespace ' . $entity[0] . '\Hydrator');
+            }
             $entity[1] = 'Entity';
 
             $this->entity = implode('\\', $entity);
@@ -115,6 +116,10 @@ abstract class Hydrator implements \Zend\Stdlib\Hydrator\HydratorInterface, \Com
         return $this->doHydrate($array, $object);
     }
 
+    /**
+     * @param mixed|null $object
+     * @param string     $method
+     */
     private function checkType($object = null, $method)
     {
         if (null !== $object && null !== $this->entity) {
@@ -144,9 +149,10 @@ abstract class Hydrator implements \Zend\Stdlib\Hydrator\HydratorInterface, \Com
     {
         $keys = self::flatten($keys);
 
-        if (empty($keys))
+        if (empty($keys)) {
             return $this->getHydrator('classmethods')
                 ->hydrate($data, $object);
+        }
 
         return $this->getHydrator('classmethods')
                 ->hydrate(array_intersect_key($data, array_flip($keys)), $object);
@@ -161,12 +167,20 @@ abstract class Hydrator implements \Zend\Stdlib\Hydrator\HydratorInterface, \Com
      */
     protected function stdExtract($object = null, array $keys = null)
     {
-        if (null === $object)
+        if (null === $object) {
             return array();
+        }
+
+        static $originalHydrator = null;
+
+        if (null === $originalHydrator) {
+            $originalHydrator = $this->getHydrator('classmethods');
+            $originalHydrator->setNamingStrategy(new NamingStrategy\RemoveIs());
+        }
 
         $keys = self::flatten($keys);
 
-        $hydrator = clone $this->getHydrator('classmethods');
+        $hydrator = clone $originalHydrator;
         if (!empty($keys)) {
             $hydrator->addFilter('keys', function ($property) use ($hydrator, $keys, $object) {
                 $method = explode('::', $property)[1];
@@ -213,7 +227,7 @@ abstract class Hydrator implements \Zend\Stdlib\Hydrator\HydratorInterface, \Com
     /**
      * Returns the logged in user. The return value is null if no one is logged in.
      *
-     * @return \CommonModule\Entity\User\Person
+     * @return null|\CommonBundle\Entity\User\Person
      */
     public function getPerson()
     {
@@ -248,5 +262,12 @@ abstract class Hydrator implements \Zend\Stdlib\Hydrator\HydratorInterface, \Com
     protected static function loadTime($date)
     {
         return DateTime::createFromFormat('H#i', $date) ?: null;
+    }
+
+    protected function getLanguages()
+    {
+        return $this->getEntityManager()
+            ->getRepository('CommonBundle\Entity\General\Language')
+            ->findAll();
     }
 }

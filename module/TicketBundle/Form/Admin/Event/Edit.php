@@ -19,7 +19,6 @@
 namespace TicketBundle\Form\Admin\Event;
 
 use LogicException,
-    TicketBundle\Component\Validator\Activity as ActivityValidator,
     TicketBundle\Entity\Event;
 
 /**
@@ -59,20 +58,29 @@ class Edit extends Add
 
     public function getInputFilterSpecification()
     {
-        $inputs = parent::getInputFilterSpecification();
+        $specs = parent::getInputFilterSpecification();
 
-        foreach ($inputs as $key => $input) {
-            if ($input['name'] == 'event') {
-                $inputs[$key]['validators'] = array(
-                    new ActivityValidator($this->geEntityManager(), $this->event),
+        foreach ($specs as $key => $spec) {
+            if (isset($spec['name']) && $spec['name'] == 'event') {
+                $specs[$key]['validators'] = array(
+                    array(
+                        'name' => 'ticket_activtiy',
+                        'options' => array(
+                            'exclude' => $this->event,
+                        ),
+                    ),
                 );
                 break;
             }
         }
 
-        return $inputs;
+        return $specs;
     }
 
+    /**
+     * @param  \TicketBundle\Entity\Event $event
+     * @return self
+     */
     public function setEvent(Event $event)
     {
         $this->event = $event;

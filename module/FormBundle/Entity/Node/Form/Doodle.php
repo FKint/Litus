@@ -20,7 +20,6 @@ namespace FormBundle\Entity\Node\Form;
 
 use CommonBundle\Entity\General\Language,
     CommonBundle\Entity\User\Person,
-    DateTime,
     Doctrine\ORM\Mapping as ORM,
     FormBundle\Entity\Mail\Mail,
     FormBundle\Entity\Node\Entry,
@@ -44,28 +43,10 @@ class Doodle extends BaseForm
     /**
      * @var Mail|null The mail sent for reminding.
      *
-     * @ORM\OneToOne(targetEntity="FormBundle\Entity\Mail\Mail")
+     * @ORM\OneToOne(targetEntity="FormBundle\Entity\Mail\Mail", cascade={"all"})
      * @ORM\JoinColumn(name="reminder_mail", referencedColumnName="id")
      */
     private $reminderMail;
-
-    /**
-     * @param Person   $person
-     * @param DateTime $startDate
-     * @param DateTime $endDate
-     * @param boolean  $active
-     * @param boolean  $multiple
-     * @param boolean  $nonMember
-     * @param boolean  $editableByUser
-     * @param boolean  $sendGuestLoginMail
-     * @param boolean  $namesVisibleForOthers
-     */
-    public function __construct(Person $person, DateTime $startDate, DateTime $endDate, $active, $multiple, $nonMember, $editableByUser, $sendGuestLoginMail, $namesVisibleForOthers)
-    {
-        parent::__construct($person, $startDate, $endDate, $active, 0, $multiple, $nonMember, $editableByUser, $sendGuestLoginMail);
-
-        $this->namesVisibleForOthers = $namesVisibleForOthers;
-    }
 
     /**
      * @param  Person|null $person
@@ -73,15 +54,17 @@ class Doodle extends BaseForm
      */
     public function canBeSavedBy(Person $person = null)
     {
-        if ($this->isEditableByUser() || null === $person)
+        if ($this->isEditableByUser() || null === $person) {
             return true;
+        }
 
         $formEntry = $this->_entityManager
             ->getRepository('FormBundle\Entity\Node\Entry')
             ->findOneByFormAndPerson($this, $person);
 
-        if (null === $formEntry)
+        if (null === $formEntry) {
             return true;
+        }
 
         return sizeof($formEntry->getFieldEntries()) == 0;
     }
@@ -92,8 +75,9 @@ class Doodle extends BaseForm
     public function getFields()
     {
         $fields = array();
-        foreach(parent::getFields() as $field)
+        foreach (parent::getFields() as $field) {
             $fields[$field->getStartDate()->getTimestamp() . $field->getId()] = $field;
+        }
 
         ksort($fields);
 

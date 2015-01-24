@@ -19,14 +19,11 @@
 namespace FormBundle\Controller;
 
 use DateTime,
-    FormBundle\Component\Form\Form as FormHelper,
-    FormBundle\Component\Form\Doodle as DoodleHelper,
+    FormBundle\Component\Form\Mail as MailHelper,
+    FormBundle\Entity\Node\Entry as FormEntry,
     FormBundle\Entity\Node\Form,
-    FormBundle\Entity\Node\GuestInfo,
     FormBundle\Entity\Node\Group,
-    FormBundle\Form\SpecifiedForm\Add as AddForm,
-    FormBundle\Form\SpecifiedForm\Doodle as DoodleForm,
-    FormBundle\Form\SpecifiedForm\Edit as EditForm,
+    FormBundle\Entity\Node\GuestInfo,
     Zend\Http\Headers,
     Zend\View\Model\ViewModel;
 
@@ -40,8 +37,9 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
 {
     public function indexAction()
     {
-        if (!($formSpecification = $this->_getForm()))
+        if (!($formSpecification = $this->_getForm())) {
             return $this->notFoundAction();
+        }
 
         if ($formSpecification->getType() == 'doodle') {
             $this->redirect()->toRoute(
@@ -55,8 +53,6 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
             return new ViewModel();
         }
 
-        $entries = null;
-
         $now = new DateTime();
         if ($now < $formSpecification->getStartDate() || $now > $formSpecification->getEndDate() || !$formSpecification->isActive()) {
             return new ViewModel(
@@ -69,6 +65,8 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
 
         $person = $this->getAuthentication()->getPersonObject();
         $guestInfo = null;
+        $entries = null;
+        $draftVersion = null;
 
         if (null !== $person) {
             $entries = $this->getEntityManager()
@@ -149,9 +147,18 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
             );
         }
 
-        $form = new AddForm($this->getEntityManager(), $this->getLanguage(), $formSpecification, $person);
+        $form = $this->getForm(
+            'form_specified-form_add',
+            array(
+                'form' => $formSpecification,
+                'person' => $person,
+                'language' => $this->getLanguage(),
+                'entry' => $draftVersion,
+                'guest_info' => $guestInfo,
+            )
+        );
+
         if (isset($draftVersion)) {
-            $form->populateFromEntry($draftVersion);
             $form->setAttribute(
                 'action',
                 $this->url()->fromRoute(
@@ -164,29 +171,32 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
             );
         }
 
-        if (isset($guestInfo))
-            $form->populateFromGuestInfo($guestInfo);
-
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost()->toArray();
-            $form->setData($formData);
+            $form->setData(array_merge_recursive(
+                $this->getRequest()->getPost()->toArray(),
+                $this->getRequest()->getFiles()->toArray()
+            ));
 
-            if ($form->isValid() || isset($formData['save_as_draft'])) {
-                $formData = $form->getFormData($formData);
+            $isDraft = null !== $this->getRequest()->getPost()->get('save_as_draft');
 
-                $result = FormHelper::save(null, $person, $guestInfo, $formSpecification, $formData, $this->getLanguage(), $form, $this->getEntityManager(), $this->getMailTransport(), $this->url(), $this->getRequest());
-
-                if (!$result) {
-                    return new ViewModel(
-                        array(
-                            'specification' => $formSpecification,
-                            'form'          => $form,
-                            'entries'       => $entries,
-                        )
+            if ($form->isValid() || $isDraft) {
+                $formEntry = new FormEntry($person, $formSpecification);
+                if (null === $person) {
+                    $formEntry->setGuestInfo(
+                        new GuestInfo($this->getEntityManager(), $this->getRequest())
                     );
                 }
 
-                if (!isset($formData['save_as_draft'])) {
+                $formEntry = $form->hydrateObject($formEntry);
+
+                $this->getEntityManager()->persist($formEntry);
+                $this->getEntityManager()->flush();
+
+                if ($formSpecification->hasMail() && !$isDraft) {
+                    MailHelper::send($formEntry, $formSpecification, $this->getLanguage(), $this->getMailTransport(), $this->url(), $this->getRequest());
+                }
+
+                if (!$isDraft) {
                     $this->flashMessenger()->success(
                         'Success',
                         'Your entry has been recorded.'
@@ -198,7 +208,7 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
                     );
                 }
 
-                $this->_redirectFormComplete($group, $progressBarInfo, $formSpecification, isset($formData['save_as_draft']));
+                $this->_redirectFormComplete($group, $progressBarInfo, $formSpecification, $isDraft);
 
                 return new ViewModel();
             }
@@ -217,8 +227,9 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
 
     public function viewAction()
     {
-        if (!($entry = $this->_getEntry()))
+        if (!($entry = $this->_getEntry())) {
             return $this->notFoundAction();
+        }
 
         $entry->getForm()->setEntityManager($this->getEntityManager());
 
@@ -262,8 +273,9 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
 
     public function doodleAction()
     {
-        if (!($formSpecification = $this->_getForm()))
+        if (!($formSpecification = $this->_getForm())) {
             return $this->notFoundAction();
+        }
 
         if ($formSpecification->getType() == 'form') {
             $this->redirect()->toRoute(
@@ -290,7 +302,6 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
         }
 
         $person = $this->getAuthentication()->getPersonObject();
-        $guestInfo = null;
 
         if ($person === null && !$formSpecification->isNonMember()) {
             return new ViewModel(
@@ -335,6 +346,7 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
         }
 
         $formEntry = null;
+        $guestInfo = null;
         if (null !== $person) {
             $formEntry = $this->getEntityManager()
                 ->getRepository('FormBundle\Entity\Node\Entry')
@@ -351,17 +363,37 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
             }
         }
 
-        $form = new DoodleForm($this->getEntityManager(), $this->getLanguage(), $formSpecification, $person, $formEntry);
-        if (isset($guestInfo))
-            $form->populateFromGuestInfo($guestInfo);
+        $form = $this->getForm(
+            'form_specified-form_doodle',
+            array(
+                'form' => $formSpecification,
+                'person' => $person,
+                'language' => $this->getLanguage(),
+                'entry' => $formEntry,
+                'guest_info' => $guestInfo,
+            )
+        );
 
         if ($this->getRequest()->isPost() && $formSpecification->canBeSavedBy($person)) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
-                DoodleHelper::save($formEntry, $person, $guestInfo, $formSpecification, $formData, $this->getLanguage(), $this->getEntityManager(), $this->getMailTransport(), $this->url(), $this->getRequest());
+                $formEntry = new FormEntry($person, $formSpecification);
+                if (null === $person) {
+                    $formEntry->setGuestInfo(
+                        new GuestInfo($this->getEntityManager(), $this->getRequest())
+                    );
+                }
+
+                $formEntry = $form->hydrateObject($formEntry);
+
+                $this->getEntityManager()->persist($formEntry);
+                $this->getEntityManager()->flush();
+
+                if ($formSpecification->hasMail()) {
+                    MailHelper::send($formEntry, $formSpecification, $this->getLanguage(), $this->getMailTransport(), $this->url(), $this->getRequest());
+                }
 
                 $this->flashMessenger()->success(
                     'Success',
@@ -390,8 +422,9 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
 
     public function saveDoodleAction()
     {
-        if (!($formSpecification = $this->_getForm()))
+        if (!($formSpecification = $this->_getForm())) {
             return $this->notFoundAction();
+        }
 
         if ($formSpecification->getType() == 'form') {
             $this->redirect()->toRoute(
@@ -456,17 +489,39 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
             }
         }
 
-        $form = new DoodleForm($this->getEntityManager(), $this->getLanguage(), $formSpecification, $person, $formEntry);
-        if (isset($guestInfo))
-            $form->populateFromGuestInfo($guestInfo);
+        $form = $this->getForm(
+            'form_specified-form_doodle',
+            array(
+                'form' => $formSpecification,
+                'person' => $person,
+                'language' => $this->getLanguage(),
+                'entry' => $formEntry,
+                'guest_info' => $guestInfo,
+            )
+        );
 
         if ($this->getRequest()->isPost() && $formSpecification->canBeSavedBy($person)) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
-                DoodleHelper::save($formEntry, $person, $guestInfo, $formSpecification, $formData, $this->getLanguage(), $this->getEntityManager(), $this->getMailTransport(), $this->url(), $this->getRequest());
+                if (null === $formEntry) {
+                    $formEntry = new FormEntry($person, $formSpecification);
+                    if (null === $person) {
+                        $formEntry->setGuestInfo(
+                            new GuestInfo($this->getEntityManager(), $this->getRequest())
+                        );
+                    }
+                }
+
+                $formEntry = $form->hydrateObject($formEntry);
+
+                $this->getEntityManager()->persist($formEntry);
+                $this->getEntityManager()->flush();
+
+                if ($formSpecification->hasMail()) {
+                    MailHelper::send($formEntry, $formSpecification, $this->getLanguage(), $this->getMailTransport(), $this->url(), $this->getRequest());
+                }
 
                 return new ViewModel(
                     array(
@@ -474,26 +529,12 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
                     )
                 );
             } else {
-                $errors = $form->getMessages();
-                $formErrors = array();
-
-                foreach ($form->getElements() as $key => $element) {
-                    if (!isset($errors[$element->getName()]))
-                        continue;
-
-                    $formErrors[$element->getAttribute('id')] = array();
-
-                    foreach ($errors[$element->getName()] as $error) {
-                        $formErrors[$element->getAttribute('id')][] = $error;
-                    }
-                }
-
                 return new ViewModel(
                     array(
                         'result' => (object) array(
                             'status' => 'error',
-                            'errors' => $formErrors,
-                        )
+                            'errors' => $form->getMessages(),
+                        ),
                     )
                 );
             }
@@ -508,26 +549,27 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
 
     public function editAction()
     {
-        if (!($entry = $this->_getEntry()))
+        if (!($formEntry = $this->_getEntry())) {
             return $this->notFoundAction();
+        }
 
-        $entry->getForm()->setEntityManager($this->getEntityManager());
+        $formEntry->getForm()->setEntityManager($this->getEntityManager());
 
         $now = new DateTime();
-        if ($now < $entry->getForm()->getStartDate() || $now > $entry->getForm()->getEndDate() || !$entry->getForm()->isActive()) {
+        if ($now < $formEntry->getForm()->getStartDate() || $now > $formEntry->getForm()->getEndDate() || !$formEntry->getForm()->isActive()) {
             return new ViewModel(
                 array(
                     'message'       => 'This form is currently closed.',
-                    'specification' => $entry->getForm(),
+                    'specification' => $formEntry->getForm(),
                 )
             );
         }
 
-        $group = $this->_getGroup($entry->getForm());
+        $group = $this->_getGroup($formEntry->getForm());
         $progressBarInfo = null;
 
         if (null !== $group) {
-            $progressBarInfo = $this->_progressBarInfo($group, $entry->getForm());
+            $progressBarInfo = $this->_progressBarInfo($group, $formEntry->getForm());
 
             if ($progressBarInfo['uncompleted_before_current'] > 0) {
                 $this->flashMessenger()->warn(
@@ -549,11 +591,12 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
 
         $person = $this->getAuthentication()->getPersonObject();
         $guestInfo = null;
+        $draftVersion = null;
 
         if (null !== $person) {
             $draftVersion = $this->getEntityManager()
                 ->getRepository('FormBundle\Entity\Node\Entry')
-                ->findDraftVersionByFormAndPerson($entry->getForm(), $person);
+                ->findDraftVersionByFormAndPerson($formEntry->getForm(), $person);
         } elseif ($this->_isCookieSet()) {
             $guestInfo = $this->getEntityManager()
                 ->getRepository('FormBundle\Entity\Node\GuestInfo')
@@ -562,32 +605,41 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
             if ($guestInfo) {
                 $draftVersion = $this->getEntityManager()
                     ->getRepository('FormBundle\Entity\Node\Entry')
-                    ->findDraftVersionByFormAndGuestInfo($entry->getForm(), $guestInfo);
+                    ->findDraftVersionByFormAndGuestInfo($formEntry->getForm(), $guestInfo);
             }
         }
 
-        $form = new EditForm($this->getEntityManager(), $this->getLanguage(), $entry->getForm(), $entry, $person);
-        $form->hasDraft(isset($draftVersion) && $draftVersion != $entry);
+        $form = $this->getForm(
+            'form_specified-form_edit',
+            array(
+                'form' => $formEntry->getForm(),
+                'person' => $person,
+                'language' => $this->getLanguage(),
+                'entry' => $formEntry,
+                'guest_info' => $guestInfo,
+                'is_draft' => isset($draftVersion) && $draftVersion != $formEntry,
+            )
+        );
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData(array_merge_recursive(
+                $this->getRequest()->getPost()->toArray(),
+                $this->getRequest()->getFiles()->toArray()
+            ));
 
-            if ($form->isValid() || isset($formData['save_as_draft'])) {
-                $formData = $form->getFormData($formData);
+            $isDraft = null !== $this->getRequest()->getPost()->get('save_as_draft');
 
-                $result = FormHelper::save($entry, $person, $guestInfo, $entry->getForm(), $formData, $this->getLanguage(), $form, $this->getEntityManager(), $this->getMailTransport(), $this->url(), $this->getRequest());
+            if ($form->isValid() || $isDraft) {
+                $formEntry = $form->hydrateObject($formEntry);
 
-                if (!$result) {
-                    return new ViewModel(
-                        array(
-                            'specification' => $entry->getForm(),
-                            'form'          => $form,
-                        )
-                    );
+                $this->getEntityManager()->persist($formEntry);
+                $this->getEntityManager()->flush();
+
+                if ($formEntry->getForm()->hasMail() && !$isDraft) {
+                    MailHelper::send($formEntry, $formEntry->getForm(), $this->getLanguage(), $this->getMailTransport(), $this->url(), $this->getRequest());
                 }
 
-                if (!isset($formData['save_as_draft'])) {
+                if (!$isDraft) {
                     $this->flashMessenger()->success(
                         'Success',
                         'Your entry has been updated.'
@@ -599,7 +651,7 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
                     );
                 }
 
-                $this->_redirectFormComplete($group, $progressBarInfo, $entry->getForm(), isset($formData['save_as_draft']));
+                $this->_redirectFormComplete($group, $progressBarInfo, $formEntry->getForm(), $isDraft);
 
                 return new ViewModel();
             }
@@ -607,7 +659,7 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
 
         return new ViewModel(
             array(
-                'specification'   => $entry->getForm(),
+                'specification'   => $formEntry->getForm(),
                 'form'            => $form,
                 'group'           => $group,
                 'progressBarInfo' => $progressBarInfo,
@@ -617,17 +669,19 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
 
     public function loginAction()
     {
-        if (!($form = $this->_getForm()) || null === $this->getParam('key') || $this->getAuthentication()->isAuthenticated())
+        if (!($form = $this->_getForm()) || null === $this->getParam('key') || $this->getAuthentication()->isAuthenticated()) {
             return $this->notFoundAction();
+        }
 
         $guestInfo = $this->getEntityManager()
             ->getRepository('FormBundle\Entity\Node\GuestInfo')
             ->findOneByFormAndSessionId($form, $this->getParam('key'));
 
-        if (null !== $guestInfo)
+        if (null !== $guestInfo) {
             $guestInfo->renew($this->getRequest());
-        else
+        } else {
             return $this->notFoundAction();
+        }
 
         $this->redirect()->toRoute(
             'form_view',
@@ -736,8 +790,9 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
             ->getRepository('FormBundle\Entity\Node\Group\Mapping')
             ->findOneByForm($form);
 
-        if (null !== $mapping)
+        if (null !== $mapping) {
             return $mapping->getGroup();
+        }
     }
 
     private function _progressBarInfo(Group $group, Form $form)
@@ -774,14 +829,17 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
                         $data['completed_before_current']++;
                     } else {
                         $data['uncompleted_before_current']++;
-                        if ($data['first_uncompleted_id'] == 0)
+                        if ($data['first_uncompleted_id'] == 0) {
                             $data['first_uncompleted_id'] = $groupForm->getForm()->getId();
+                        }
                     }
                 } else {
-                    if (sizeof($formEntry) > 0 && null === $draftVersion)
+                    if (sizeof($formEntry) > 0 && null === $draftVersion) {
                         $data['completed_after_current']++;
-                    if ($data['next_form'] == 0)
+                    }
+                    if ($data['next_form'] == 0) {
                         $data['next_form'] = $groupForm->getForm()->getId();
+                    }
                 }
             }
         } else {
@@ -816,14 +874,17 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
                         $data['completed_before_current']++;
                     } else {
                         $data['uncompleted_before_current']++;
-                        if ($data['first_uncompleted_id'] == 0)
+                        if ($data['first_uncompleted_id'] == 0) {
                             $data['first_uncompleted_id'] = $groupForm->getForm()->getId();
+                        }
                     }
                 } else {
-                    if (sizeof($formEntry) > 0 && !isset($draftVersion))
+                    if (sizeof($formEntry) > 0 && !isset($draftVersion)) {
                         $data['completed_after_current']++;
-                    if ($data['next_form'] == 0)
+                    }
+                    if ($data['next_form'] == 0) {
                         $data['next_form'] = $groupForm->getForm()->getId();
+                    }
                 }
             }
         }
@@ -870,7 +931,7 @@ class FormController extends \CommonBundle\Component\Controller\ActionController
         /** @var \Zend\Http\Header\Cookie $cookies */
         $cookies = $this->getRequest()->getHeader('Cookie');
 
-        return $cookies->offsetExists(GuestInfo::$cookieNamespace);
+        return isset($cookies) && $cookies->offsetExists(GuestInfo::$cookieNamespace);
     }
 
     /**

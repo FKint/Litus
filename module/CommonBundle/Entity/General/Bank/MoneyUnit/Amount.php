@@ -70,6 +70,7 @@ class Amount
         $this->cashRegister = $register;
         $this->unit = $unit;
         $this->amount = $amount;
+        $register->addMoneyAmount($this);
     }
 
     /**

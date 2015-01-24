@@ -18,7 +18,9 @@
 
 namespace CommonBundle\Component\Form\Admin\Form;
 
-use CommonBundle\Component\Form\FieldsetInterface,
+use CommonBundle\Component\Form\Admin\Fieldset\TabContent,
+    CommonBundle\Component\Form\Admin\Fieldset\TabPane,
+    CommonBundle\Component\Form\FieldsetInterface,
     CommonBundle\Entity\General\Language,
     Locale,
     RuntimeException;
@@ -42,8 +44,9 @@ abstract class Tabbable extends \CommonBundle\Component\Form\Admin\Form
         $languages = $this->getLanguages();
         $prefix = $this->getPrefix();
 
-        if (count($languages) === 0)
+        if (count($languages) === 0) {
             throw new RuntimeException('No languages found!');
+        }
 
         if (count($languages) === 1) {
             $this->initBeforeTabs();
@@ -53,8 +56,11 @@ abstract class Tabbable extends \CommonBundle\Component\Form\Admin\Form
             $defaultLanguage = Locale::getDefault();
 
             $this->add(array(
-                'type' => 'tabs',
-                'name' => $prefix . 'languages',
+                'type'       => 'tabs',
+                'name'       => $prefix . 'languages',
+                'attributes' => array(
+                    'id' => $prefix . 'languages',
+                ),
             ));
 
             $tabs = $this->get($prefix . 'languages');
@@ -65,50 +71,43 @@ abstract class Tabbable extends \CommonBundle\Component\Form\Admin\Form
             foreach ($languages as $language) {
                 $abbrev = $language->getAbbrev();
 
-                $pane = $this->createTabPane($prefix . 'tab_' . $abbrev);
+                $pane = $this->createTabPane($tabContent, $prefix . 'tab_' . $abbrev);
 
                 $this->addTab($pane, $language, $abbrev == $defaultLanguage);
 
                 $tabs->addTab(array($language->getName() => $this->escapeTabContentId('#' . $tabContent->getName() . '[' . $prefix . 'tab_' . $abbrev . ']')));
-                $tabContent->add($pane);
             }
-
-            $this->add($tabContent);
         }
 
         $this->initAfterTabs();
     }
 
     /**
-     * @return SubForm\TabContent
+     * @return TabContent
      */
     private function createTabContent()
     {
-        $tabContent = new SubForm\TabContent($this->getPrefix() . 'tab_content');
-        $this->initElement($tabContent);
+        $this->add(array(
+            'type' => 'tabcontent',
+            'name' => $this->getPrefix() . 'tab_content',
+        ));
 
-        return $tabContent;
+        return $this->get($this->getPrefix() . 'tab_content');
     }
 
     /**
-     * @param  string          $name
-     * @return SubForm\TabPane
+    * @param  TabContent $tabContent
+    * @param  string     $name
+    * @return TabPane
      */
-    private function createTabPane($name)
+    private function createTabPane(TabContent $tabContent, $name)
     {
-        $tabPane = new SubForm\TabPane($name);
-        $this->initElement($tabPane);
+        $tabContent->add(array(
+            'type' => 'tabpane',
+            'name' => $name,
+        ));
 
-        return $tabPane;
-    }
-
-    /**
-     * @param FieldsetInterface $element The fieldset to configure
-     */
-    private function initElement(FieldsetInterface $element)
-    {
-        $element->init();
-        $this->getFormFactory()->configureFieldset($element, array());
+        return $tabContent->get($name);
     }
 
     /**
@@ -133,8 +132,10 @@ abstract class Tabbable extends \CommonBundle\Component\Form\Admin\Form
 
     public function getPrefix()
     {
-        if (null === $this->prefix || '' == $this->prefix)
+        if (null === $this->prefix || '' == $this->prefix) {
             return '';
+        }
+
         return $this->prefix . '_';
     }
 
@@ -161,6 +162,9 @@ abstract class Tabbable extends \CommonBundle\Component\Form\Admin\Form
      */
     abstract protected function addTab(FieldsetInterface $container, Language $language, $isDefault);
 
+    /**
+     * @return Language[]
+     */
     protected function getLanguages()
     {
         return $this->getEntityManager()

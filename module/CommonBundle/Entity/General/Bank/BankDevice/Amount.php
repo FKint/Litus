@@ -72,6 +72,7 @@ class Amount
         $this->cashRegister = $cashRegister;
         $this->device = $bankDevice;
         $this->setAmount($amount);
+        $cashRegister->addDeviceAmount($this);
     }
 
     /**

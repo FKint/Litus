@@ -19,6 +19,7 @@
 namespace FormBundle\Entity\Mail;
 
 use CommonBundle\Entity\General\Language,
+    Doctrine\Common\Collection\ArrayCollection,
     Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -53,20 +54,15 @@ class Mail
     private $bcc;
 
     /**
-     * @var \Doctrine\Common\Collection\ArrayCollection
+     * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="FormBundle\Entity\Mail\Translation", mappedBy="mail", cascade={"remove"})
      */
     private $translations;
 
-    /**
-     * @param string  $from
-     * @param boolean $bcc
-     */
-    public function __construct($from, $bcc)
+    public function __construct()
     {
-        $this->from = $from;
-        $this->bcc = $bcc;
+        $this->translations = new ArrayCollection();
     }
 
     /**
@@ -124,8 +120,9 @@ class Mail
     {
         $translation = $this->getTranslation($language, $allowFallback);
 
-        if (null !== $translation)
+        if (null !== $translation) {
             return $translation->getSubject();
+        }
 
         return '';
     }
@@ -139,8 +136,9 @@ class Mail
     {
         $translation = $this->getTranslation($language, $allowFallback);
 
-        if (null !== $translation)
+        if (null !== $translation) {
             return $translation->getContent();
+        }
 
         return '';
     }
@@ -152,19 +150,23 @@ class Mail
      */
     public function getTranslation(Language $language = null, $allowFallback = true)
     {
-        if (sizeof($this->translations) == 0)
+        if (sizeof($this->translations) == 0) {
             return null;
-
-        foreach ($this->translations as $translation) {
-            if (null !== $language && $translation->getLanguage() == $language && strlen($translation->getSubject()) > 0)
-                return $translation;
-
-            if ($translation->getLanguage()->getAbbrev() == \Locale::getDefault())
-                $fallbackTranslation = $translation;
         }
 
-        if ($allowFallback && isset($fallbackTranslation))
+        foreach ($this->translations as $translation) {
+            if (null !== $language && $translation->getLanguage() == $language && strlen($translation->getSubject()) > 0) {
+                return $translation;
+            }
+
+            if ($translation->getLanguage()->getAbbrev() == \Locale::getDefault()) {
+                $fallbackTranslation = $translation;
+            }
+        }
+
+        if ($allowFallback && isset($fallbackTranslation)) {
             return $fallbackTranslation;
+        }
 
         return null;
     }

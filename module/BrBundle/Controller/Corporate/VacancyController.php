@@ -21,10 +21,7 @@ namespace BrBundle\Controller\Corporate;
 use BrBundle\Entity\Company,
     BrBundle\Entity\Company\Job,
     BrBundle\Entity\Company\Request\RequestVacancy,
-    BrBundle\Form\Corporate\Vacancy\Add as AddForm,
-    BrBundle\Form\Corporate\Vacancy\Edit as EditForm,
-    CommonBundle\Component\FlashMessenger\FlashMessage,
-    DateTime,
+    BrBundle\Entity\User\Person\Corporate,
     Zend\View\Model\ViewModel;
 
 /**
@@ -37,7 +34,9 @@ class VacancyController extends \BrBundle\Component\Controller\CorporateControll
 {
     public function overviewAction()
     {
-        $person = $this->getAuthentication()->getPersonObject();
+        if (!($person = $this->_getPerson())) {
+            return new ViewModel();
+        }
 
         $paginator = $this->paginator()->createFromQuery(
             $this->getEntityManager()
@@ -59,44 +58,30 @@ class VacancyController extends \BrBundle\Component\Controller\CorporateControll
         );
     }
 
-    public function editAction()
+    public function addAction()
     {
-        if (!($oldJob = $this->_getJob()))
-            return new ViewModel();
+        $form = $this->getForm('br_corporate_job_add');
 
-        $form = new EditForm($oldJob);
+        if (!($person = $this->_getPerson())) {
+            return new ViewModel();
+        }
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
-
-                $contact = $this->getAuthentication()->getPersonObject();
-
-                $job = new Job(
-                    $formData['job_name'],
-                    $formData['description'],
-                    $formData['benefits'],
-                    $formData['profile'],
-                    $formData['contact'],
-                    $formData['city'],
-                    $contact->getCompany(),
-                    'vacancy',
-                    DateTime::createFromFormat('d#m#Y H#i', $formData['start_date']),
-                    DateTime::createFromFormat('d#m#Y H#i', $formData['end_date']),
-                    $formData['sector']
+                $job = $form->hydrateObject(
+                    new Job($person->getCompany(), 'vacancy')
                 );
 
                 $job->pending();
 
                 $this->getEntityManager()->persist($job);
 
-                $request = new RequestVacancy($job, 'edit', $contact,$oldJob);
+                $request = new RequestVacancy($job, 'add', $person);
 
                 $this->getEntityManager()->persist($request);
-
                 $this->getEntityManager()->flush();
 
                 $this->flashMessenger()->success(
@@ -122,40 +107,35 @@ class VacancyController extends \BrBundle\Component\Controller\CorporateControll
         );
     }
 
-    public function addAction()
+    public function editAction()
     {
-        $form = new AddForm();
+        if (!($oldJob = $this->_getJob())) {
+            return new ViewModel();
+        }
+
+        if (!($person = $this->_getPerson())) {
+            return new ViewModel();
+        }
+
+        $form = $this->getForm('br_corporate_job_edit', array('job' => $oldJob));
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
-
-                $contact = $this->getAuthentication()->getPersonObject();
-
-                $job = new Job(
-                    $formData['job_name'],
-                    $formData['description'],
-                    $formData['benefits'],
-                    $formData['profile'],
-                    $formData['contact'],
-                    $formData['city'],
-                    $contact->getCompany(),
-                    'vacancy',
-                    DateTime::createFromFormat('d#m#Y H#i', $formData['start_date']),
-                    DateTime::createFromFormat('d#m#Y H#i', $formData['end_date']),
-                    $formData['sector']
+                $job = $form->hydrateObject(
+                    new Job($person->getCompany(), 'vacancy')
                 );
 
                 $job->pending();
 
                 $this->getEntityManager()->persist($job);
 
-                $request = new RequestVacancy($job, 'add', $contact);
+                $request = new RequestVacancy($job, 'edit', $person, $oldJob);
 
                 $this->getEntityManager()->persist($request);
+
                 $this->getEntityManager()->flush();
 
                 $this->flashMessenger()->success(
@@ -183,12 +163,15 @@ class VacancyController extends \BrBundle\Component\Controller\CorporateControll
 
     public function deleteAction()
     {
-        if (!($vacancy = $this->_getVacancy()))
+        if (!($vacancy = $this->_getVacancy())) {
             return new ViewModel();
+        }
 
-        $contact = $this->getAuthentication()->getPersonObject();
+        if (!($person = $this->_getPerson())) {
+            return new ViewModel();
+        }
 
-        $request = new RequestVacancy($vacancy, 'delete', $contact);
+        $request = new RequestVacancy($vacancy, 'delete', $person);
 
         $this->getEntityManager()->persist($request);
         $this->getEntityManager()->flush();
@@ -211,7 +194,7 @@ class VacancyController extends \BrBundle\Component\Controller\CorporateControll
             $this->redirect()->toRoute(
                 'br_corporate_vacancy',
                 array(
-                    'action' => 'overview'
+                    'action' => 'overview',
                 )
             );
 
@@ -231,7 +214,7 @@ class VacancyController extends \BrBundle\Component\Controller\CorporateControll
             $this->redirect()->toRoute(
                 'br_corporate_vacancy',
                 array(
-                    'action' => 'overview'
+                    'action' => 'overview',
                 )
             );
 
@@ -244,8 +227,9 @@ class VacancyController extends \BrBundle\Component\Controller\CorporateControll
     private function _getSectors()
     {
         $sectorArray = array();
-        foreach (Company::$possibleSectors as $key => $sector)
+        foreach (Company::$possibleSectors as $key => $sector) {
             $sectorArray[$key] = $sector;
+        }
 
         return $sectorArray;
     }
@@ -261,7 +245,7 @@ class VacancyController extends \BrBundle\Component\Controller\CorporateControll
             $this->redirect()->toRoute(
                 'br_admin_company',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -281,7 +265,7 @@ class VacancyController extends \BrBundle\Component\Controller\CorporateControll
             $this->redirect()->toRoute(
                 'br_admin_company',
                 array(
-                    'action' => 'manage'
+                    'action' => 'manage',
                 )
             );
 
@@ -289,5 +273,29 @@ class VacancyController extends \BrBundle\Component\Controller\CorporateControll
         }
 
         return $job;
+    }
+
+    /**
+     * @return Corporate
+     */
+    private function _getPerson()
+    {
+        $person = $this->getAuthentication()->getPersonObject();
+
+        if ($person === null || !($person instanceof Corporate)) {
+            $this->flashMessenger()->error(
+                'Error',
+                'Please login to view the CV book.'
+            );
+
+            $this->redirect()->toRoute(
+                'br_corporate_index',
+                array(
+                    'language' => $this->getLanguage()->getAbbrev(),
+                )
+            );
+        }
+
+        return $person;
     }
 }

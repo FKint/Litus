@@ -18,8 +18,7 @@
 
 namespace BrBundle\Controller\Corporate;
 
-use CommonBundle\Component\FlashMessenger\FlashMessage,
-    Zend\View\Model\ViewModel;
+use Zend\View\Model\ViewModel;
 
 /**
  * AuthController
@@ -37,7 +36,7 @@ class AuthController extends \BrBundle\Component\Controller\CorporateController
             $form->setData($formData);
 
             if ($form->isValid()) {
-                $formData = $form->getFormData($formData);
+                $formData = $form->getData();
 
                 $this->getAuthentication()->forget();
 

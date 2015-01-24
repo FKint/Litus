@@ -19,8 +19,8 @@
 namespace BrBundle\Controller\Corporate;
 
 use BrBundle\Entity\Cv\Util,
+    BrBundle\Entity\User\Person\Corporate,
     CommonBundle\Entity\General\AcademicYear,
-    CommonBundle\Component\FlashMessenger\FlashMessage,
     Zend\Http\Headers,
     Zend\View\Model\ViewModel;
 
@@ -33,21 +33,7 @@ class CvController extends \BrBundle\Component\Controller\CorporateController
 {
     public function groupedAction()
     {
-        $person = $this->getAuthentication()->getPersonObject();
-
-        if ($person === null) {
-            $this->flashMessenger()->error(
-                'Error',
-                'Please login to view the CV book.'
-            );
-
-            $this->redirect()->toRoute(
-                'br_corporate_index',
-                array(
-                    'language' => $this->getLanguage()->getAbbrev(),
-                )
-            );
-
+        if (!($person = $this->_getPerson())) {
             return new ViewModel();
         }
 
@@ -93,7 +79,7 @@ class CvController extends \BrBundle\Component\Controller\CorporateController
                 'academicYear' => $academicYear,
                 'studies' => $result,
                 'onlyArchive' => $onlyArchive,
-                'profilePath' =>$this->getEntityManager()
+                'profilePath' => $this->getEntityManager()
                     ->getRepository('CommonBundle\Entity\General\Config')
                     ->getConfigValue('common.profile_path'),
             )
@@ -102,21 +88,7 @@ class CvController extends \BrBundle\Component\Controller\CorporateController
 
     public function listAction()
     {
-        $person = $this->getAuthentication()->getPersonObject();
-
-        if ($person === null) {
-            $this->flashMessenger()->error(
-                'Error',
-                'Please login to view the CV book.'
-            );
-
-            $this->redirect()->toRoute(
-                'br_corporate_index',
-                array(
-                    'language' => $this->getLanguage()->getAbbrev(),
-                )
-            );
-
+        if (!($person = $this->_getPerson())) {
             return new ViewModel();
         }
 
@@ -161,7 +133,7 @@ class CvController extends \BrBundle\Component\Controller\CorporateController
             array(
                 'academicYear' => $academicYear,
                 'entries' => $entries,
-                'profilePath' =>$this->getEntityManager()
+                'profilePath' => $this->getEntityManager()
                     ->getRepository('CommonBundle\Entity\General\Config')
                     ->getConfigValue('common.profile_path'),
                 'onlyArchive' => $onlyArchive,
@@ -173,21 +145,7 @@ class CvController extends \BrBundle\Component\Controller\CorporateController
     {
         $this->initAjax();
 
-        $person = $this->getAuthentication()->getPersonObject();
-
-        if ($person === null) {
-            $this->flashMessenger()->error(
-                'Error',
-                'Please login to view the CV book.'
-            );
-
-            $this->redirect()->toRoute(
-                'br_corporate_index',
-                array(
-                    'language' => $this->getLanguage()->getAbbrev(),
-                )
-            );
-
+        if (!($person = $this->_getPerson())) {
             return new ViewModel();
         }
 
@@ -211,19 +169,22 @@ class CvController extends \BrBundle\Component\Controller\CorporateController
 
         $filters = array();
 
-        if (null !== $this->getParam('string'))
+        if (null !== $this->getParam('string')) {
             $filters['string'] = $this->getParam('string');
+        }
 
         if (null !== $this->getParam('min') || null !== $this->getParam('max')) {
             $filters['grade'] = array();
-            if (null !== $this->getParam('min'))
+            if (null !== $this->getParam('min')) {
                 $filters['grade']['min'] = $this->getParam('min');
-            else
+            } else {
                 $filters['grade']['min'] = 0;
-            if (null !== $this->getParam('max'))
+            }
+            if (null !== $this->getParam('max')) {
                 $filters['grade']['max'] = $this->getParam('max');
-            else
+            } else {
                 $filters['grade']['max'] = 100;
+            }
         }
 
         $filtered = $this->_doFilter($this->_getList($academicYear), $filters);
@@ -241,21 +202,7 @@ class CvController extends \BrBundle\Component\Controller\CorporateController
 
     public function downloadArchiveAction()
     {
-        $person = $this->getAuthentication()->getPersonObject();
-
-        if ($person === null) {
-            $this->flashMessenger()->error(
-                'Error',
-                'Please login to view the CV book.'
-            );
-
-            $this->redirect()->toRoute(
-                'br_corporate_index',
-                array(
-                    'language' => $this->getLanguage()->getAbbrev(),
-                )
-            );
-
+        if (!($person = $this->_getPerson())) {
             return new ViewModel();
         }
 
@@ -323,7 +270,6 @@ class CvController extends \BrBundle\Component\Controller\CorporateController
 
     private function _doFilter($entries, $filters)
     {
-
         if (isset($filters['string'])) {
             $entries = $this->_filterString($entries, $filters['string']);
         }
@@ -347,8 +293,9 @@ class CvController extends \BrBundle\Component\Controller\CorporateController
                     break;
                 }
             }
-            if ($matches)
+            if ($matches) {
                 $result[] = $entry;
+            }
         }
 
         return $result;
@@ -366,5 +313,29 @@ class CvController extends \BrBundle\Component\Controller\CorporateController
         }
 
         return $result;
+    }
+
+    /**
+     * @return Corporate
+     */
+    private function _getPerson()
+    {
+        $person = $this->getAuthentication()->getPersonObject();
+
+        if ($person === null || !($person instanceof Corporate)) {
+            $this->flashMessenger()->error(
+                'Error',
+                'Please login to view the CV book.'
+            );
+
+            $this->redirect()->toRoute(
+                'br_corporate_index',
+                array(
+                    'language' => $this->getLanguage()->getAbbrev(),
+                )
+            );
+        }
+
+        return $person;
     }
 }

@@ -18,7 +18,6 @@
 
 namespace CommonBundle\Form\Address;
 
-use CommonBundle\Component\Validator\NotZero as NotZeroValidator;
 use CommonBundle\Entity\General\Address;
 
 /**
@@ -33,11 +32,16 @@ class Add extends \CommonBundle\Component\Form\Fieldset
     {
         parent::init();
 
+        $this->addClass('address');
+
         $this->add(array(
-            'type'    => 'text',
-            'name'    => 'street',
-            'label'   => 'Street',
-            'options' => array(
+            'type'       => 'text',
+            'name'       => 'street',
+            'label'      => 'Street',
+            'attributes' => array(
+                'class' => 'street',
+            ),
+            'options'    => array(
                 'input' => array(
                     'filters'  => array(
                         array('name' => 'StringTrim'),
@@ -47,10 +51,13 @@ class Add extends \CommonBundle\Component\Form\Fieldset
         ));
 
         $this->add(array(
-            'type'    => 'text',
-            'name'    => 'number',
-            'label'   => 'Number',
-            'options' => array(
+            'type'       => 'text',
+            'name'       => 'number',
+            'label'      => 'Number',
+            'attributes' => array(
+                'class' => 'number',
+            ),
+            'options'    => array(
                 'input' => array(
                     'filters'  => array(
                         array('name' => 'StringTrim'),
@@ -62,17 +69,20 @@ class Add extends \CommonBundle\Component\Form\Fieldset
                                 'allowWhiteSpace' => true,
                             ),
                         ),
-                        new NotZeroValidator(),
+                        array('name' => 'not_zero'),
                     ),
                 ),
             ),
         ));
 
         $this->add(array(
-            'type'    => 'text',
-            'name'    => 'mailbox',
-            'label'   => 'Mailbox',
-            'options' => array(
+            'type'       => 'text',
+            'name'       => 'mailbox',
+            'label'      => 'Mailbox',
+            'attributes' => array(
+                'class' => 'mailbox',
+            ),
+            'options'    => array(
                 'input' => array(
                     'filters'  => array(
                         array('name' => 'StringTrim'),
@@ -82,17 +92,23 @@ class Add extends \CommonBundle\Component\Form\Fieldset
         ));
 
         $this->add(array(
-            'type'    => 'text',
-            'name'    => 'postal',
-            'label'   => 'Postal Code',
-            'options' => array(
+            'type'       => 'text',
+            'name'       => 'postal',
+            'label'      => 'Postal Code',
+            'attributes' => array(
+                'class' => 'postal',
+            ),
+            'options'    => array(
                 'input' => array(
                     'filters'  => array(
                         array('name' => 'StringTrim'),
                     ),
                     'validators' => array(
                         array(
-                            'name' => 'digits',
+                            'name' => 'alnum',
+                            'options' => array(
+                                'allowWhiteSpace' => true,
+                            ),
                         ),
                     ),
                 ),
@@ -103,7 +119,10 @@ class Add extends \CommonBundle\Component\Form\Fieldset
             'type'       => 'text',
             'name'       => 'city',
             'label'      => 'City',
-            'options' => array(
+            'attributes' => array(
+                'class' => 'city',
+            ),
+            'options'    => array(
                 'input' => array(
                     'filters'  => array(
                         array('name' => 'StringTrim'),
@@ -117,6 +136,7 @@ class Add extends \CommonBundle\Component\Form\Fieldset
             'name'       => 'country',
             'label'      => 'Country',
             'attributes' => array(
+                'class'   => 'country',
                 'options' => $this->getCountries(),
             ),
             'value'      => 'BE',
@@ -134,10 +154,11 @@ class Add extends \CommonBundle\Component\Form\Fieldset
     {
         $this->get('street')->setRequired($required);
         $this->get('number')->setRequired($required);
+        $this->get('mailbox')->setRequired(false);
         $this->get('postal')->setRequired($required);
         $this->get('city')->setRequired($required);
 
-        return parent::setRequired($required);
+        return $this;
     }
 
     private function getCountries()

@@ -18,27 +18,18 @@
 
 namespace SyllabusBundle\Component\Validator\Study;
 
-use Doctrine\ORM\EntityManager,
-    SyllabusBundle\Entity\Study;
-
 /**
  * Matches the given study code against the database to check whether it exists or not.
  *
  * @author Kristof Mariën <kristof.marien@litus.cc>
  */
-class KulId extends \Zend\Validator\AbstractValidator
+class KulId extends \CommonBundle\Component\Validator\AbstractValidator
 {
     const NOT_VALID = 'notValid';
 
-    /**
-     * @var EntityManager The EntityManager instance
-     */
-    private $_entityManager = null;
-
-    /**
-     * @var Study|null The study exluded from this check
-     */
-    private $_exclude;
+    protected $options = array(
+        'exclude' => null,
+    );
 
     /**
      * Error messages
@@ -46,24 +37,24 @@ class KulId extends \Zend\Validator\AbstractValidator
      * @var array
      */
     protected $messageTemplates = array(
-        self::NOT_VALID => 'The study id already exists'
+        self::NOT_VALID => 'The study id already exists',
     );
 
     /**
-     * Create a new Article Barcode validator.
+     * Sets validator options
      *
-     * @param EntityManager $entityManager The EntityManager instance
-     * @param Study|null    $exclude
-     * @param mixed         $opts          The validator's options
+     * @param int|array|\Traversable $options
      */
-    public function __construct(EntityManager $entityManager, Study $exclude = null, $opts = null)
+    public function __construct($options = array())
     {
-        parent::__construct($opts);
+        if (!is_array($options)) {
+            $args = func_get_args();
+            $options = array();
+            $options['exclude'] = array_shift($args);
+        }
 
-        $this->_entityManager = $entityManager;
-        $this->_exclude = $exclude;
+        parent::__construct($options);
     }
-
 
     /**
      * Returns true if and only if a field name has been set, the field name is available in the
@@ -77,12 +68,13 @@ class KulId extends \Zend\Validator\AbstractValidator
     {
         $this->setValue($value);
 
-        $study = $this->_entityManager
+        $study = $this->getEntityManager()
             ->getRepository('SyllabusBundle\Entity\Study')
             ->findOneByKulId($value);
 
-        if (null === $study || ($this->_exclude !== null && $study->getId() == $this->_exclude->getId()))
+        if (null === $study || ($this->options['exclude'] !== null && $study->getId() == $this->options['exclude']->getId())) {
             return true;
+        }
 
         $this->error(self::NOT_VALID);
 

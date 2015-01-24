@@ -21,10 +21,7 @@ namespace CudiBundle\Controller\Prof\Article;
 use CudiBundle\Entity\Article,
     CudiBundle\Entity\File\File,
     CudiBundle\Entity\Prof\Action,
-    CudiBundle\Form\Prof\File\Add as AddForm,
-    Zend\File\Transfer\Adapter\Http as FileUpload,
     Zend\Http\Headers,
-    Zend\InputFilter\InputInterface,
     Zend\View\Model\ViewModel;
 
 /**
@@ -36,8 +33,9 @@ class FileController extends \CudiBundle\Component\Controller\ProfController
 {
     public function manageAction()
     {
-        if (!($article = $this->_getArticle()))
+        if (!($article = $this->_getArticle())) {
             return new ViewModel();
+        }
 
         $mappings = $this->getEntityManager()
             ->getRepository('CudiBundle\Entity\File\Mapping')
@@ -49,11 +47,12 @@ class FileController extends \CudiBundle\Component\Controller\ProfController
                 ->getRepository('CudiBundle\Entity\Prof\Action')
                 ->findAllByEntityAndEntityIdAndAction('file', $mapping->getId(), 'remove');
 
-            if (!isset($actions[0]))
+            if (!isset($actions[0])) {
                 $fileMappings[] = $mapping;
+            }
         }
 
-        $form = new AddForm();
+        $form = $this->getForm('cudi_prof_file_add');
         $form->setAttribute(
             'action',
             $this->url()->fromRoute(
@@ -81,8 +80,9 @@ class FileController extends \CudiBundle\Component\Controller\ProfController
             ->getRepository('CommonBundle\Entity\General\Config')
             ->getConfigValue('cudi.file_path');
 
-        if (!($mapping = $this->_getFileMapping()))
+        if (!($mapping = $this->_getFileMapping())) {
             return new ViewModel();
+        }
 
         $file = $mapping->getFile();
 
@@ -107,33 +107,30 @@ class FileController extends \CudiBundle\Component\Controller\ProfController
 
     public function uploadAction()
     {
-        if (!($article = $this->_getArticle()))
+        if (!($article = $this->_getArticle())) {
             return new ViewModel();
+        }
 
-        $form = new AddForm();
-        $formData = $this->getRequest()->getPost();
-        $form->setData($formData);
+        $form = $this->getForm('cudi_prof_file_add');
+        $form->setData(array_merge(
+            $this->getRequest()->getPost()->toArray(),
+            $this->getRequest()->getFiles()->toArray()
+        ));
 
-        $upload = new FileUpload();
-        $inputFilter = $form->getInputFilter()->get('file');
-        if ($inputFilter instanceof InputInterface)
-            $upload->setValidators($inputFilter->getValidatorChain()->getValidators());
-
-        if ($form->isValid() && $upload->isValid()) {
-            $formData = $form->getFormData($formData);
+        if ($form->isValid()) {
+            $formData = $form->getData();
 
             $filePath = $this->getEntityManager()
                 ->getRepository('CommonBundle\Entity\General\Config')
                 ->getConfigValue('cudi.file_path');
 
-            $originalName = $upload->getFileName('file', false);
+            $originalName = $formData['file']['name'];
 
             do {
                 $fileName = '/' . sha1(uniqid());
             } while (file_exists($filePath . $fileName));
 
-            $upload->addFilter('Rename', $filePath . $fileName);
-            $upload->receive();
+            rename($formData['file']['tmp_name'], $filePath . $fileName);
 
             $file = new File(
                 $this->getEntityManager(),
@@ -166,33 +163,16 @@ class FileController extends \CudiBundle\Component\Controller\ProfController
                             'description' => $file->getDescription(),
                             'id' => $file->getId(),
                             'mappingId' => $mapping->getId(),
-                        )
+                        ),
                     ),
                 )
             );
         } else {
-            $errors = $form->getMessages();
-            $formErrors = array();
-
-            foreach ($form->getElements() as $key => $element) {
-                if (!isset($errors[$element->getName()]))
-                    continue;
-
-                $formErrors[$element->getAttribute('id')] = array();
-
-                foreach ($errors[$element->getName()] as $error) {
-                    $formErrors[$element->getAttribute('id')][] = $error;
-                }
-            }
-
-            if (sizeof($upload->getMessages()) > 0)
-                $formErrors['file'] = $upload->getMessages();
-
             return new ViewModel(
                 array(
                     'status' => 'error',
                     'form' => array(
-                        'errors' => $formErrors
+                        'errors' => $form->getMessages(),
                     ),
                 )
             );
@@ -203,15 +183,17 @@ class FileController extends \CudiBundle\Component\Controller\ProfController
     {
         $this->initAjax();
 
-        if (!($mapping = $this->_getFileMapping()))
+        if (!($mapping = $this->_getFileMapping())) {
             return new ViewModel();
+        }
 
         if ($mapping->isProf()) {
             $actions = $this->getEntityManager()
                 ->getRepository('CudiBundle\Entity\Prof\Action')
                 ->findAllByEntityAndEntityIdAndAction('file', $mapping->getId(), 'add');
-            foreach ($actions as $action)
+            foreach ($actions as $action) {
                 $this->getEntityManager()->remove($action);
+            }
 
             $this->getEntityManager()->remove($mapping);
         } else {
