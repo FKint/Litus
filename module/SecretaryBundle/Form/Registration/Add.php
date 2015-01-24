@@ -18,9 +18,7 @@
 
 namespace SecretaryBundle\Form\Registration;
 
-use CommonBundle\Component\Validator\PhoneNumber as PhoneNumberValidator,
-    CommonBundle\Entity\User\Person\Academic,
-    SecretaryBundle\Component\Validator\NoAt as NoAtValidator,
+use CommonBundle\Entity\User\Person\Academic,
     SecretaryBundle\Entity\Organization\MetaData;
 
 /**
@@ -77,12 +75,15 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
             'label'    => 'Personal',
             'elements' => array(
                 array(
-                    'type'     => 'text',
-                    'name'     => 'first_name',
-                    'label'    => 'First Name',
-                    'required' => true,
-                    'value'    => isset($extra['first_name']) ? $extra['first_name'] : '',
-                    'options'  => array(
+                    'type'       => 'text',
+                    'name'       => 'first_name',
+                    'label'      => 'First Name',
+                    'required'   => true,
+                    'value'      => isset($extra['first_name']) ? $extra['first_name'] : '',
+                    'attributes' => array(
+                        'id' => 'first_name',
+                    ),
+                    'options'    => array(
                         'input' => array(
                             'filters'  => array(
                                 array('name' => 'StringTrim'),
@@ -96,6 +97,9 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
                     'label'    => 'Last Name',
                     'required' => true,
                     'value'    => isset($extra['last_name']) ? $extra['last_name'] : '',
+                    'attributes' => array(
+                        'id' => 'last_name',
+                    ),
                     'options'  => array(
                         'input' => array(
                             'filters'  => array(
@@ -152,36 +156,47 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
                                 array('name' => 'StringTrim'),
                             ),
                             'validators' => array(
-                                new PhoneNumberValidator(),
+                                array('name' => 'phone_number_regex'),
                             ),
                         ),
                     ),
                 ),
                 array(
-                    'type'       => 'text',
-                    'name'       => 'university_identification',
-                    'label'      => 'University Identification',
-                    'value'      => $this->identification,
-                    'attributes' => array(
-                        'disabled' => true,
-                    ),
-                ),
-                array(
-                    'type'       => 'text',
-                    'name'       => 'university_email',
-                    'label'      => 'University E-mail',
-                    'value'      => $universityEmail,
-                    'required'   => true,
-                    'attributes' => array(
-                        'id' => 'university_email',
-                    ),
-                    'options'    => array(
-                        'input' => array(
-                            'filters'  => array(
-                                array('name' => 'StringTrim'),
+                    'type'     => 'fieldset',
+                    'name'     => 'university',
+                    'elements' => array(
+                        array(
+                            'type'       => 'hidden',
+                            'name'       => 'identification',
+                            'value'      => $this->identification,
+                        ),
+                        array(
+                            'type'       => 'text',
+                            'name'       => 'identification_visible',
+                            'label'      => 'University Identification',
+                            'value'      => $this->identification,
+                            'attributes' => array(
+                                'disabled' => true,
                             ),
-                            'validators' => array(
-                                new NoAtValidator(),
+                        ),
+                        array(
+                            'type'       => 'text',
+                            'name'       => 'email',
+                            'label'      => 'University E-mail',
+                            'value'      => $universityEmail,
+                            'required'   => true,
+                            'attributes' => array(
+                                'id' => 'university_email',
+                            ),
+                            'options'    => array(
+                                'input' => array(
+                                    'filters'  => array(
+                                        array('name' => 'StringTrim'),
+                                    ),
+                                    'validators' => array(
+                                        array('name' => 'secretary_no_at'),
+                                    ),
+                                ),
                             ),
                         ),
                     ),
@@ -211,14 +226,16 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
                     'value' => true,
                 ),
                 array(
-                    'type'  => 'common_address_add-primary',
-                    'name'  => 'primary_address',
-                    'label' => 'Primary Address&mdash;Student Room or Home',
+                    'type'     => 'common_address_add-primary',
+                    'name'     => 'primary_address',
+                    'label'    => 'Primary Address&mdash;Student Room or Home',
+                    'required' => true,
                 ),
                 array(
-                    'type'  => 'common_address_add',
-                    'name'  => 'secondary_address',
-                    'label' => 'Secondary Address&mdash;Home',
+                    'type'     => 'common_address_add',
+                    'name'     => 'secondary_address',
+                    'label'    => 'Secondary Address&mdash;Home',
+                    'required' => true,
                 ),
             ),
         ));
@@ -402,7 +419,7 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
      */
     public function isOtherOrganizationEnabled()
     {
-        return $enableOtherOrganization = $this->getEntityManager()
+        return $this->getEntityManager()
             ->getRepository('CommonBundle\Entity\General\Config')
             ->getConfigValue('secretary.enable_other_organization');
     }

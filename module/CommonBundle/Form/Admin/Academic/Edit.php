@@ -18,12 +18,10 @@
 
 namespace CommonBundle\Form\Admin\Academic;
 
-use CommonBundle\Component\Validator\Person\Barcode as BarcodeValidator,
-    CommonBundle\Entity\User\Person\Academic,
+use CommonBundle\Entity\User\Person\Academic,
     CommonBundle\Entity\User\Status\Organization as OrganizationStatus,
     CommonBundle\Entity\User\Status\University as UniversityStatus,
-    LogicException,
-    SecretaryBundle\Component\Validator\NoAt as NoAtValidator;
+    LogicException;
 
 /**
  * Edit Academic
@@ -73,15 +71,15 @@ class Edit extends \CommonBundle\Form\Admin\Person\Edit
         ));
 
         $this->add(array(
-            'type'  => 'common_address_add-primary',
-            'name'  => 'primary_address',
-            'label' => 'Primary Address&mdash;Student Room or Home',
+            'type'       => 'common_address_add-primary',
+            'name'       => 'primary_address',
+            'label'      => 'Primary Address&mdash;Student Room or Home',
         ));
 
         $this->add(array(
-            'type'  => 'common_address_add',
-            'name'  => 'secondary_address',
-            'label' => 'Secondary Address&mdash;Home',
+            'type'       => 'common_address_add',
+            'name'       => 'secondary_address',
+            'label'      => 'Secondary Address&mdash;Home',
         ));
 
         $this->add(array(
@@ -130,7 +128,12 @@ class Edit extends \CommonBundle\Form\Admin\Person\Edit
                                         'useChecksum' => false,
                                     ),
                                 ),
-                                new BarcodeValidator($this->getEntityManager(), $this->person),
+                                array(
+                                    'name' => 'person_barcode',
+                                    'options' => array(
+                                        'person' => $this->person,
+                                    ),
+                                ),
                             ),
                         ),
                     ),
@@ -197,7 +200,7 @@ class Edit extends \CommonBundle\Form\Admin\Person\Edit
                                 array('name' => 'StringTrim'),
                             ),
                             'validators' => array(
-                                new NoAtValidator(),
+                                array('name' => 'secretary_no_at'),
                             ),
                         ),
                     ),

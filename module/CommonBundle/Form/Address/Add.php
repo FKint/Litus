@@ -18,8 +18,7 @@
 
 namespace CommonBundle\Form\Address;
 
-use CommonBundle\Component\Validator\NotZero as NotZeroValidator,
-    CommonBundle\Entity\General\Address;
+use CommonBundle\Entity\General\Address;
 
 /**
  * Add Address
@@ -70,7 +69,7 @@ class Add extends \CommonBundle\Component\Form\Fieldset
                                 'allowWhiteSpace' => true,
                             ),
                         ),
-                        new NotZeroValidator(),
+                        array('name' => 'not_zero'),
                     ),
                 ),
             ),
@@ -106,7 +105,10 @@ class Add extends \CommonBundle\Component\Form\Fieldset
                     ),
                     'validators' => array(
                         array(
-                            'name' => 'digits',
+                            'name' => 'alnum',
+                            'options' => array(
+                                'allowWhiteSpace' => true,
+                            ),
                         ),
                     ),
                 ),
@@ -152,10 +154,11 @@ class Add extends \CommonBundle\Component\Form\Fieldset
     {
         $this->get('street')->setRequired($required);
         $this->get('number')->setRequired($required);
+        $this->get('mailbox')->setRequired(false);
         $this->get('postal')->setRequired($required);
         $this->get('city')->setRequired($required);
 
-        return parent::setRequired($required);
+        return $this;
     }
 
     private function getCountries()

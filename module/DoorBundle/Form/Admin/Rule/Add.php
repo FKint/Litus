@@ -32,53 +32,28 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
         parent::init();
 
         $this->add(array(
-            'type'       => 'hidden',
-            'name'       => 'academic_id',
-            'attributes' => array(
-                'id' => 'personId',
-            ),
-            'options'    => array(
-                'input' => array(
-                    'filters'  => array(
-                        array('name' => 'StringTrim'),
-                    ),
-                    'validators' => array(
-                        array(
-                            'name' => 'int',
-                        ),
-                    ),
-                ),
-            ),
-        ));
-
-        $this->add(array(
-            'type'       => 'text',
+            'type'       => 'typeahead',
             'name'       => 'academic',
             'label'      => 'Academic',
             'required'   => true,
-            'attributes' => array(
-                'autocomplete' => 'off',
-                'data-provide' => 'typeahead',
-                'id'           => 'academicSearch',
-            ),
             'options'    => array(
                 'input' => array(
-                    'filters' => array(
-                        array('name' => 'StringTrim'),
+                    'validators' => array(
+                        array('name' => 'typeahead_person'),
                     ),
                 ),
             ),
         ));
 
         $this->add(array(
-            'type'     => 'datetime',
+            'type'     => 'date',
             'name'     => 'start_date',
             'label'    => 'Start Date',
             'required' => true,
         ));
 
         $this->add(array(
-            'type'     => 'datetime',
+            'type'     => 'date',
             'name'     => 'end_date',
             'label'    => 'End Date',
             'required' => true,

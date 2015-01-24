@@ -43,19 +43,19 @@ class CashRegister
     private $id;
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection The amounts of each money unit
+     * @var ArrayCollection The amounts of each money unit
      *
      * @ORM\OneToMany(
-     *        targetEntity="CommonBundle\Entity\General\Bank\MoneyUnit\Amount", mappedBy="cashRegister", cascade={"remove"}
+     *        targetEntity="CommonBundle\Entity\General\Bank\MoneyUnit\Amount", mappedBy="cashRegister", cascade={"persist", "remove"}
      * )
      */
     private $moneyUnitAmounts;
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection The amounts of each bank device
+     * @var ArrayCollection The amounts of each bank device
      *
      * @ORM\OneToMany(
-     *        targetEntity="CommonBundle\Entity\General\Bank\BankDevice\Amount", mappedBy="cashRegister", cascade={"remove"}
+     *        targetEntity="CommonBundle\Entity\General\Bank\BankDevice\Amount", mappedBy="cashRegister", cascade={"persist", "remove"}
      * )
      */
     private $bankDeviceAmounts;
@@ -111,18 +111,20 @@ class CashRegister
     }
 
     /**
-     * Get the amount object for a unit.
+     * Get the amount for a unit.
      *
-     * @param  \CommonBundle\Entity\General\Bank\MoneyUnit        $unit The unit for which we want to get the amount
-     * @return \CommonBundle\Entity\General\Bank\MoneyUnit\Amount
+     * @param  MoneyUnit $unit The unit for which we want to get the amount
+     * @return int
      */
     public function getAmountForUnit(MoneyUnit $unit)
     {
         foreach ($this->moneyUnitAmounts as $amount) {
             if ($amount->getUnit() == $unit) {
-                return $amount;
+                return $amount->getAmount();
             }
         }
+
+        return 0;
     }
 
     public function addMoneyAmount(MoneyAmount $amount)
@@ -131,18 +133,74 @@ class CashRegister
     }
 
     /**
-     * Get amount object for a bank device.
+     * Set the amount for a unit.
      *
-     * @param  \CommonBundle\Entity\General\Bank\BankDevice        $device The device for which we want to get the amount
-     * @return \CommonBundle\Entity\General\Bank\BankDevice\Amount
+     * @param MoneyUnit $unit
+     * @param int       $newAmount
+     *
+     * @return self
+     */
+    public function setAmountForUnit(MoneyUnit $unit, $newAmount)
+    {
+        $previous = null;
+
+        foreach ($this->moneyUnitAmounts as $amount) {
+            if ($amount->getUnit() == $unit) {
+                $previous = $amount;
+            }
+        }
+
+        if (null === $previous) {
+            $this->moneyUnitAmounts[] = new MoneyUnit\Amount($this, $unit, $newAmount);
+        } else {
+            $previous->setAmount($newAmount);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get 100 times the amount for a bank device.
+     *
+     * @param  BankDevice $device The device for which we want to get the amount
+     * @return int
      */
     public function getAmountForDevice(BankDevice $device)
     {
         foreach ($this->bankDeviceAmounts as $amount) {
             if ($amount->getDevice() == $device) {
-                return $amount;
+                return $amount->getAmount();
             }
         }
+
+        return 0;
+    }
+
+    /**
+     * Set the amount for a bank device
+     *
+     * @param BankDevice $device
+     * @param float      $newAmount
+     *
+     * @return self
+     */
+    public function setAmountForDevice(BankDevice $device, $newAmount)
+    {
+        $previous = null;
+
+        foreach ($this->bankDeviceAmounts as $amount) {
+            if ($amount->getDevice() == $device) {
+                $previous = $amount;
+            }
+        }
+
+        if (null === $previous) {
+            $this->bankDeviceAmounts[] = new BankDevice\Amount($this, $device, $newAmount);
+        } else {
+            $previous->setAmount($newAmount);
+        }
+
+        return $this;
     }
 
     public function addDeviceAmount(DeviceAmount $amount)

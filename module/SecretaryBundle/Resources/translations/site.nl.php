@@ -49,7 +49,7 @@ return array(
     'University E-mail' => 'Universiteits E-mail',
     'Personal E-mail' => 'Persoonlijke E-mail',
     'I want to receive e-mail at my personal e-mail address' => 'Ik wil e-mail ontvangen op mijn persoonlijk e-mail adres',
-    'Student Association' => 'Studentenkring',
+    'Student Organization' => 'Studentenkring',
     'I want to become a member of the student association (&euro; { price })' => 'Ik wil lid worden van de studentenkring (&euro; { price })',
     'I have read and agree with the terms and conditions' => 'Ik heb de voorwaarden gelezen en ga hiermee akkoord',
     'I want to receive my Ir.Reëel at CuDi' => 'Ik wil mijn Ir.Reëel krijgen bij CuDi',
@@ -93,7 +93,6 @@ return array(
     'L - Female' => 'L - Vrouw',
     'XL - Female' => 'XL - Vrouw',
 
-    'This field should not contain an @' => 'Dit veld mag geen @ bevatten',
     'Other Subjects' => 'Andere Vakken',
     'You have not yet added any other subjects.' => 'Je hebt nog geen andere vakken toegevoegd.',
     'Add Other Subjects' => 'Andere Vakken Toevoegen',

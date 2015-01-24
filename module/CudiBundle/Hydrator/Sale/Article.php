@@ -18,15 +18,14 @@
 
 namespace CudiBundle\Hydrator\Sale;
 
-use CommonBundle\Component\Hydrator\Exception\InvalidObjectException,
-    CudiBundle\Entity\Sale\Article as ArticleEntity;
+use CommonBundle\Component\Hydrator\Exception\InvalidObjectException;
 
 class Article extends \CommonBundle\Component\Hydrator\Hydrator
 {
     protected function doExtract($object = null)
     {
         static $std_keys = array(
-            'bookable', 'unbookable', 'sellable', 'can_expire',
+            'bookable', 'unbookable', 'sellable',
         );
 
         if (null === $object) {
@@ -34,6 +33,8 @@ class Article extends \CommonBundle\Component\Hydrator\Hydrator
         }
 
         $data = $this->stdExtract($object, $std_keys);
+
+        $data['can_expire'] = $object->canExpire();
 
         $data['purchase_price'] = number_format($object->getPurchasePrice()/100, 2);
         $data['sell_price'] = number_format($object->getSellPrice()/100, 2);

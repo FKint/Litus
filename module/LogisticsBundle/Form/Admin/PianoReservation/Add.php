@@ -18,12 +18,8 @@
 
 namespace LogisticsBundle\Form\Admin\PianoReservation;
 
-use CommonBundle\Component\Validator\Academic as AcademicValidator,
-    CommonBundle\Component\Validator\DateCompare as DateCompareValidator,
-    DateInterval,
+use DateInterval,
     DateTime,
-    LogisticsBundle\Component\Validator\PianoDuration as PianoDurationValidator,
-    LogisticsBundle\Component\Validator\PianoReservationConflict as ReservationConflictValidator,
     LogisticsBundle\Entity\Reservation\PianoReservation;
 
 /**
@@ -45,43 +41,14 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
         parent::init();
 
         $this->add(array(
-            'type'       => 'hidden',
-            'name'       => 'player_id',
-            'attributes' => array(
-                'id' => 'playerId',
-            ),
-            'options'    => array(
-                'input' => array(
-                    'required' => true,
-                    'filters' => array(
-                        array('name' => 'StringTrim'),
-                    ),
-                    'validators' => array(
-                        new AcademicValidator(
-                            $this->getEntityManager(),
-                            array(
-                                'byId' => true,
-                            )
-                        ),
-                    ),
-                ),
-            ),
-        ));
-
-        $this->add(array(
-            'type'       => 'text',
+            'type'       => 'typeahead',
             'name'       => 'player',
             'label'      => 'Player',
             'required'   => true,
-            'attributes' => array(
-                'autocomplete' => 'off',
-                'data-provide' => 'typeahead',
-                'id'           => 'playerSearch',
-            ),
             'options'    => array(
                 'input' => array(
-                    'filters' => array(
-                        array('name' => 'StringTrim'),
+                    'validators' => array(
+                        array('name' => 'typeahead_person'),
                     ),
                 ),
             ),
@@ -104,7 +71,7 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
                         array(
                             'name' => 'date',
                             'options' => array(
-                                'format' => 'D d/m/Y H:i',
+                                'format' => 'd/m/Y H:i',
                             ),
                         ),
                     ),
@@ -129,21 +96,31 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
                         array(
                             'name' => 'date',
                             'options' => array(
-                                'format' => 'D d/m/Y H:i',
+                                'format' => 'd/m/Y H:i',
                             ),
                         ),
-                        new DateCompareValidator('start_date', 'D d/m/Y H:i'),
-                        new ReservationConflictValidator(
-                            'start_date',
-                            'D d/m/Y H:i',
-                            PianoReservation::PIANO_RESOURCE_NAME,
-                            $this->getEntityManager(),
-                            null !== $this->reservation ? $this->reservation->getId() : null
+                        array(
+                            'name' => 'date_compare',
+                            'options' => array(
+                                'first_date' => 'start_date',
+                                'format' => 'd/m/Y H:i',
+                            ),
                         ),
-                        new PianoDurationValidator(
-                            'start_date',
-                            'D d/m/Y H:i',
-                            $this->getEntityManager()
+                        array(
+                            'name' => 'logistics_piano_reservation_conflict',
+                            'options' => array(
+                                'start_date' => 'start_date',
+                                'format' => 'd/m/Y H:i',
+                                'resource' => PianoReservation::PIANO_RESOURCE_NAME,
+                                'reservation_id' => null !== $this->reservation ? $this->reservation->getId() : null,
+                            ),
+                        ),
+                        array(
+                            'name' => 'logistics_piano_duration',
+                            'options' => array(
+                                'start_date' => 'start_date',
+                                'format' => 'd/m/Y H:i',
+                            ),
                         ),
                     ),
                 ),
@@ -241,7 +218,7 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
                             ->isTimeInExistingReservation($startSlot, $isStart);
 
                         if (!$occupied) {
-                            $list[$startSlot->format('D d/m/Y H:i')] = $startSlot->format('D d/m/Y H:i');
+                            $list[$startSlot->format('d/m/Y H:i')] = $startSlot->format('D d/m/Y H:i');
                         }
 
                         $startSlot->add(new DateInterval('PT' . $slotDuration . 'M'));

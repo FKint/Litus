@@ -175,6 +175,7 @@ abstract class Person implements RoleAware
 
         $this->roles = new ArrayCollection();
         $this->organizationStatuses = new ArrayCollection();
+        $this->barcodes = new ArrayCollection();
     }
 
     /**
@@ -421,7 +422,7 @@ abstract class Person implements RoleAware
     public function setSex($sex)
     {
         if (($sex !== 'm') && ($sex !== 'f') && ($sex !== null)) {
-            throw new \InvalidArgumentException('Invalid sex');
+            throw new InvalidArgumentException('Invalid sex');
         }
 
         $this->sex = $sex;

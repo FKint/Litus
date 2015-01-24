@@ -18,13 +18,9 @@
 
 namespace LogisticsBundle\Form\PianoReservation;
 
-use CommonBundle\Component\Validator\DateCompare as DateCompareValidator,
-    CommonBundle\Entity\General\Language,
-    DateInterval,
+use DateInterval,
     DateTime,
     IntlDateFormatter,
-    LogisticsBundle\Component\Validator\PianoDuration as PianoDurationValidator,
-    LogisticsBundle\Component\Validator\PianoReservationConflict as ReservationConflictValidator,
     LogisticsBundle\Entity\Reservation\PianoReservation;
 
 /**
@@ -34,17 +30,22 @@ use CommonBundle\Component\Validator\DateCompare as DateCompareValidator,
  */
 class Add extends \CommonBundle\Component\Form\Bootstrap\Form
 {
+    /**
+     * @var array List of all possible slots
+     */
+    private $_weeks;
+
     public function init()
     {
         parent::init();
 
-        $weeks = $this->getTimeSlots();
+        $this->_weeks = $this->getTimeSlots();
 
-        foreach ($weeks as $key => $week) {
+        foreach ($this->_weeks as $key => $week) {
             $this->add(array(
                 'type'       => 'fieldset',
                 'name'       => 'week_' . $key,
-                'attributes' => array(
+                'elements' => array(
                     array(
                         'type'       => 'select',
                         'name'       => 'start_date',
@@ -62,7 +63,7 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
                                     array(
                                         'name' => 'date',
                                         'options' => array(
-                                            'format' => 'D d/m/Y H:i',
+                                            'format' => 'd/m/Y H:i',
                                         ),
                                     ),
                                 ),
@@ -86,23 +87,30 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
                                     array(
                                         'name' => 'date',
                                         'options' => array(
-                                            'format' => 'D d/m/Y H:i',
+                                            'format' => 'd/m/Y H:i',
                                         ),
                                     ),
-                                    new DateCompareValidator(
-                                        array('week_' . $key, 'start_date'),
-                                        'D d/m/Y H:i'
+                                    array(
+                                        'name' => 'date_compare',
+                                        'options' => array(
+                                            'first_date' => 'start_date',
+                                            'format' => 'd/m/Y H:i',
+                                        ),
                                     ),
-                                    new ReservationConflictValidator(
-                                        array('week_' . $key, 'start_date'),
-                                        'D d/m/Y H:i',
-                                        PianoReservation::PIANO_RESOURCE_NAME,
-                                        $this->getEntityManager()
+                                    array(
+                                        'name' => 'logistics_piano_reservation_conflict',
+                                        'options' => array(
+                                            'start_date' => 'start_date',
+                                            'format' => 'd/m/Y H:i',
+                                            'resource' => PianoReservation::PIANO_RESOURCE_NAME,
+                                        ),
                                     ),
-                                    new PianoDurationValidator(
-                                        array('week_' . $key, 'start_date'),
-                                        'D d/m/Y H:i',
-                                        $this->getEntityManager()
+                                    array(
+                                        'name' => 'logistics_piano_duration',
+                                        'options' => array(
+                                            'start_date' => 'start_date',
+                                            'format' => 'd/m/Y H:i',
+                                        ),
                                     ),
                                 ),
                             ),
@@ -111,7 +119,7 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
                     array(
                         'type'  => 'submit',
                         'name'  => 'submit',
-                        'label' => 'Book',
+                        'value' => 'Book',
                     ),
                 ),
             ));
@@ -176,7 +184,7 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
 
                             $listStart[] = array(
                                 'label' => $formatter->format($startSlot),
-                                'value' => $startSlot->format('D d/m/Y H:i'),
+                                'value' => $startSlot->format('d/m/Y H:i'),
                                 'attributes' => array(
                                     'disabled' => $occupied,
                                 ),
@@ -190,7 +198,7 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
 
                             $listEnd[] = array(
                                 'label' => $formatter->format($startSlot),
-                                'value' => $startSlot->format('D d/m/Y H:i'),
+                                'value' => $startSlot->format('d/m/Y H:i'),
                                 'attributes' => array(
                                     'disabled' => $occupied,
                                 ),
@@ -224,18 +232,20 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
         return $weeks;
     }
 
+    public function getWeeks()
+    {
+        return $this->_weeks;
+    }
+
     public function getInputFilterSpecification()
     {
+        $specs = parent::getInputFilterSpecification();
         foreach ($this->getFieldsets() as $fieldset) {
             if (!isset($this->data[$fieldset->getName()]['submit'])) {
-                continue;
+                unset($specs[$fieldset->getName()]);
             }
-
-            return array(
-                $fieldset->getName() => $fieldset->getInputSpecification(),
-            );
         }
 
-        return array();
+        return $specs;
     }
 }

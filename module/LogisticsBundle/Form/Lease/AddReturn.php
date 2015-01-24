@@ -18,9 +18,6 @@
 
 namespace LogisticsBundle\Form\Lease;
 
-use CommonBundle\Component\Validator\Price as PriceValidator,
-    LogisticsBundle\Component\Validator\LeaseValidator;
-
 /**
  * The form used to register a returned item.
  *
@@ -33,47 +30,32 @@ class AddReturn extends \CommonBundle\Component\Form\Bootstrap\Form
         parent::init();
 
         $this->add(array(
-            'type'       => 'text',
-            'name'       => 'item',
+            'type'       => 'typeahead',
+            'name'       => 'returnItem',
             'label'      => 'Item',
-            'attributes' => array(
-                'autocomplete' => false,
-                'class'        => 'js-item-search',
-            ),
-        ));
-
-        $this->add(array(
-            'type'       => 'hidden',
-            'name'       => 'barcode',
-            'attributes' => array(
-                'class' => 'js-item-barcode',
-            ),
-            'options'    => array(
+            'options' => array(
                 'input' => array(
-                    'required' => true,
-                    'filters'  => array(
-                        array('name' => 'StringTrim'),
-                    ),
                     'validators' => array(
                         array(
-                            'name' => 'barcode',
+                            'name' => 'logistics_typeahead_lease',
                             'options' => array(
-                                'adapter'     => 'Ean12',
-                                'useChecksum' => false,
+                                'must_be_leased' => true,
                             ),
                         ),
-                        new LeaseValidator($this->getEntityManager(), true),
                     ),
                 ),
             ),
         ));
 
         $this->add(array(
-            'type'     => 'text',
-            'name'     => 'returned_amount',
-            'label'    => 'Amount',
-            'required' => true,
-            'options'  => array(
+            'type'       => 'text',
+            'name'       => 'returned_amount',
+            'label'      => 'Amount',
+            'required'   => true,
+            'attributes' => array(
+                'id' => 'returned_amount',
+            ),
+            'options'    => array(
                 'input' => array(
                     'filters'  => array(
                         array('name' => 'StringTrim'),
@@ -91,6 +73,7 @@ class AddReturn extends \CommonBundle\Component\Form\Bootstrap\Form
             'label'      => 'Returned By',
             'required'   => true,
             'attributes' => array(
+                'id'           => 'returned_by',
                 'autocomplete' => false,
             ),
             'options'    => array(
@@ -103,17 +86,20 @@ class AddReturn extends \CommonBundle\Component\Form\Bootstrap\Form
         ));
 
         $this->add(array(
-            'type'     => 'text',
-            'name'     => 'returned_pawn',
-            'label'    => 'Returned Pawn',
-            'required' => true,
-            'options'  => array(
+            'type'       => 'text',
+            'name'       => 'returned_pawn',
+            'label'      => 'Returned Pawn',
+            'required'   => true,
+            'attributes' => array(
+                'id' => 'returned_pawn',
+            ),
+            'options'    => array(
                 'input' => array(
                     'filters'  => array(
                         array('name' => 'StringTrim'),
                     ),
                     'validators' => array(
-                        new PriceValidator(),
+                        array('name' => 'price'),
                     ),
                 ),
             ),

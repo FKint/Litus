@@ -19,7 +19,6 @@
 namespace SyllabusBundle\Form\Admin\Subject\Study;
 
 use CommonBundle\Entity\General\AcademicYear,
-    SyllabusBundle\Component\Validator\Subject\Study as StudyValidator,
     SyllabusBundle\Entity\StudySubjectMap,
     SyllabusBundle\Entity\Subject;
 
@@ -59,44 +58,24 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
         parent::init();
 
         $this->add(array(
-            'type'       => 'hidden',
-            'name'       => 'study_id',
-            'attributes' => array(
-                'id' => 'studyId',
-            ),
-            'options'    => array(
-                'input' => array(
-                    'required' => true,
-                    'filters'  => array(
-                        array('name' => 'StringTrim'),
-                    ),
-                    'validators' => array(
-                        array(
-                            'name' => 'int',
-                        ),
-                    ),
-                ),
-            ),
-        ));
-
-        $this->add(array(
-            'type'       => 'text',
+            'type'       => 'typeahead',
             'name'       => 'study',
             'label'      => 'Study',
             'required'   => true,
             'attributes' => array(
-                'autocomplete' => 'off',
-                'data-provide' => 'typeahead',
-                'id'           => 'studySearch',
                 'style'        => 'width: 400px;',
             ),
             'options'    => array(
                 'input' => array(
-                    'filters'  => array(
-                        array('name' => 'StringTrim'),
-                    ),
                     'validators' => array(
-                        new StudyValidator($this->getEntityManager(), $this->subject, $this->academicYear),
+                        array(
+                            'name' => 'syllabus_subject_study',
+                            'options' => array(
+                                'subject' => $this->subject,
+                                'academic_year' => $this->academicYear,
+                            ),
+                        ),
+                        array('name' => 'syllabus_typeahead_study'),
                     ),
                 ),
             ),

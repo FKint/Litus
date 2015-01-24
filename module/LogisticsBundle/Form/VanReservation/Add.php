@@ -18,10 +18,7 @@
 
 namespace LogisticsBundle\Form\VanReservation;
 
-use CommonBundle\Component\Validator\Academic as AcademicValidator,
-    CommonBundle\Component\Validator\DateCompare as DateCompareValidator,
-    LogisticsBundle\Component\Validator\ReservationConflict as ReservationConflictValidator,
-    LogisticsBundle\Entity\Reservation\VanReservation;
+use LogisticsBundle\Entity\Reservation\VanReservation;
 
 /**
  * The form used to add a new Reservation.
@@ -40,14 +37,6 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
     public function init()
     {
         parent::init();
-
-        $this->add(array(
-            'type'       => 'hidden',
-            'name'       => 'passenger_id',
-            'attributes' => array(
-                'id' => 'passengerId',
-            ),
-        ));
 
         $this->add(array(
             'type'       => 'text',
@@ -96,13 +85,21 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
                                 'format' => 'd/m/Y H:i',
                             ),
                         ),
-                        new DateCompareValidator('start_date', 'd/m/Y H:i'),
-                        new ReservationConflictValidator(
-                            'start_date',
-                            'd/m/Y H:i',
-                            VanReservation::VAN_RESOURCE_NAME,
-                            $this->getEntityManager(),
-                            null === $this->reservation ? 0 : $this->reservation->getId()
+                        array(
+                            'name' => 'date_compare',
+                            'options' => array(
+                                'first_date' => 'start_date',
+                                'format' => 'd/m/Y H:i',
+                            ),
+                        ),
+                        array(
+                            'name' => 'logistics_reservation_conflict',
+                            'options' => array(
+                                'start_date' => 'start_date',
+                                'format' => 'd/m/Y H:i',
+                                'resource' => VanReservation::VAN_RESOURCE_NAME,
+                                'reservation_id' => null === $this->reservation ? 0 : $this->reservation->getId(),
+                            ),
                         ),
                     ),
                 ),
@@ -170,14 +167,19 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
         ));
 
         $this->add(array(
-            'type'       => 'text',
+            'type'       => 'typeahead',
             'name'       => 'passenger',
             'label'      => 'Passenger',
             'attributes' => array(
-                'autocomplete' => 'off',
-                'class'        => 'passenger',
-                'data-provide' => 'typeahead',
-                'id'           => 'passengerSearch',
+                'class'   => 'passenger',
+            ),
+            'required'   => false,
+            'options'    => array(
+                'input' => array(
+                    'validators'  => array(
+                        array('name' => 'typeahead_person'),
+                    ),
+                ),
             ),
         ));
 
@@ -206,46 +208,5 @@ class Add extends \CommonBundle\Component\Form\Bootstrap\Form
         }
 
         return $driversArray;
-    }
-
-    public function getInputFilterSpecification()
-    {
-        $specs = parent::getInputFilterSpecification();
-
-        if (isset($this->data['passenger_id']) && '' != $this->data['passenger_id']) {
-            $specs['passenger_id'] = array(
-                'name' => 'passenger_id',
-                'required' => false,
-                'filters' => array(
-                    array('name' => 'StringTrim'),
-                ),
-                'validators' => array(
-                    new AcademicValidator(
-                        $this->getEntityManager(),
-                        array(
-                            'byId' => true,
-                        )
-                    ),
-                ),
-            );
-        } else {
-            $specs['passenger'] = array(
-                'name' => 'passenger',
-                'required' => false,
-                'filters' => array(
-                    array('name' => 'StringTrim'),
-                ),
-                'validators' => array(
-                    new AcademicValidator(
-                        $this->getEntityManager(),
-                        array(
-                            'byId' => false,
-                        )
-                    ),
-                ),
-            );
-        }
-
-        return $specs;
     }
 }

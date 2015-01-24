@@ -21,8 +21,7 @@ namespace CudiBundle\Entity\Article;
 use CudiBundle\Entity\Article\Option\Binding,
     CudiBundle\Entity\Article\Option\Color,
     Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Mapping as ORM,
-    InvalidArgumentException;
+    Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="CudiBundle\Repository\Article\Internal")
@@ -101,6 +100,14 @@ class Internal extends \CudiBundle\Entity\Article
      * @ORM\Column(type="string", nullable=true)
      */
     private $frontPage;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->nbBlackAndWhite = 0;
+        $this->nbColored = 0;
+    }
 
     /**
      * @return int

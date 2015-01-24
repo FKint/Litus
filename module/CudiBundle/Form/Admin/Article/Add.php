@@ -18,9 +18,7 @@
 
 namespace CudiBundle\Form\Admin\Article;
 
-use CommonBundle\Component\Validator\Uri as UriValidator,
-    CommonBundle\Component\Validator\Year as YearValidator,
-    CudiBundle\Entity\Article;
+use CudiBundle\Entity\Article;
 
 /**
  * Add Article
@@ -66,8 +64,8 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
                 ),
                 array(
                     'type'       => 'text',
-                    'name'       => 'author',
-                    'label'      => 'Author',
+                    'name'       => 'authors',
+                    'label'      => 'Authors',
                     'required'   => true,
                     'attributes' => array(
                         'size' => 60,
@@ -106,10 +104,8 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
                                 array('name' => 'StringTrim'),
                             ),
                             'validators' => array(
-                                array(
-                                    'name' => 'int',
-                                ),
-                                new YearValidator(),
+                                array('name' => 'int'),
+                                array('name' => 'year'),
                             ),
                         ),
                     ),
@@ -144,7 +140,7 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
                                 array('name' => 'StringTrim'),
                             ),
                             'validators' => array(
-                                new UriValidator(),
+                                array('name' => 'uri'),
                             ),
                         ),
                     ),
@@ -190,6 +186,7 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
                     'name'       => 'internal',
                     'label'      => 'Internal Article',
                     'attributes' => array(
+                        'id'        => 'internal',
                         'data-help' => 'Enabling this flag will show extra options for articles that will be printed by the owners of the store. Articles that are printed by and bought from another supplier doesn\'t need these options.',
                     ),
                 ),
@@ -288,42 +285,27 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
 
         $this->add(array(
             'type'       => 'fieldset',
-            'name'       => 'subject',
+            'name'       => 'subject_form',
             'label'      => 'Subject Mapping',
             'attributes' => array(
                 'id' => 'subject_form',
             ),
             'elements'   => array(
                 array(
-                    'type'       => 'hidden',
-                    'name'       => 'id',
-                    'attributes' => array(
-                        'id' => 'subjectId',
-                    ),
-                    'options'    => array(
-                        'input' => array(
-                            'required' => true,
-                            'filters'  => array(
-                                array('name' => 'StringTrim'),
-                            ),
-                            'validators' => array(
-                                array(
-                                    'name' => 'int',
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-                array(
-                    'type'       => 'text',
-                    'name'       => 'name',
+                    'type'       => 'typeahead',
+                    'name'       => 'subject',
                     'label'      => 'Subject',
                     'required'   => true,
                     'attributes' => array(
-                        'autocomplete' => 'off',
-                        'data-provide' => 'typeahead',
-                        'id'           => 'subjectSearch',
+                        'id'           => 'subject',
                         'size'         => 70,
+                    ),
+                    'options'  => array(
+                        'input' => array(
+                            'validators' => array(
+                                array('name' => 'syllabus_typeahead_subject'),
+                            ),
+                        ),
                     ),
                 ),
                 array(

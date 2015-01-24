@@ -48,7 +48,7 @@ class Article extends \CommonBundle\Component\Hydrator\Hydrator
             ),
         );
 
-        $data['article']['author'] = $object->getAuthors();
+        $data['article']['authors'] = $object->getAuthors();
         $data['article']['publisher'] = $object->getPublishers();
         $data['article']['type'] = $object->getType();
 
@@ -61,8 +61,8 @@ class Article extends \CommonBundle\Component\Hydrator\Hydrator
                 )
             );
 
-            $data['internal']['binding'] = $object->getBinding()->getId();
-            $data['internal']['front_color'] = $object->getFrontColor()->getId();
+            $data['internal']['binding'] = $object->getBinding() ? $object->getBinding()->getId() : '';
+            $data['internal']['front_color'] = $object->getFrontColor() ? $object->getFrontColor()->getId() : '';
             $data['internal']['rectoverso'] = $object->isRectoVerso();
         }
 
@@ -86,7 +86,7 @@ class Article extends \CommonBundle\Component\Hydrator\Hydrator
         if (isset($data['article'])) {
             $this->stdHydrate($data['article'], $object, self::$article_keys);
 
-            $object->setAuthors($data['article']['author'])
+            $object->setAuthors($data['article']['authors'])
                 ->setPublishers($data['article']['publisher'])
                 ->setIsDownloadable($data['article']['downloadable'])
                 ->setIsSameAsPreviousYear($data['article']['same_as_previous_year'])
@@ -98,19 +98,22 @@ class Article extends \CommonBundle\Component\Hydrator\Hydrator
                 ->getRepository('CudiBundle\Entity\Article\Option\Binding')
                 ->findOneById($data['internal']['binding']);
 
-            $frontColor = $this->getEntityManager()
-                ->getRepository('CudiBundle\Entity\Article\Option\Color')
-                ->findOneById($data['internal']['front_color']);
+            $frontPageColor = null;
+            if (isset($data['internal']['front_color'])) {
+                $frontPageColor = $this->getEntityManager()
+                    ->getRepository('CudiBundle\Entity\Article\Option\Color')
+                    ->findOneById($data['internal']['front_color']);
+            }
 
             $this->stdHydrate($data['internal'], $object, self::$internal_keys);
 
             $object->setBinding($binding)
-                ->setIsOfficial($data['internal']['official'])
+                ->setIsOfficial(isset($data['internal']['official']) ? $data['internal']['official'] : true)
                 ->setIsRectoVerso($data['internal']['rectoverso'])
                 ->setFrontColor($frontPageColor)
                 ->setIsPerforated($data['internal']['perforated'])
                 ->setIsColored($data['internal']['colored'])
-                ->setIsHardCovered($data['internal']['hardcovered']);
+                ->setIsHardCovered(isset($data['internal']['hardcovered']) ? $data['internal']['hardcovered'] : false);
         }
 
         return $object;

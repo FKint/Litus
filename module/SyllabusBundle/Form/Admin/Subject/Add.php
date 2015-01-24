@@ -18,8 +18,7 @@
 
 namespace SyllabusBundle\Form\Admin\Subject;
 
-use SyllabusBundle\Component\Validator\Subject\Code as CodeValidator,
-    SyllabusBundle\Entity\Subject;
+use SyllabusBundle\Entity\Subject;
 
 /**
  * Add Subject
@@ -50,7 +49,12 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
                         array('name' => 'StringTrim'),
                     ),
                     'validators' => array(
-                        new CodeValidator($this->getEntityManager(), $this->subject),
+                        array(
+                            'name' => 'syllabus_subject_code',
+                            'options' => array(
+                                'exclude' => $this->subject,
+                            ),
+                        ),
                     ),
                 ),
             ),
@@ -102,41 +106,17 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
         ));
 
         $this->add(array(
-            'type'       => 'hidden',
-            'name'       => 'study_id',
-            'attributes' => array(
-                'id' => 'studyId',
-            ),
-            'options'    => array(
-                'input' => array(
-                    'required' => true,
-                    'filters'  => array(
-                        array('name' => 'StringTrim'),
-                    ),
-                    'validators' => array(
-                        array(
-                            'name' => 'int',
-                        ),
-                    ),
-                ),
-            ),
-        ));
-
-        $this->add(array(
-            'type'       => 'text',
+            'type'       => 'typeahead',
             'name'       => 'study',
             'label'      => 'Study',
             'required'   => true,
             'attributes' => array(
-                'autocomplete' => 'off',
-                'data-provide' => 'typeahead',
-                'id'           => 'studySearch',
                 'style'        => 'width: 400px',
             ),
             'options'    => array(
                 'input' => array(
-                    'filters'  => array(
-                        array('name' => 'StringTrim'),
+                    'validators' => array(
+                        array('name' => 'syllabus_typeahead_study'),
                     ),
                 ),
             ),

@@ -22,12 +22,14 @@ use BrBundle\Component\ContractParser\Entries,
     BrBundle\Component\ContractParser\Text;
 
 /**
- *
- *
  * @author Daan Wendelen <daan.wendelen@litus.cc>
  */
 class NewState extends EntryState
 {
+    /**
+     * @param  string           $text
+     * @return LastEntriesState
+     */
     public function addEntry($text)
     {
         $entries = new Entries($text);
@@ -37,6 +39,10 @@ class NewState extends EntryState
         return new LastEntriesState($entries, $this->getEntry());
     }
 
+    /**
+     * @param  string        $text
+     * @return LastTextState
+     */
     public function addText($text)
     {
         $t = new Text($text);

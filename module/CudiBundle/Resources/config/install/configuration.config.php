@@ -217,8 +217,13 @@ VTK Cudi
     ),
     array(
         'key'         => 'cudi.queue_socket_public',
-        'value'       => '127.0.0.1:8899',
+        'value'       => ':8899',
         'description' => 'The public address for the websocket of the queue',
+    ),
+    array(
+        'key'         => 'cudi.queue_socket_enabled',
+        'value'       => '1',
+        'description' => 'Whether the cudi queue socket is enabled',
     ),
     array(
         'key'         => 'cudi.queue_socket_key',
@@ -454,5 +459,10 @@ VTK Cudi
         'key'         => 'cudi.enable_sale_article_barcode_check',
         'value'       => '1',
         'description' => 'Enable the barcode checks for sale articles.',
+    ),
+    array(
+        'key'         => 'cudi.enable_assign_after_stock_update',
+        'value'       => '1',
+        'description' => 'Enable assign after updating the stock (enable_automatic_assignment must also be enabled).',
     ),
 );

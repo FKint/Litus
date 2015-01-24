@@ -33,8 +33,7 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
     {
         parent::init();
 
-        $this->setAttribute('id', 'uploadFile')
-            ->setAttribute('enctype', 'multipart/form-data');
+        $this->setAttribute('id', 'uploadFile');
 
         $this->add(array(
             'type'       => 'text',
@@ -66,7 +65,7 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
                 'input' => array(
                     'validators' => array(
                         array(
-                            'name' => 'filefilessize',
+                            'name' => 'filesize',
                             'options' => array(
                                 'max' => self::FILESIZE,
                             ),

@@ -24,6 +24,8 @@ use CommonBundle\Component\ServiceManager\ServiceLocatorAwareInterface,
     Zend\Form\FieldsetInterface,
     Zend\Form\FormInterface,
     Zend\InputFilter\InputFilterAwareInterface,
+    Zend\InputFilter\InputFilterInterface,
+    Zend\InputFilter\InputInterface,
     Zend\InputFilter\InputProviderInterface,
     Zend\Stdlib\Hydrator\ClassMethods as ClassMethodsHydrator;
 
@@ -92,9 +94,10 @@ abstract class Form extends \Zend\Form\Form implements InputFilterAwareInterface
      * @param  string $value
      * @param  string $class
      * @param  string $name
+     * @param  array  $attributes
      * @return self
      */
-    public function addSubmit($value, $class = null, $name = 'submit')
+    public function addSubmit($value, $class = null, $name = 'submit', $attributes = array())
     {
         $submit = array(
             'type'       => 'submit',
@@ -103,10 +106,10 @@ abstract class Form extends \Zend\Form\Form implements InputFilterAwareInterface
         );
 
         if ($class) {
-            $submit['attributes'] = array(
-                'class' => $class,
-            );
+            $attributes['class'] = $class;
         }
+
+        $submit['attributes'] = $attributes;
 
         $this->add($submit);
 
@@ -122,14 +125,13 @@ abstract class Form extends \Zend\Form\Form implements InputFilterAwareInterface
      */
     public function addFieldset($label, $name)
     {
-        $fieldset = new Fieldset($name);
-        $fieldset->setLabel($label);
+        $this->add(array(
+            'type' => 'fieldset',
+            'name' => $name,
+            'label' => $label,
+        ));
 
-        $this->getFormFactory()->configureFieldset($fieldset, array());
-
-        $this->add($fieldset);
-
-        return $fieldset;
+        return $this->get($name);
     }
 
     /**
@@ -172,30 +174,18 @@ abstract class Form extends \Zend\Form\Form implements InputFilterAwareInterface
         return $this->getHydrator()->hydrate($this->getData(), $object);
     }
 
-    private function injectSelfInValidators(array $specification)
+    private function injectSelfInValidators(InputFilterInterface $filter)
     {
-        if (!array_key_exists('type', $specification)
-                || !is_string($specification['type'])
-                || $specification['type'] !== 'inputfilter') {
-            // not an InputFilter specification, probably an Input specification
-
-            if (array_key_exists('validators', $specification) && is_array($specification['validators'])) {
-                foreach ($specification['validators'] as $validator) {
-                    if ($validator instanceof FormAwareInterface) {
-                        $validator->setForm($this);
+        foreach ($filter->getInputs() as $key => $input) {
+            if ($input instanceof InputInterface) {
+                foreach ($input->getValidatorChain()->getValidators() as $validator) {
+                    if ($validator['instance'] instanceof FormAwareInterface) {
+                        $validator['instance']->setForm($this);
                     }
                 }
+            } else {
+                $this->injectSelfInValidators($input);
             }
-
-            return;
-        }
-
-        foreach ($specification as $child) {
-            if (!is_array($child)) {
-                continue;
-            }
-
-            $this->injectSelfInValidators($child);
         }
     }
 
@@ -204,10 +194,12 @@ abstract class Form extends \Zend\Form\Form implements InputFilterAwareInterface
         if (!isset($this->filter)) {
             $specification = $this->getInputFilterSpecification();
 
-            $this->injectSelfInValidators($specification);
-
             $this->filter = $this->getInputFilterFactory()
                 ->createInputFilter($specification);
+
+            if ($this->filter instanceof InputFilterInterface) {
+                $this->injectSelfInValidators($this->filter);
+            }
         }
 
         return $this->filter;

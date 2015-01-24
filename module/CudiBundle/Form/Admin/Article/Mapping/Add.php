@@ -30,36 +30,20 @@ class Add extends \CommonBundle\Component\Form\Admin\Form
         parent::init();
 
         $this->add(array(
-            'type'       => 'hidden',
-            'name'       => 'subject_id',
-            'attributes' => array(
-                'id' => 'subjectId',
-            ),
-            'options'    => array(
-                'input' => array(
-                    'required' => true,
-                    'filters'  => array(
-                        array('name' => 'StringTrim'),
-                    ),
-                    'validators' => array(
-                        array(
-                            'name' => 'int',
-                        ),
-                    ),
-                ),
-            ),
-        ));
-
-        $this->add(array(
-            'type'       => 'text',
+            'type'       => 'typeahead',
             'name'       => 'subject',
             'label'      => 'Subject',
             'required'   => true,
             'attributes' => array(
-                'autocomplete' => 'off',
-                'data-provide' => 'typeahead',
-                'id'           => 'subjectSearch',
+                'id'           => 'subject',
                 'size'         => 70,
+            ),
+            'options'    => array(
+                'input' => array(
+                    'validators' => array(
+                        array('name' => 'syllabus_typeahead_subject'),
+                    ),
+                ),
             ),
         ));
 
