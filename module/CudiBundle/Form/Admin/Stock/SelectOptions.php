@@ -59,11 +59,26 @@ class SelectOptions extends \CommonBundle\Component\Form\Admin\Form
         ));
 
         $this->add(array(
+            'type'     => 'select',
+            'name'     => 'semester',
+            'label'    => 'Semester',
+            'required' => true,
+            'attributes' => array(
+                'options' => $this->_getSemesters(),
+            ),
+        ));
+
+        $this->add(array(
             'type'  => 'checkbox',
             'name'  => 'in_stock',
             'label' => 'Only In Stock',
         ));
 
         $this->addSubmit('Select', 'view', 'select');
+    }
+
+    private function _getSemesters()
+    {
+        return array(0 => 'Both', '1' => 1, '2' => 2);
     }
 }

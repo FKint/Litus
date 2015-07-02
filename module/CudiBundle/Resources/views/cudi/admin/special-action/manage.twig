@@ -23,4 +23,20 @@
             </div>
         {% endif %}
     </aside>
+
+    <aside>
+        {% if hasAccess('cudi_admin_special_action', 'stock') %}
+            <div class="sidebox">
+                <div class="title">Calculate stock and order</div>
+                <div class="content">
+                    <p>
+                        <i>Please hit the link below to recalculate stock and create orders!</i>
+                    </p>
+                    <p>
+                        <a href="{{ url('cudi_admin_special_action', {"action": "stock"}) }}">&rarr; Calculate stock</a>
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+    </aside>
 {% endblock %}

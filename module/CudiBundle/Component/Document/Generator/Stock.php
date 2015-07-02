@@ -53,14 +53,20 @@ class Stock extends \CommonBundle\Component\Document\Generator\Pdf
     private $academicYear;
 
     /**
+     * @var integer
+     */
+    private $semester;
+
+    /**
      * @param EntityManager $entityManager The EntityManager instance
      * @param string        $articles      The kind of articles to export
      * @param string        $order         The ordering of the articles to export
      * @param boolean       $onlyInStock   Print only articles in stock
      * @param AcademicYear  $academicYear
+     * @param integer       $semester      The semester
      * @param TmpFile       $file          The file to write to
      */
-    public function __construct(EntityManager $entityManager, $articles, $order, $onlyInStock, AcademicYear $academicYear, TmpFile $file)
+    public function __construct(EntityManager $entityManager, $articles, $order, $onlyInStock, AcademicYear $academicYear, $semester, TmpFile $file)
     {
         $filePath = $entityManager
             ->getRepository('CommonBundle\Entity\General\Config')
@@ -71,7 +77,7 @@ class Stock extends \CommonBundle\Component\Document\Generator\Pdf
             $filePath . '/stock/stock.xsl',
             $file->getFilename()
         );
-
+        $this->semester = $semester;
         $this->articles = $articles;
         $this->order = $order;
         $this->onlyInStock = $onlyInStock;
@@ -100,11 +106,11 @@ class Stock extends \CommonBundle\Component\Document\Generator\Pdf
         if ($this->order == 'barcode') {
             $stock = $this->getEntityManager()
                 ->getRepository('CudiBundle\Entity\Sale\Article')
-                ->findAllByAcademicYearSortBarcode($this->academicYear);
+                ->findAllByAcademicYearSortBarcode($this->academicYear,$this->semester);
         } else {
             $stock = $this->getEntityManager()
                 ->getRepository('CudiBundle\Entity\Sale\Article')
-                ->findAllByAcademicYear($this->academicYear);
+                ->findAllByAcademicYear($this->academicYear,$this->semester);
         }
 
         $items = array();

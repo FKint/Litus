@@ -441,6 +441,7 @@ class StockController extends \CudiBundle\Component\Controller\ActionController
                     $formData['order'],
                     isset($formData['in_stock']) && $formData['in_stock'],
                     $this->getAcademicYearEntity(),
+                    $formData['semester'],
                     $file
                 );
                 $document->generate();

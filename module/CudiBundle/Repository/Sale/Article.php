@@ -60,9 +60,9 @@ class Article extends EntityRepository
      * @param  AcademicYear $academicYear
      * @return array
      */
-    public function findAllByAcademicYearSortBarcode(AcademicYear $academicYear)
+    public function findAllByAcademicYearSortBarcode(AcademicYear $academicYear, $semester = 0)
     {
-        $articles = $this->getArticleIdsBySemester($academicYear);
+        $articles = $this->getArticleIdsBySemester($academicYear, $semester);
 
         $query = $this->getEntityManager()->createQueryBuilder();
         $resultSet = $query->select('a')

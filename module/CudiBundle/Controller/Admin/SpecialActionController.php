@@ -144,4 +144,44 @@ class SpecialActionController extends \CudiBundle\Component\Controller\ActionCon
             )
         );
     }
+
+    public function stockAction()
+    {
+        $form = $this->getForm('cudi_special-action_stock_calculate');
+
+        $academicYear = $this->getCurrentAcademicYear();
+
+        if ($this->getRequest()->isPost()) {
+            $form->setData($this->getRequest()->getPost());
+
+            if ($form->isValid()) {
+                $formData = $form->getData();
+
+                $supplier = $this->getEntityManager()
+                    ->getRepository('CudiBundle\Entity\Supplier')
+                    ->findOneById($formData['supplier']);
+
+                $articles = $this->getEntityManager()
+                    ->getRepository('CudiBundle\Entity\Sale\Article')
+                    ->findAllBySupplierStringAndAcademicYear($supplier->getName(), $academicYear, $formData['semester']);
+
+                $period = $this->getActiveStockPeriodEntity();
+
+                foreach ($articles as $article) {
+                    $stock = $article->getStockValue();
+                    $delivered = $period->getNbDelivered($article);
+                    $assigned = $period->getNbAssigned($article);
+                    $nbReserved = $period->getNbBooked($article) + $period->getNbAssigned($article);
+                    print_r($stock . "----" . $delivered . "----" . $assigned . "----" . $nbReserved);
+                    exit();
+                }
+            }
+        }
+
+        return new ViewModel(
+            array(
+                'form' => $form,
+            )
+        );
+    }
 }
