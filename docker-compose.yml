@@ -1,0 +1,38 @@
+version: '2'
+services:
+    litus:
+        build: .
+        volumes: 
+            - .:/code
+        working_dir: /code
+        ports:
+            - "20080:80"
+        links:
+            - database
+            - memcached
+            - mongo
+    database:
+        image: postgres:latest
+        environment:
+            - POSTGRES_PASSWORD=13vaelrivjwaemlf
+            - POSTGRES_USER=litus
+    memcached:
+        image: memcached:latest
+        ports:
+            - "11211:11211"
+    phppgadmin:
+        build: 
+            context: .
+            dockerfile: Dockerfile-phppgadmin
+        ports:
+            - "20081:80"
+        environment:
+            - DB_PORT=5432
+            - DB_HOST=database
+        links:
+            - database
+    mongo:
+        image: mongo:latest
+            
+
+
